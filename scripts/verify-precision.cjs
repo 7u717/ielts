@@ -126,7 +126,7 @@ async function type(page, text) {
         progress = page.getByRole('progressbar', { name: '本组学习进度' })
       const p = await progress.boundingBox()
       assert.equal(p.width, 32)
-      assert.ok(p.y >= tools.y + tools.height && p.y < tools.y + tools.height + 30)
+      assert.ok(p.y > 700, 'word progress stays in a fixed lower position')
       await page.screenshot({ path: `${output}/learning-${scheme}-390.png`, fullPage: true })
       const old = await progress.getAttribute('aria-valuenow'),
         wordBox = await page.locator('#word-wrap').boundingBox()

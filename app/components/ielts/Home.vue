@@ -53,6 +53,18 @@ const topicProgress = (id: string) => {
   const dict = store.word.bookList.find(d => d.id === id)
   return dict?.complete ? 1 : Math.min(1, (dict?.lastLearnIndex || 0) / (dict?.length || 24))
 }
+const menuProgress = computed(() => Object.fromEntries(topics.map(t => [t.id, topicProgress(t.id)])))
+const meterPeek = ref('')
+let meterTimer: ReturnType<typeof setTimeout> | undefined
+function peekMeter(id: string) {
+  haptic()
+  clearTimeout(meterTimer)
+  meterPeek.value = id
+  meterTimer = setTimeout(() => {
+    meterPeek.value = ''
+  }, 1600)
+}
+onBeforeUnmount(() => clearTimeout(meterTimer))
 const today = computed(() =>
   store.word.bookList
     .flatMap(d => d.statistics)
@@ -289,6 +301,7 @@ function up(e: PointerEvent) {
           :open="topicsOpen"
           :selected="topic.id"
           :topics="topics"
+          :progress-values="menuProgress"
           :busy="busy"
           @toggle="topicsOpen = !topicsOpen"
           @close="topicsOpen = false"
@@ -298,6 +311,7 @@ function up(e: PointerEvent) {
       <h2>{{ topic.name }}</h2>
       <div class="overview-meters">
         <div class="overview-meter-row">
+          <button class="overview-meter-hit" type="button" aria-label="查看今日进度数字" @click="peekMeter('today')" />
           <div
             class="overview-meter"
             role="progressbar"
@@ -308,9 +322,14 @@ function up(e: PointerEvent) {
           >
             <i :style="{ transform: `scaleX(${Math.min(1, today / dailyGoal)})` }" />
           </div>
-          <small>{{ today }} / {{ dailyGoal }}</small>
+          <Transition name="meaning"
+            ><small v-if="meterPeek === 'today'" class="meter-peek" role="status"
+              >{{ today }} / {{ dailyGoal }}</small
+            ></Transition
+          >
         </div>
         <div class="overview-meter-row">
+          <button class="overview-meter-hit" type="button" aria-label="查看主题进度数字" @click="peekMeter('total')" />
           <div
             class="overview-meter"
             role="progressbar"
@@ -321,7 +340,11 @@ function up(e: PointerEvent) {
           >
             <i :style="{ transform: `scaleX(${topicProgress(topic.id)})` }" />
           </div>
-          <small>{{ store.sdict.lastLearnIndex }} / {{ topic.length }}</small>
+          <Transition name="meaning"
+            ><small v-if="meterPeek === 'total'" class="meter-peek" role="status"
+              >{{ store.sdict.lastLearnIndex }} / {{ topic.length }}</small
+            ></Transition
+          >
         </div>
       </div>
       <button class="overview-start" :aria-label="hasSession ? '继续学习' : '开始学习'" :disabled="busy" @click="start">

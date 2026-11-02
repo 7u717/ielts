@@ -87,7 +87,7 @@ async function saved(page, value) {
       await page.waitForTimeout(430)
       assert.ok(!/今日|已学/.test(await overview.innerText()))
       assert.equal(await overview.getByRole('progressbar').count(), 2)
-      assert.ok((await overview.innerText()).includes('20'))
+      assert.equal(await overview.locator('.meter-peek').count(), 0)
       await page.screenshot({ path: `${output}/overview-${scheme}-390.png`, fullPage: true })
       await page.keyboard.press('Escape')
       await overview.waitFor({ state: 'hidden' })

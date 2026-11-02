@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { practiceExamples } from '@/core/ielts/examples'
 import { useWindowSize } from '@vueuse/core'
 import type { Question, Word } from '@/core/types'
 import { WordPlayTrigger, WordPracticeType, WordPracticeMode, ShortcutKey } from '@/core/types/enum'
@@ -63,8 +64,24 @@ const effective = useInjectedDisplayPolicy(
   computed(() => ({ showFullWord: controller.showFullWord.value, showWordResult: controller.showWordResult.value }))
 )
 const { width } = useWindowSize({ initialWidth: 390 })
-const size = computed(() =>
-  Math.min(58, (Math.min(width.value, 600) - 44) / (Math.max(1, props.word.word.length) * 0.54))
+const glyphWidth = ref(Math.max(1, props.word.word.length * 0.56))
+let measurementCanvas: HTMLCanvasElement | undefined
+let disposed = false
+function measureWord() {
+  if (import.meta.server || disposed) return
+  measurementCanvas ??= document.createElement('canvas')
+  const context = measurementCanvas.getContext('2d')
+  if (!context) return
+  const family = getComputedStyle(document.documentElement).getPropertyValue('--r-num').trim()
+  context.font = `400 100px ${family || '-apple-system, sans-serif'}`
+  glyphWidth.value = Math.max(1, context.measureText(props.word.word).width / 100)
+}
+watch([() => props.word.word, width], measureWord, { immediate: true })
+const size = computed(() => Math.min(48, (Math.min(500, Math.min(width.value, 600) - 64) - 2) / glyphWidth.value))
+const detailSize = computed(() => Math.min(30, (Math.min(width.value - 64, 310) - 52) / glyphWidth.value))
+const examples = computed(() => practiceExamples(props.word))
+const examplePreview = computed(() =>
+  !minimalInput.value && !effective.value.isWordMasked ? examples.value[0]?.c : ''
 )
 const dragX = ref(0)
 const dragging = ref(false)
@@ -184,6 +201,8 @@ function resumeAudio() {
   if (!document.hidden && settings.wordSound) play(WordPlayTrigger.NewWord)
 }
 onMounted(() => {
+  measureWord()
+  void document.fonts?.ready.then(measureWord)
   document.addEventListener('visibilitychange', resumeAudio)
   if (!localStorage.getItem('ielts-gesture-hint-v1')) {
     hint.value = true
@@ -194,6 +213,7 @@ onMounted(() => {
   }
 })
 onBeforeUnmount(() => {
+  disposed = true
   document.removeEventListener('visibilitychange', resumeAudio)
   clearTimeout(hold)
   clearTimeout(finishTimer)
@@ -275,16 +295,25 @@ function saveNote() {
             <button class="icon-button" aria-label="还没记住" @click="unknown"><Icon name="review" /></button
             ><button class="icon-button" aria-label="记得" @click="known"><Icon name="check" /></button>
           </div>
+          <button
+            v-if="examplePreview"
+            class="sentence-preview"
+            lang="en"
+            aria-label="查看完整例句"
+            @click="detailsOpen = true"
+          >
+            {{ examplePreview }}
+          </button>
           <div class="word-tools">
             <button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button
             ><button class="icon-button" aria-label="单词详情" @click="detailsOpen = true">
               <Icon name="detail" />
             </button>
           </div>
-          <Footer />
         </div>
       </div>
     </Transition>
+    <Footer />
     <Transition name="meaning"
       ><p v-if="hint" class="gesture-hint" role="status">点词查看 · 按住发音 · 左滑换词</p></Transition
     >
@@ -292,12 +321,13 @@ function saveNote() {
       :open="detailsOpen"
       :title="effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"
       minimal
+      floating
       class="word-detail-sheet"
       @close="closeDetails"
     >
       <template v-if="!effective.isWordMasked || controller.showWordResult.value">
         <div class="detail-word-heading">
-          <h2>{{ word.word }}</h2>
+          <h2 :style="{ fontSize: detailSize + 'px' }">{{ word.word }}</h2>
           <div class="detail-sound-row">
             <span v-if="word.phonetic0">/{{ word.phonetic0 }}/</span
             ><button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button>
@@ -305,9 +335,9 @@ function saveNote() {
         </div>
         <p class="detail-meaning">{{ word.trans.map(t => t.pos + ' ' + t.cn).join('；') }}</p>
         <div class="word-examples">
-          <div v-for="s in word.sentences" :key="s.c">
+          <div v-for="s in examples" :key="s.c">
             <p>{{ s.c }}</p>
-            <p class="sheet-note">{{ s.cn }}</p>
+            <p v-if="s.cn" class="sheet-note">{{ s.cn }}</p>
           </div>
         </div>
         <p v-if="store.noteData[word.word] && !editing" class="sheet-note">{{ store.noteData[word.word] }}</p>

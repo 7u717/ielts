@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import Icon from './Icon.vue'
-const props = defineProps<{ open: boolean; selected: string; topics: { id: string; name: string }[]; busy?: boolean }>()
+const props = defineProps<{
+  open: boolean
+  selected: string
+  topics: { id: string; name: string }[]
+  busy?: boolean
+  progressValues?: Record<string, number>
+}>()
+function ratio(id: string) {
+  return Math.max(0, Math.min(1, props.progressValues?.[id] || 0))
+}
 const emit = defineEmits<{ toggle: []; close: []; select: [string] }>()
 const wrap = ref<HTMLElement>()
 const trigger = ref<HTMLButtonElement>()
@@ -66,8 +75,22 @@ onBeforeUnmount(() => {
           :aria-label="topic.name"
           :aria-checked="selected === topic.id"
           :disabled="busy"
+          :aria-description="'已学 ' + Math.round(ratio(topic.id) * 100) + '%'"
           @click="emit('select', topic.id)"
         >
+          <svg class="topic-orb-progress" viewBox="0 0 38 38" aria-hidden="true">
+            <circle class="topic-orb-track" cx="19" cy="19" r="9.5" />
+            <circle
+              v-if="ratio(topic.id) > 0"
+              class="topic-orb-arc"
+              cx="19"
+              cy="19"
+              r="9.5"
+              pathLength="1"
+              stroke-dasharray="1"
+              :stroke-dashoffset="1 - ratio(topic.id)"
+            />
+          </svg>
           <span>{{ topic.name }}</span>
         </button>
       </div>
