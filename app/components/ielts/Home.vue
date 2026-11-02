@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, onBeforeUnmount } from 'vue'
+import { computed, ref, watch } from 'vue'
 import topics from '@/core/ielts/topics.json'
 import { useBaseStore } from '@/core/stores/base'
 import { useSettingStore } from '@/core/stores/setting'
@@ -17,11 +17,10 @@ import { Toast } from '@/base'
 import Sheet from './Sheet.vue'
 import Icon from './Icon.vue'
 import Ring from './Ring.vue'
-import Tabs from './Tabs.vue'
+import HomeDock from './HomeDock.vue'
 import WordRow from './WordRow.vue'
 import TopicMenu from './TopicMenu.vue'
 import Vocabulary from './Vocabulary.vue'
-import ModeSwitch from './ModeSwitch.vue'
 const store = useBaseStore()
 const settings = useSettingStore()
 const persistence = usePracticeWordPersistence()
@@ -37,42 +36,14 @@ const hasSession = ref(false)
 const wordDetails = ref<Word | null>(null)
 const vocabularyOpen = ref(false)
 const overviewOpen = ref(false)
-const progressPeek = ref('')
-let progressTimer: ReturnType<typeof setTimeout> | undefined
-function peekProgress(t: (typeof topics)[number]) {
-  clearTimeout(progressTimer)
-  progressPeek.value = t.id
-  progressTimer = setTimeout(() => {
-    progressPeek.value = ''
-  }, 1600)
-  void choose(t)
-}
-onBeforeUnmount(() => clearTimeout(progressTimer))
 const topic = computed(() => topics.find(t => t.id === store.sdict.id) || topics[0])
 const topicProgress = (id: string) => {
   const dict = store.word.bookList.find(d => d.id === id)
   return dict?.complete ? 1 : Math.min(1, (dict?.lastLearnIndex || 0) / (dict?.length || 24))
 }
 const menuProgress = computed(() => Object.fromEntries(topics.map(t => [t.id, topicProgress(t.id)])))
-const meterPeek = ref('')
-let meterTimer: ReturnType<typeof setTimeout> | undefined
-function peekMeter(id: string) {
-  haptic()
-  clearTimeout(meterTimer)
-  meterPeek.value = id
-  meterTimer = setTimeout(() => {
-    meterPeek.value = ''
-  }, 1600)
-}
-onBeforeUnmount(() => clearTimeout(meterTimer))
-const today = computed(() =>
-  store.word.bookList
-    .flatMap(d => d.statistics)
-    .filter(s => new Date(s.startDate).toDateString() === new Date().toDateString())
-    .reduce((n, s) => n + (s.new || 0), 0)
-)
-const dailyGoal = computed(() => store.sdict.perDayStudyNumber || 20)
 const review = computed(() => (store.load && !busy.value ? createStudyTask().taskWords.review : []))
+const dueReviewCount = computed(() => (store.load && !busy.value ? createStudyTask().dueReviewCount : 0))
 const list = computed(() => (tab.value === 'wrong' ? store.wrong.words : review.value))
 watch(
   () => store.load,
@@ -219,41 +190,11 @@ function up(e: PointerEvent) {
             @click="overviewOpen = true"
           >
             <Transition name="hero-theme" mode="out-in"
-              ><Ring :key="topic.id" :progress="today / dailyGoal" :size="250"
+              ><Ring :key="topic.id" :progress="topicProgress(topic.id)" :size="274"
                 ><span class="hero-topic">{{ topic.name }}</span></Ring
               ></Transition
             >
           </button>
-          <div class="mode-controls">
-            <ModeSwitch
-              :model-value="mode"
-              :disabled="busy"
-              :vocabulary-label="topic.name + '词表'"
-              @update:model-value="chooseMode"
-              @vocabulary="vocabularyOpen = true"
-            />
-          </div>
-        </div>
-        <div class="topic-progress">
-          <div class="topic-strip" data-horizontal>
-            <button
-              v-for="t in topics"
-              :key="t.id"
-              class="topic-progress-item"
-              :aria-label="`${t.name}，已学 ${Math.round(topicProgress(t.id) * 100)}%`"
-              :aria-pressed="topic.id === t.id"
-              :disabled="busy"
-              @click="peekProgress(t)"
-            >
-              <Ring :progress="topicProgress(t.id)" :size="42" small
-                ><Transition name="meaning"
-                  ><span v-if="progressPeek === t.id" class="ring-peek"
-                    >{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span
-                  ></Transition
-                ></Ring
-              ><span>{{ t.name }}</span>
-            </button>
-          </div>
         </div>
         <button v-if="error" class="error-action" @click="choose(topic)">{{ error }}</button>
         <span v-if="busy" class="loading-note" role="status">正在载入</span>
@@ -294,7 +235,15 @@ function up(e: PointerEvent) {
         </div>
       </section>
     </Transition>
-    <Tabs v-model="tab" />
+    <HomeDock
+      :tab="tab"
+      :mode="mode"
+      :disabled="busy"
+      :vocabulary-label="topic.name + '词表'"
+      @tab="tab = $event"
+      @mode="chooseMode"
+      @vocabulary="vocabularyOpen = true"
+    />
     <ClientOnly
       ><Teleport to="#topic-menu-mount"
         ><TopicMenu
@@ -309,42 +258,32 @@ function up(e: PointerEvent) {
     ></ClientOnly>
     <Sheet :open="overviewOpen" title="学习概览" minimal floating class="study-overview" @close="overviewOpen = false">
       <h2>{{ topic.name }}</h2>
-      <div class="overview-meters">
-        <div class="overview-meter-row">
-          <button class="overview-meter-hit" type="button" aria-label="查看今日进度数字" @click="peekMeter('today')" />
+      <div class="overview-meters topic-meters">
+        <div class="topic-meter-row">
+          <Icon name="check" />
           <div
             class="overview-meter"
             role="progressbar"
-            aria-label="今日学习进度"
-            :aria-valuenow="today"
-            :aria-valuemax="dailyGoal"
-            aria-valuemin="0"
-          >
-            <i :style="{ transform: `scaleX(${Math.min(1, today / dailyGoal)})` }" />
-          </div>
-          <Transition name="meaning"
-            ><small v-if="meterPeek === 'today'" class="meter-peek" role="status"
-              >{{ today }} / {{ dailyGoal }}</small
-            ></Transition
-          >
-        </div>
-        <div class="overview-meter-row">
-          <button class="overview-meter-hit" type="button" aria-label="查看主题进度数字" @click="peekMeter('total')" />
-          <div
-            class="overview-meter"
-            role="progressbar"
-            aria-label="主题总进度"
-            :aria-valuenow="store.sdict.lastLearnIndex"
+            aria-label="本话题已学进度"
+            :aria-valuenow="store.sdict.complete ? topic.length : store.sdict.lastLearnIndex"
             :aria-valuemax="topic.length"
             aria-valuemin="0"
           >
             <i :style="{ transform: `scaleX(${topicProgress(topic.id)})` }" />
           </div>
-          <Transition name="meaning"
-            ><small v-if="meterPeek === 'total'" class="meter-peek" role="status"
-              >{{ store.sdict.lastLearnIndex }} / {{ topic.length }}</small
-            ></Transition
+        </div>
+        <div class="topic-meter-row">
+          <Icon name="review" />
+          <div
+            class="overview-meter"
+            role="progressbar"
+            aria-label="本话题待复习比例"
+            :aria-valuenow="dueReviewCount"
+            :aria-valuemax="topic.length"
+            aria-valuemin="0"
           >
+            <i :style="{ transform: `scaleX(${Math.min(1, dueReviewCount / topic.length)})` }" />
+          </div>
         </div>
       </div>
       <button class="overview-start" :aria-label="hasSession ? '继续学习' : '开始学习'" :disabled="busy" @click="start">

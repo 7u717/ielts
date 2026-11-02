@@ -1,0 +1,222 @@
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright')
+const { startStudy } = require('./mobile-actions.cjs')
+const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const base = process.env.IELTS_TEST_URL || 'http://127.0.0.1:4173/ielts/'
+const output = process.env.IELTS_SCREENSHOTS || '/tmp/ielts-graphic-home'
+fs.mkdirSync(output, { recursive: true })
+async function data(page, value) {
+  return page.evaluate(
+    async ({ value, write }) => {
+      const db = await new Promise(resolve => {
+        const r = indexedDB.open('keyval-store')
+        r.onsuccess = () => resolve(r.result)
+      })
+      return new Promise(resolve => {
+        const tx = db.transaction('keyval', write ? 'readwrite' : 'readonly'),
+          os = tx.objectStore('keyval')
+        if (write) {
+          os.put(JSON.stringify(value), 'typing-word-dict')
+          tx.oncomplete = resolve
+        } else {
+          const r = os.get('typing-word-dict')
+          r.onsuccess = () => resolve(JSON.parse(r.result))
+        }
+      })
+    },
+    { value, write: arguments.length === 2 }
+  )
+}
+async function skip(page) {
+  const before = await page.locator('#word-wrap').innerText(),
+    box = await page.locator('#word-wrap').boundingBox()
+  await page.mouse.move(box.x + box.width * 0.8, box.y + 20)
+  await page.mouse.down()
+  await page.mouse.move(box.x + box.width * 0.8 - 140, box.y + 20, { steps: 8 })
+  await page.mouse.up()
+  await page.waitForFunction(old => document.querySelector('#word-wrap')?.innerText !== old, before)
+  await page.waitForTimeout(450)
+}
+;(async () => {
+  const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox'] })
+  try {
+    for (const scheme of ['dark', 'light']) {
+      const ctx = await browser.newContext({
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 2,
+        isMobile: true,
+        hasTouch: true,
+        colorScheme: scheme,
+      })
+      await ctx.route('https://dict.youdao.com/**', r => r.abort())
+      await ctx.addInitScript(() => {
+        HTMLMediaElement.prototype.play = function () {
+          return this.src.startsWith('https:') ? Promise.reject(new Error('fixture')) : Promise.resolve()
+        }
+        speechSynthesis.speak = u =>
+          queueMicrotask(() => {
+            u.onstart?.()
+            u.onend?.()
+          })
+        window.haptics = []
+        navigator.vibrate = n => {
+          window.haptics.push(n)
+          return true
+        }
+      })
+      const page = await ctx.newPage(),
+        errors = []
+      page.on('pageerror', e => errors.push(e.message))
+      await page.goto(base, { waitUntil: 'networkidle' })
+      await page.locator('.hero-ring-button:enabled').waitFor()
+      const saved = await data(page)
+      saved.val.word.bookList.find(d => d.id === 'ielts-environment').lastLearnIndex = 6
+      saved.val.noteData.graphicSentinel = 'keep'
+      saved.val.fsrsData.biodiversity = {
+        due: '2020-01-01T00:00:00.000Z',
+        stability: 8,
+        difficulty: 4,
+        reps: 3,
+        lapses: 1,
+        state: 2,
+        elapsed_days: 4,
+        scheduled_days: 9,
+        learning_steps: 0,
+        last_review: '2019-12-30T00:00:00.000Z',
+      }
+      await data(page, saved)
+      await page.reload({ waitUntil: 'networkidle' })
+      await page.locator('.hero-ring-button:enabled').waitFor()
+      assert.equal(await page.locator('.topic-progress,.mode-controls,.mode-switch').count(), 0)
+      assert.equal(await page.locator('.iue-tabs').count(), 1)
+      assert.equal(await page.locator('.unified-dock button').count(), 6)
+      const ring = await page.locator('.hero-ring-button').boundingBox()
+      assert.equal(ring.width, 274)
+      assert.ok(Math.abs(ring.x + ring.width / 2 - 195) < 1)
+      await page.screenshot({ path: `${output}/home-${scheme}-390.png`, fullPage: true })
+      await page.getByRole('button', { name: '选择主题', exact: true }).click()
+      const menu = page.getByRole('menu', { name: '主题', exact: true })
+      await menu.waitFor()
+      await page.waitForTimeout(850)
+      const orbs = menu.getByRole('menuitemradio')
+      assert.equal(await orbs.locator('svg path').count(), 6)
+      const selected = menu.getByRole('menuitemradio', { name: '环境', exact: true })
+      assert.equal(
+        await selected.evaluate(el => getComputedStyle(el).backgroundColor),
+        scheme === 'dark' ? 'rgb(245, 245, 247)' : 'rgb(29, 29, 31)'
+      )
+      const other = menu.getByRole('menuitemradio', { name: '教育', exact: true })
+      assert.equal(await other.locator('span').evaluate(el => getComputedStyle(el).opacity), '0')
+      const box = await other.boundingBox()
+      await page.mouse.move(box.x + 19, box.y + 19)
+      await page.mouse.down()
+      await page.waitForTimeout(500)
+      await page.mouse.up()
+      await page.waitForTimeout(350)
+      assert.ok(await menu.isVisible())
+      assert.equal(await selected.getAttribute('aria-checked'), 'true')
+      assert.ok(Number(await other.locator('span').evaluate(el => getComputedStyle(el).opacity)) > 0.8)
+      await page.screenshot({ path: `${output}/topics-${scheme}-390.png`, fullPage: true })
+      await page.getByRole('button', { name: '选择主题', exact: true }).click()
+      await menu.waitFor({ state: 'hidden' })
+      await page.locator('.hero-ring-button').click()
+      const overview = page.getByRole('dialog', { name: '学习概览', exact: true })
+      await overview.waitFor()
+      await page.waitForTimeout(450)
+      assert.equal(
+        await overview.getByRole('progressbar', { name: '本话题已学进度' }).getAttribute('aria-valuenow'),
+        '6'
+      )
+      assert.equal(
+        await overview.getByRole('progressbar', { name: '本话题待复习比例' }).getAttribute('aria-valuenow'),
+        '1'
+      )
+      assert.ok(!/\d/.test(await overview.innerText()))
+      assert.equal(
+        await overview
+          .getByRole('progressbar', { name: '本话题已学进度' })
+          .locator('i')
+          .evaluate(el => getComputedStyle(el).transform),
+        'matrix(0.25, 0, 0, 1, 0, 0)'
+      )
+      await page.screenshot({ path: `${output}/overview-${scheme}-390.png`, fullPage: true })
+      await page.mouse.click(10, 110)
+      await overview.waitFor({ state: 'hidden' })
+      await page.getByRole('button', { name: '环境词表', exact: true }).click()
+      const vocab = page.getByRole('dialog', { name: '环境', exact: true })
+      await vocab.waitFor()
+      await page.waitForTimeout(500)
+      assert.equal(await vocab.locator('.vocabulary-gloss').count(), 24)
+      assert.equal(
+        await vocab
+          .locator('.vocabulary-gloss')
+          .first()
+          .evaluate(el => getComputedStyle(el).opacity),
+        '0.4'
+      )
+      assert.ok(
+        (await vocab.locator('.sheet-body').evaluate(el => getComputedStyle(el).maskImage)).includes('linear-gradient')
+      )
+      const heights = await vocab
+        .locator('.vocabulary-word')
+        .evaluateAll(nodes => nodes.map(el => el.getBoundingClientRect().height))
+      assert.ok(heights.every(h => h === 58))
+      await page.screenshot({ path: `${output}/vocabulary-${scheme}-390.png`, fullPage: true })
+      await page.mouse.click(8, 110)
+      await vocab.waitFor({ state: 'hidden' })
+      await startStudy(page)
+      await page.locator('#word-wrap').waitFor()
+      await page.waitForTimeout(500)
+      const example = page.getByRole('button', { name: '查看完整例句', exact: true })
+      await example.waitFor()
+      assert.equal(await example.evaluate(el => getComputedStyle(el).fontSize), '15px')
+      assert.equal(await example.evaluate(el => getComputedStyle(el).webkitLineClamp), '2')
+      const stage = await page.locator('.word-stage').boundingBox()
+      assert.ok(Math.abs(stage.y + stage.height / 2 - 844 * 0.39) < 2)
+      await page.screenshot({ path: `${output}/learning-${scheme}-390.png`, fullPage: true })
+      await example.click()
+      const detail = page.locator('.word-detail-sheet')
+      await detail.waitFor()
+      await page.waitForTimeout(400)
+      assert.ok((await detail.locator('.word-examples').innerText()).length > 30)
+      await page.mouse.click(8, 100)
+      await detail.waitFor({ state: 'hidden' })
+      await page.getByRole('button', { name: '学习工具', exact: true }).click()
+      await page.waitForTimeout(650)
+      assert.equal(
+        await page.locator('.topic-orb-backdrop').evaluate(el => getComputedStyle(el).backdropFilter),
+        'none'
+      )
+      assert.equal(await page.locator('.practice-shell').evaluate(el => getComputedStyle(el).filter), 'none')
+      await page.screenshot({ path: `${output}/tools-${scheme}-390.png`, fullPage: true })
+      await page.getByRole('button', { name: '学习工具', exact: true }).click()
+      await page.locator('.topic-orb-backdrop').waitFor({ state: 'hidden' })
+      await page.waitForTimeout(350)
+      for (let n = 0; n < 3; n++) await skip(page)
+      assert.equal(await page.locator('.gesture-hint').count(), 0, 'hint appears for first three distinct words only')
+      await page.getByRole('link', { name: '保存并返回' }).click()
+      await page.locator('.hero-ring-button:enabled').waitFor()
+      assert.equal((await data(page)).val.noteData.graphicSentinel, 'keep')
+      for (const name of ['打字', '听写', '学习']) {
+        await page.getByRole('button', { name, exact: true }).click()
+        await page.locator('.hero-ring-button:enabled').waitFor()
+        assert.equal(await page.getByRole('button', { name, exact: true }).getAttribute('aria-pressed'), 'true')
+      }
+      await page.getByRole('button', { name: '错词', exact: true }).click()
+      await page.getByText('还没有错词', { exact: true }).waitFor()
+      await page.getByRole('button', { name: '复习', exact: true }).click()
+      await page.getByRole('button', { name: '开始复习', exact: true }).waitFor()
+      assert.deepEqual(errors, [])
+      assert.ok((await page.evaluate(() => window.haptics)).every(n => n === 8))
+      console.log(
+        `PASS: ${scheme} single dock, 274px centered ring, topic icons/hold/selection, real learned/due values, two-line examples, first-three hints, no tool blur, uniform gloss rows, preserved notes`
+      )
+      await ctx.close()
+    }
+  } finally {
+    await browser.close()
+  }
+})().catch(e => {
+  console.error(e)
+  process.exitCode = 1
+})

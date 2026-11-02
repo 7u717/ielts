@@ -200,17 +200,23 @@ watch(
 function resumeAudio() {
   if (!document.hidden && settings.wordSound) play(WordPlayTrigger.NewWord)
 }
+const hintViews = useState('ielts-ui-swipe-hints', () => 0)
+function showSwipeHint() {
+  clearTimeout(hintTimer)
+  hint.value = hintViews.value < 3
+  if (hint.value) {
+    hintViews.value++
+    hintTimer = setTimeout(() => {
+      hint.value = false
+    }, 3500)
+  }
+}
+watch(() => props.word.word, showSwipeHint)
 onMounted(() => {
   measureWord()
   void document.fonts?.ready.then(measureWord)
   document.addEventListener('visibilitychange', resumeAudio)
-  if (!localStorage.getItem('ielts-gesture-hint-v1')) {
-    hint.value = true
-    localStorage.setItem('ielts-gesture-hint-v1', '1')
-    hintTimer = setTimeout(() => {
-      hint.value = false
-    }, 4500)
-  }
+  showSwipeHint()
 })
 onBeforeUnmount(() => {
   disposed = true
@@ -315,7 +321,9 @@ function saveNote() {
     </Transition>
     <Footer />
     <Transition name="meaning"
-      ><p v-if="hint" class="gesture-hint" role="status">点词查看 · 按住发音 · 左滑换词</p></Transition
+      ><p v-if="hint" class="gesture-hint" role="status">
+        <span class="swipe-hint-line" aria-hidden="true"></span><span class="sr-only">左右滑动切词</span>
+      </p></Transition
     >
     <Sheet
       :open="detailsOpen"

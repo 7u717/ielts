@@ -2975,3 +2975,186 @@ body:has(.study-menu.open) .practice-shell {
   filter: none;
   scale: 0.985;
 }
+/* One dock, one topic ring: the remaining space belongs to the content. */
+.ielts-home .overview-panel {
+  min-height: calc(100svh - var(--header-h) - var(--nav-h) - 32px);
+  padding: 0;
+  justify-content: center;
+}
+.overview-panel .hero-ring-button {
+  width: 274px;
+  min-height: 274px;
+  height: 274px;
+}
+.hero-ring-button > .iue-ring {
+  width: 274px;
+  height: 274px;
+}
+.unified-dock {
+  width: 334px;
+  height: 56px;
+  padding: 5px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 0;
+}
+.unified-dock button,
+.unified-dock .tab-indicator {
+  width: 54px;
+  height: 46px;
+  flex: 0 0 54px;
+}
+.unified-dock button {
+  color: var(--muted);
+}
+.unified-dock button[aria-pressed='true'] {
+  color: var(--bg);
+}
+.unified-dock .tab-indicator {
+  top: 5px;
+  left: 5px;
+}
+.unified-dock .iue-icon {
+  width: 19px;
+  height: 19px;
+}
+.topic-menu .lk-o > .iue-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.3;
+}
+.topic-menu.open .lk-o > span {
+  opacity: 0;
+}
+.topic-menu.open .lk-o[aria-checked='true'],
+html.light .topic-menu.open .lk-o[aria-checked='true'] {
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: none;
+}
+.topic-menu.open .lk-o[aria-checked='true'] > span,
+.topic-menu.open .lk-o.label-peek > span,
+.topic-menu.open .lk-o:focus-visible > span {
+  opacity: 0.9;
+  color: var(--text);
+}
+.study-overview .topic-meters {
+  width: 164px;
+  gap: 24px;
+}
+.topic-meter-row {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+.topic-meter-row > .iue-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+}
+.sentence-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  font-size: 15px;
+  line-height: 1.65;
+  opacity: 0.94;
+  margin-top: 12px;
+  text-wrap: pretty;
+}
+.word-stage {
+  top: calc(39svh - var(--header-h));
+}
+html[data-keyboard-open='true'] .word-stage {
+  top: max(110px, calc((100svh - var(--keyboard-inset, 0px)) * 0.39 - var(--header-h)));
+}
+.gesture-hint {
+  bottom: max(102px, calc(env(safe-area-inset-bottom, 0px) + 76px));
+  height: 12px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.swipe-hint-line {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 0.5px;
+  background: var(--muted);
+  opacity: 0.35;
+  animation: swipe-whisper 1.8s var(--r-ease) 2;
+}
+.swipe-hint-line::before,
+.swipe-hint-line::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  width: 4px;
+  height: 4px;
+  border-left: 0.5px solid var(--muted);
+  border-bottom: 0.5px solid var(--muted);
+}
+.swipe-hint-line::before {
+  left: 0;
+  transform: rotate(45deg);
+}
+.swipe-hint-line::after {
+  right: 0;
+  transform: rotate(225deg);
+}
+@keyframes swipe-whisper {
+  50% {
+    transform: translateX(-5px);
+    opacity: 0.55;
+  }
+}
+body:has(.study-menu.open) .topic-orb-backdrop {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: rgba(0, 0, 0, 0.06);
+}
+.vocabulary-word {
+  display: flex;
+  flex-direction: row;
+  height: 58px;
+  padding: 0;
+  box-sizing: border-box;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  width: 100%;
+}
+.vocabulary-english {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+}
+.vocabulary-gloss {
+  flex: 1 1 40%;
+  min-width: 0;
+  max-width: 48%;
+  color: var(--text);
+  opacity: 0.4;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+.vocabulary-sheet .sheet-body {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16px);
+  mask-image: linear-gradient(to bottom, transparent, #000 16px);
+}
+@media (max-width: 360px) {
+  .unified-dock {
+    transform: translateX(-50%) scale(0.94);
+  }
+}

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import Icon from './Icon.vue'
+import { haptic } from '@/core/ielts/ui'
 const props = defineProps<{
   open: boolean
   selected: string
@@ -8,8 +9,32 @@ const props = defineProps<{
   busy?: boolean
   progressValues?: Record<string, number>
 }>()
-function ratio(id: string) {
-  return Math.max(0, Math.min(1, props.progressValues?.[id] || 0))
+const icons = ['leaf', 'learn', 'chip', 'people', 'heartbeat', 'trend']
+const peek = ref('')
+let hold: ReturnType<typeof setTimeout> | undefined
+let labelTimer: ReturnType<typeof setTimeout> | undefined
+let held = false
+function press(id: string) {
+  held = false
+  hold = setTimeout(() => {
+    held = true
+    peek.value = id
+    haptic()
+    clearTimeout(labelTimer)
+    labelTimer = setTimeout(() => {
+      peek.value = ''
+    }, 1800)
+  }, 420)
+}
+function release() {
+  clearTimeout(hold)
+}
+function select(id: string) {
+  if (held) {
+    held = false
+    return
+  }
+  emit('select', id)
 }
 const emit = defineEmits<{ toggle: []; close: []; select: [string] }>()
 const wrap = ref<HTMLElement>()
@@ -47,6 +72,8 @@ watch(
 )
 onMounted(() => document.addEventListener('pointerdown', outside))
 onBeforeUnmount(() => {
+  clearTimeout(hold)
+  clearTimeout(labelTimer)
   document.removeEventListener('pointerdown', outside)
   if (props.open) emit('close')
 })
@@ -69,28 +96,20 @@ onBeforeUnmount(() => {
         <button
           v-for="(topic, index) in topics"
           :key="topic.id"
-          :class="['lk-o', `lk-o${index + 1}`]"
+          :class="['lk-o', `lk-o${index + 1}`, { 'label-peek': peek === topic.id }]"
           :style="{ '--x': '0px', '--y': 52 + index * 46 + 'px', '--delay': index * 0.05 + 's' }"
           role="menuitemradio"
           :aria-label="topic.name"
           :aria-checked="selected === topic.id"
           :disabled="busy"
-          :aria-description="'已学 ' + Math.round(ratio(topic.id) * 100) + '%'"
-          @click="emit('select', topic.id)"
+          @pointerdown="press(topic.id)"
+          @pointerup="release"
+          @pointercancel="release"
+          @pointerleave="release"
+          @contextmenu.prevent
+          @click="select(topic.id)"
         >
-          <svg class="topic-orb-progress" viewBox="0 0 38 38" aria-hidden="true">
-            <circle class="topic-orb-track" cx="19" cy="19" r="9.5" />
-            <circle
-              v-if="ratio(topic.id) > 0"
-              class="topic-orb-arc"
-              cx="19"
-              cy="19"
-              r="9.5"
-              pathLength="1"
-              stroke-dasharray="1"
-              :stroke-dashoffset="1 - ratio(topic.id)"
-            />
-          </svg>
+          <Icon :name="icons[index]" />
           <span>{{ topic.name }}</span>
         </button>
       </div>

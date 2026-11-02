@@ -98,6 +98,7 @@ onBeforeUnmount(() => {
         @click="tap(word)"
       >
         <span class="vocabulary-english">{{ word.word }}</span>
+        <span class="vocabulary-gloss" aria-hidden="true">{{ word.trans.map(t => t.cn).join('；') }}</span>
       </button>
       <div
         :id="'vocab-' + word.id"
