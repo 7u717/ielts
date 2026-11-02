@@ -61,7 +61,7 @@ fs.mkdirSync(output, { recursive: true })
       '0px'
     )
     const progress = await page.getByRole('progressbar').boundingBox()
-    assert.ok(progress.y > 700 && progress.width < 60, 'progress no longer divides the header')
+    assert.equal(progress.width, 1, 'group progress remains accessible without a decorative line')
     const word = page.locator('#word-wrap')
     assert.equal(await word.locator('.letter').evaluate(el => getComputedStyle(el).color), 'rgb(229, 229, 234)')
     assert.ok(Number.parseFloat(await word.evaluate(el => getComputedStyle(el).fontSize)) > 46)

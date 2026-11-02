@@ -73,7 +73,7 @@ async function saved(page, value) {
           .locator('.topic-progress .iue-ring')
           .first()
           .evaluate(el => el.getBoundingClientRect().width),
-        38
+        42
       )
       assert.equal(await page.getByRole('group', { name: '学习模式' }).innerText(), '')
       assert.equal(
@@ -88,7 +88,8 @@ async function saved(page, value) {
       const overview = page.getByRole('dialog', { name: '学习概览', exact: true })
       await overview.waitFor()
       await page.waitForTimeout(430)
-      assert.ok((await overview.innerText()).includes('今日'))
+      assert.ok(!/今日|已学/.test(await overview.innerText()))
+      assert.equal(await overview.getByRole('progressbar').count(), 2)
       assert.ok((await overview.innerText()).includes('20'))
       await page.screenshot({ path: `${output}/overview-${scheme}-390.png`, fullPage: true })
       await page.keyboard.press('Escape')

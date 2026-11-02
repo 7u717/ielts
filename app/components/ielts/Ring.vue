@@ -12,21 +12,15 @@ const dot = computed(() => ({
 <template>
   <div class="iue-ring" :class="{ small }" :style="{ width: size + 'px', height: size + 'px' }">
     <svg viewBox="0 0 240 240" aria-hidden="true">
-      <circle
-        class="ring-track"
-        cx="120"
-        cy="120"
-        :r="radius"
-        :stroke-dasharray="small ? `${circumference * 0.72} ${circumference}` : undefined"
-      />
+      <circle class="ring-track" cx="120" cy="120" :r="radius" />
       <circle
         v-if="ratio > 0"
         class="ring-arc"
         cx="120"
         cy="120"
         :r="radius"
-        :stroke-dasharray="small ? `${circumference * 0.72} ${circumference}` : circumference"
-        :stroke-dashoffset="circumference * (small ? 0.72 : 1) * (1 - ratio)"
+        :stroke-dasharray="circumference"
+        :stroke-dashoffset="circumference * (1 - ratio)"
       />
       <circle v-if="!small && ratio > 0" class="ring-end-glow" :cx="dot.x" :cy="dot.y" r="4" />
     </svg>

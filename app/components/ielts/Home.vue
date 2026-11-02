@@ -245,7 +245,7 @@ function grabUp(e: PointerEvent) {
               :disabled="busy"
               @click="peekProgress(t)"
             >
-              <Ring :progress="topicProgress(t.id)" :size="38" small
+              <Ring :progress="topicProgress(t.id)" :size="42" small
                 ><Transition name="meaning"
                   ><span v-if="progressPeek === t.id" class="ring-peek"
                     >{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span
@@ -308,19 +308,33 @@ function grabUp(e: PointerEvent) {
     ></ClientOnly>
     <Sheet :open="overviewOpen" title="学习概览" minimal floating class="study-overview" @close="overviewOpen = false">
       <h2>{{ topic.name }}</h2>
-      <div class="overview-facts">
-        <p>
-          <span>今日</span
-          ><strong
-            >{{ today }}<small> / {{ dailyGoal }}</small></strong
+      <div class="overview-meters">
+        <div class="overview-meter-row">
+          <div
+            class="overview-meter"
+            role="progressbar"
+            aria-label="今日学习进度"
+            :aria-valuenow="today"
+            :aria-valuemax="dailyGoal"
+            aria-valuemin="0"
           >
-        </p>
-        <p>
-          <span>已学</span
-          ><strong
-            >{{ store.sdict.lastLearnIndex }}<small> / {{ topic.length }}</small></strong
+            <i :style="{ transform: `scaleX(${Math.min(1, today / dailyGoal)})` }" />
+          </div>
+          <small>{{ today }} / {{ dailyGoal }}</small>
+        </div>
+        <div class="overview-meter-row">
+          <div
+            class="overview-meter"
+            role="progressbar"
+            aria-label="主题总进度"
+            :aria-valuenow="store.sdict.lastLearnIndex"
+            :aria-valuemax="topic.length"
+            aria-valuemin="0"
           >
-        </p>
+            <i :style="{ transform: `scaleX(${topicProgress(topic.id)})` }" />
+          </div>
+          <small>{{ store.sdict.lastLearnIndex }} / {{ topic.length }}</small>
+        </div>
       </div>
       <button class="overview-start" :aria-label="hasSession ? '继续学习' : '开始学习'" :disabled="busy" @click="start">
         <Icon name="play" />

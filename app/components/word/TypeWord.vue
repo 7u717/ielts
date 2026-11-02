@@ -2,7 +2,7 @@
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import type { Question, Word } from '@/core/types'
-import { WordPlayTrigger, WordPracticeType, ShortcutKey } from '@/core/types/enum'
+import { WordPlayTrigger, WordPracticeType, WordPracticeMode, ShortcutKey } from '@/core/types/enum'
 import { useBaseStore } from '@/core/stores/base'
 import { useSettingStore } from '@/core/stores/setting'
 import { usePlayWordAudio, cancelWordPracticeAudio } from '@/core/hooks/sound'
@@ -31,6 +31,9 @@ const emit = defineEmits<{
 }>()
 const store = useBaseStore()
 const settings = useSettingStore()
+const minimalInput = computed(() =>
+  [WordPracticeMode.Free, WordPracticeMode.ListenOnly].includes(settings.wordPracticeMode)
+)
 const detailsOpen = ref(false)
 const meaning = ref(false)
 const hint = ref(false)
@@ -217,7 +220,7 @@ function saveNote() {
 }
 </script>
 <template>
-  <div v-if="word.word" class="typing-word" :data-practice-phase="phaseName">
+  <div v-if="word.word" class="typing-word" :class="{ 'minimal-input': minimalInput }" :data-practice-phase="phaseName">
     <Transition name="word-change" mode="out-in">
       <div :key="word.word + phaseKey" class="word-stage">
         <div
@@ -245,6 +248,7 @@ function saveNote() {
               ref="typing"
               :word="word"
               :active="!detailsOpen && !editing"
+              :minimalInput="minimalInput"
               :practiceType="practiceType"
               :isWordMasked="effective.isWordMasked"
               :showFullWord="controller.showFullWord.value"
@@ -272,7 +276,9 @@ function saveNote() {
           </div>
           <div class="word-tools">
             <button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button
-            ><button class="icon-button" aria-label="单词详情" @click="detailsOpen = true"><Icon name="more" /></button>
+            ><button class="icon-button" aria-label="单词详情" @click="detailsOpen = true">
+              <Icon name="detail" />
+            </button>
           </div>
         </div>
       </div>

@@ -6,13 +6,11 @@ defineEmits<{ skipStep: [] }>()
 </script>
 <template>
   <div
-    class="practice-hairline"
+    class="practice-progress-a11y"
     role="progressbar"
     aria-label="本组学习进度"
     :aria-valuenow="data.index"
     :aria-valuemax="data.words.length"
     aria-valuemin="0"
-  >
-    <i :style="{ transform: `scaleX(${data.index / Math.max(1, data.words.length)})` }" />
-  </div>
+  ></div>
 </template>
