@@ -120,8 +120,8 @@ async function saved(page, value) {
         return { background: s.backgroundColor, blur: s.backdropFilter, border: s.borderTopWidth }
       })
       assert.ok(glass.blur.includes('blur(24px)'))
-      assert.ok(glass.background.includes(scheme === 'dark' ? '0.6' : '0.56'))
-      assert.notEqual(glass.border, '0px')
+      assert.ok(glass.background.includes(scheme === 'dark' ? '0.06' : '0.55'))
+      assert.equal(glass.border, '0px')
       await page.screenshot({ path: `${output}/preferences-${scheme}-390.png`, fullPage: true })
       await page.keyboard.press('Escape')
       await prefs.waitFor({ state: 'hidden' })

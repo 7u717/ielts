@@ -24,7 +24,7 @@ function beginClose(notify = false) {
   if (closing.value || !dialog.value?.open) return
   closing.value = true
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  timer = setTimeout(() => finishClose(notify), reduced ? 0 : props.floating ? 200 : props.minimal ? 280 : 180)
+  timer = setTimeout(() => finishClose(notify), reduced ? 0 : 200)
 }
 function close() {
   beginClose(true)
@@ -40,7 +40,10 @@ watch(
       closing.value = false
       drag.value = 0
       previous = document.activeElement as HTMLElement
-      if (!dialog.value?.open) dialog.value?.showModal()
+      if (!dialog.value?.open) {
+        haptic()
+        dialog.value?.showModal()
+      }
     } else {
       beginClose()
     }

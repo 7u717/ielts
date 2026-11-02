@@ -115,7 +115,16 @@ async function fits(page) {
       assert.ok(!/\d\s*\/\s*\d/.test(await overview.innerText()))
       const floatFill = await overview.evaluate(el => getComputedStyle(el).backgroundColor)
       assert.equal(await overview.evaluate(el => getComputedStyle(el).borderTopWidth), '0px')
-      assert.ok((await overview.evaluate(el => getComputedStyle(el).backdropFilter)).includes('blur(28px)'))
+      assert.equal(Math.round((await overview.boundingBox()).width), 270)
+      const material = await overview.evaluate(el => ({
+        fill: getComputedStyle(el).backgroundColor,
+        blur: getComputedStyle(el).backdropFilter,
+        mask: getComputedStyle(el, '::backdrop').backdropFilter,
+      }))
+      assert.ok(material.blur.includes('saturate(1.6)'))
+      assert.ok(material.mask.includes('blur(1.5px)'))
+      assert.equal(material.fill, scheme === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.55)')
+      assert.ok((await overview.evaluate(el => getComputedStyle(el).backdropFilter)).includes('blur(24px)'))
       await page.screenshot({ path: `${output}/overview-${scheme}-390.png`, fullPage: true })
       await overview.getByRole('button', { name: '查看今日进度数字', exact: true }).click()
       await overview.getByRole('status').waitFor()
@@ -128,6 +137,8 @@ async function fits(page) {
       await page.waitForTimeout(400)
       await fits(page)
       assert.equal(await page.locator('.typing-caret').count(), 0)
+      const stage = await page.locator('.word-stage').boundingBox()
+      assert.ok(Math.abs(stage.y + stage.height / 2 - 844 * 0.42) < 2, 'whole cluster centered at 42%')
       const preview = page.getByRole('button', { name: '查看完整例句', exact: true })
       await preview.waitFor()
       assert.ok((await preview.innerText()).includes('biodiversity'))
@@ -174,6 +185,11 @@ async function fits(page) {
       const prefs = page.getByRole('dialog', { name: '偏好', exact: true })
       await prefs.waitFor()
       await page.waitForTimeout(500)
+      const prefsBox = await prefs.boundingBox()
+      assert.equal(prefsBox.x, 12)
+      assert.equal(Math.round(844 - prefsBox.y - prefsBox.height), 12)
+      assert.equal(await prefs.evaluate(el => getComputedStyle(el).backgroundColor), floatFill)
+      assert.equal(await prefs.evaluate(el => getComputedStyle(el).borderTopWidth), '0px')
       await page.screenshot({ path: `${output}/preferences-${scheme}-390.png`, fullPage: true })
       assert.deepEqual(errors, [])
       assert.ok((await page.evaluate(() => window.haptics)).every(n => n === 8))
