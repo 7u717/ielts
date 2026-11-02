@@ -8,7 +8,7 @@ function continueStudy() { model.value = false; emitter.emit(EventKey.continueSt
 <template>
   <Sheet :open="model" title="这一组，记住了。" @close="model = false">
     <p class="sheet-note">{{ props.loading ? '正在保存学习记录…' : '学习记录已保存，下一次复习交给记忆曲线。' }}</p>
-    <div class="completion-actions"><button class="primary-action" :disabled="props.loading" @click="continueStudy">再学一组 →</button><NuxtLink to="/" @click="model = false">今天到这里</NuxtLink></div>
+    <div class="completion-actions"><button class="primary-action" :disabled="props.loading" @click="continueStudy">再学一组 →</button><NuxtLink v-if="!props.loading" to="/">今天到这里</NuxtLink></div>
   </Sheet>
 </template>
 <style scoped>

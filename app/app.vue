@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { withAppBaseURL } from '@/core/utils/base-url'
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 const siteOrigin = String(runtimeConfig.public.origin || 'https://typewords.cc').replace(/\/$/, '')
 
-const canonicalURL = $computed(() => new URL(route.path, `${siteOrigin}/`).toString())
+const canonicalURL = $computed(() => new URL(withAppBaseURL(route.path), `${siteOrigin}/`).toString())
 
 const nonIndexableRoutePrefixes = [
   '/fsrs',

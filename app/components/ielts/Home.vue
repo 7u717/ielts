@@ -11,12 +11,11 @@ import { useNav } from '@/core/utils'
 import { WordPracticeMode } from '@/core/types/enum'
 import { Toast } from '@/base'
 import Sheet from './Sheet.vue'
-import Preferences from './Preferences.vue'
 const store = useBaseStore()
 const settings = useSettingStore()
 const persistence = usePracticeWordPersistence()
 const { nav } = useNav()
-const panel = ref<'topics' | 'settings' | 'words' | null>(null)
+const panel = ref<'topics' | 'words' | null>(null)
 const tab = ref<'learn' | 'wrong' | 'review'>('learn')
 const mode = ref(WordPracticeMode.System)
 const busy = ref(true)
@@ -85,7 +84,6 @@ const wrongWords = computed(() => store.wrong.words)
     <Sheet :open="panel === 'topics'" title="选择话题" @close="panel = null">
       <div class="topic-list"><button v-for="t in topics" :disabled="busy" :aria-pressed="topic.id === t.id" @click="choose(t)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path :d="t.icon" /></svg><span>{{ t.name }}</span><span class="quiet">{{ topic.id === t.id ? '✓' : '↗' }}</span></button></div>
     </Sheet>
-    <Sheet :open="panel === 'settings'" title="偏好" @close="panel = null"><Preferences /></Sheet>
     <Sheet :open="panel === 'words'" :title="tab === 'wrong' ? '错词本' : topic.name" @close="panel = null">
       <p v-if="tab === 'wrong' && !wrongWords.length" class="sheet-note">还没有错词，继续保持。</p>
       <div class="vocabulary-list"><div v-for="w in tab === 'wrong' ? wrongWords : store.sdict.words" :key="w.word"><span>{{ w.word }}</span><span class="quiet">{{ w.trans[0]?.cn }}</span></div></div>

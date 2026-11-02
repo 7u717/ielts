@@ -54,6 +54,7 @@ const notifyPractice: PracticeNotifier = (level, message) => {
   Toast[level](message)
 }
 let isComplete = $ref(false)
+let hasSettled = false
 let loading = $ref(false)
 let settling = $ref(false)
 let showRemoteReloadDialog = $ref(false)
@@ -238,6 +239,7 @@ onMounted(async () => {
 })
 
 onBeforeRouteLeave(async () => {
+  if (settling) return false
   cancelScheduledPracticeSave()
   await savePracticeDataIns()
   await dataSync.saveDictState()
@@ -328,6 +330,7 @@ async function initData(initVal?: TaskWords, init: boolean = false) {
   startTimer()
   knownCacheUpdatedAt = Math.max(knownCacheUpdatedAt, Date.now())
   isIniting.value = false
+  hasSettled = false
   settling = isComplete = false
 }
 
@@ -361,12 +364,13 @@ async function complete() {
 
     try {
       session.settleLocalPractice()
+      hasSettled = true
 
       try {
         await dataSync.saveDictState(store.$state, { pullWhenRemoteNewer: false })
       } catch (error) {
         console.error('[practice] 远端结算同步失败', error)
-        Toast.error('本地结算已完成，远端同步失败，可稍后重试')
+        Toast.error('学习记录保存失败，请稍后重试')
       }
 
       await wordPersistence.clear()
@@ -404,7 +408,7 @@ async function savePracticeDataIns() {
   ) {
     return
   }
-  if (isComplete) return
+  if (isComplete || hasSettled) return
   if (practiceSaveInProgress) return await practiceSaveInProgress
   if (runtimeStore.globalLoading) return
 
@@ -470,7 +474,7 @@ async function repeat() {
 async function continueStudy() {
   const previousWord = word
   wordPersistence.clear()
-  const temp = session.createNextTask(isComplete)
+  const temp = session.createNextTask(hasSettled)
   if (!temp.new.length && !temp.review.length) {
     Toast.warning('当前没有可学习的单词')
     return
@@ -636,11 +640,6 @@ useEvents([
     </template>
   </PracticeLayout>
   <Statistics v-model="isComplete" :loading="settling" />
-  <PracticeOnboardingHost
-    ref="onboardingHostRef"
-    :ready="data.words.length > 0"
-    :dict-id="String(route.params.id ?? '')"
-  />
   <Dialog
     v-model="showRemoteReloadDialog"
     title="检测到其他设备的新进度，是否重新加载？"

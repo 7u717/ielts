@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="flex justify-center relative" :class="!settingStore.showToolbar && 'footer-hide'">
+  <div class="flex justify-center relative">
     <div class="wrap" id="PracticeArea">
       <slot name="practice"></slot>
     </div>
