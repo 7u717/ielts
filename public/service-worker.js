@@ -1,5 +1,5 @@
 // Cache only this app's public resources; learning records stay in IndexedDB.
-const CACHE = 'ielts-shell-v1'
+const CACHE = 'ielts-shell-v2'
 const base = new URL('./', self.location.href)
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll([

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { selectSavedDictionary } from '@/core/ielts/session'
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from 'vue'
 import Statistics from '@/components/word/Statistics.vue'
 import { emitter, EventKey, useEvents } from '@/core/utils/eventBus.ts'
@@ -269,12 +270,13 @@ async function loadDict() {
     if (!dict) dict = dict_list.flat().find(v => v.id === dictId) as Dict
     if (dict && dict.id) {
       //如果是不是自定义词典，就请求数据
-      if (!dict.custom) dict = await _getDictDataByUrl(dict)
+      if (!dict.custom && !dict.system) dict = await _getDictDataByUrl(dict)
       if (!dict.words.length) {
         router.push('/words')
         return Toast.warning('没有单词可学习！')
       }
-      store.changeDict(dict)
+      if (store.sdict.id !== dict.id) await selectSavedDictionary(dict)
+      else await store.changeDict(dict)
       await initData(null, true)
       loading = false
     } else {
@@ -571,13 +573,6 @@ useEvents([
         />
 
         <div class="mb-50 w-full" v-else>
-          <PrevAndNextWord
-            :data="data"
-            :isWordMasked="effective.isWordMasked"
-            @next="nav.next(false)"
-            @prev="nav.prev"
-            @openNotice="onboardingHostRef?.openConflictNotice2"
-          />
           <TypeWord
             :word="word"
             :question="data.question"

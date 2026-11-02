@@ -1,14 +1,14 @@
 {
   "id": "./",
-  "name": "IELTS · 每天一点",
-  "short_name": "IELTS",
+  "name": "雅思",
+  "short_name": "雅思",
   "description": "按话题学习雅思词汇，打字、听写与间隔复习。",
   "lang": "zh-CN",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0c0d0f",
-  "theme_color": "#0c0d0f",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }

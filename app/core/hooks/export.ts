@@ -8,7 +8,7 @@ import {
   SAVE_DICT_KEY,
   SAVE_SETTING_KEY,
 } from '../config/env'
-import { get } from 'idb-keyval'
+import { get, keys } from 'idb-keyval'
 import saveAs from 'file-saver'
 import dayjs from 'dayjs'
 import { Toast } from '@/base'
@@ -58,6 +58,10 @@ export function useExport() {
     if (d1) {
       data.val[PRACTICE_ARTICLE_CACHE.key].val = d1
     }
+    // Add archived per-topic sessions without changing the existing export schema.
+    const sessionKeys = (await keys()).filter(key => typeof key === 'string' && key.startsWith('ielts-session:'))
+    ;(data as any).ieltsSessions = Object.fromEntries(await Promise.all(sessionKeys.map(async key => [key, await get(key)])))
+    ;(data as any).ieltsSessionContext = await get('ielts-session-context')
     return data
   }
 

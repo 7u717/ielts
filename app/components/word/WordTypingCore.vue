@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { haptic } from '@/core/ielts/ui'
 import type { Word } from '@/core/types/types.ts'
 import { getDefaultWord } from '@/core/types/func.ts'
 import { WordPlayTrigger, WordPracticeType } from '@/core/types/enum.ts'
@@ -48,15 +49,11 @@ const typing = usePracticeWordTyping({
   getPracticeType: () => props.practiceType,
   getIsWordMasked: () => props.isWordMasked,
   getShowWordResult: () => props.showWordResult,
-  getSettings: () => settingStore,
+  getSettings: () => ({ ...settingStore, autoNextWord: true, repeatCount: 1, waitTimeForChangeWord: 200 }),
   setShowWordResult: value => emit('update:showWordResult', value),
   onComplete: () => emit('complete'),
   onWrong: () => emit('wrong'),
   onPlay: trigger => emit('play', trigger),
-  onNotice: notice =>
-    Toast.info($t(notice.type === 'delete-reinput' ? 'press_delete_reinput' : 'press_space_continue'), {
-      duration: 2000,
-    }),
   playBeep,
   playCorrect,
   playKeyboardAudio,
@@ -76,6 +73,10 @@ const {
   setWordTestResult,
   clearDeferredTimers,
 } = typing
+
+watch(inputCharacterStates, states => {
+  if (states.length && !states[states.length - 1].isCorrect) haptic()
+})
 
 const displayWord = $computed(() => props.word.word.slice(input.value.length + wrong.value.length))
 let cursor = $ref({ top: 0, left: 0 })
@@ -163,84 +164,52 @@ defineExpose({
 
 <template>
   <div
-    class="typing-core"
     ref="typingWordRef"
-    :class="wrong || (wholeInputAttempt && inputLock && !isWordCorrect) ? 'is-wrong' : ''"
+    class="typing-core"
+    :class="{ 'is-wrong': wrong || (wholeInputAttempt && inputLock && !isWordCorrect) }"
   >
-    <!-- 默写模式 -->
-    <div v-if="practiceType === WordPracticeType.Dictation">
-      <div
-        class="letter text-align-center w-full inline-block"
-        v-opacity:noAnim="!isWordMasked || showWordResult || showFullWord"
-      >
-        {{ word.word }}
-      </div>
-      <div
-        class="mt-2 min-w-120 pb-1 dictation"
-        :style="{ minHeight: wordFontSize + 'px' }"
-        :class="showWordResult ? (isWordCorrect ? 'right' : 'wrong') : ''"
-      >
-        <template v-for="i in input">
-          <span class="l" v-if="i !== ' '">{{ i }}</span>
-          <Space class="l" v-else :is-wrong="showWordResult ? !isWordCorrect : false" :is-wait="!showWordResult" />
-        </template>
-      </div>
-    </div>
-
-    <!-- 非默写模式 -->
-    <template v-else>
-      <template v-if="wholeInputAttempt">
-        <template v-for="(item, index) in inputCharacterStates" :key="index">
-          <span v-if="item.character === ' '" class="l">
-            <Space :is-wrong="!item.isCorrect" :is-wait="false" />
-          </span>
-          <span v-else class="l" :class="item.isCorrect ? 'input' : 'wrong'">{{ item.character }}</span>
-        </template>
-      </template>
-      <span class="input" v-else-if="input">{{ input }}</span>
-      <span class="wrong" v-if="wrong">{{ wrong }}</span>
-      <span class="letter" v-if="isWordMasked && !showFullWord">
-        {{
-          displayWord
-            .split('')
-            .map(v => (v === ' ' ? '&nbsp;' : '_'))
-            .join('')
-        }}
-      </span>
-      <span class="letter" v-else>{{ displayWord }}</span>
-    </template>
-
-    <div
-      v-if="active"
-      class="cursor"
-      :style="{
-        top: cursor.top + 'px',
-        left: cursor.left + 'px',
-        height: wordFontSize + 'px',
-      }"
-    ></div>
+    <template v-for="(item, index) in inputCharacterStates" :key="index"
+      ><span class="l" :class="item.isCorrect ? 'input' : 'wrong'">{{
+        item.character === ' ' ? '\u00a0' : item.character
+      }}</span></template
+    >
+    <span v-if="wrong" class="wrong">{{ wrong }}</span>
+    <span class="letter" v-if="isWordMasked && !showFullWord">{{ displayWord.replace(/[^ ]/g, '·') }}</span>
+    <span v-else class="letter">{{ displayWord }}</span>
   </div>
 </template>
-
-<style scoped lang="scss">
-.dictation {
-  border-bottom: 2px solid gray;
-}
-
+<style scoped>
 .typing-core {
-  position: relative;
-
-  &.is-wrong {
-    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  display: inline;
+  font-family: var(--r-num);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+.letter {
+  color: var(--muted);
+}
+.input {
+  color: #f5f5f7;
+}
+.wrong {
+  color: #e9aaaa;
+}
+.is-wrong {
+  animation: typing-error 0.16s var(--r-ease);
+}
+@keyframes typing-error {
+  0%,
+  100% {
+    transform: translateX(0);
   }
-
-  .input,
-  .right {
-    color: rgb(22, 163, 74);
+  35% {
+    transform: translateX(-2px);
   }
-
-  .wrong {
-    color: rgba(red, 0.6);
+  70% {
+    transform: translateX(2px);
   }
 }
 </style>

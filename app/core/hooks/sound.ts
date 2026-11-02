@@ -225,7 +225,10 @@ export function useTTsPlayAudio() {
     const voices = speechSynthesis.getVoices()
     const matching = voices.filter(voice => voice.lang === msg.lang)
     msg.voice = matching[0] ?? voices.find(voice => voice.lang.startsWith('en')) ?? null
-    if (generation === ttsPlaybackGeneration) speechSynthesis.speak(msg)
+    if (generation === ttsPlaybackGeneration) {
+      speechSynthesis.resume()
+      speechSynthesis.speak(msg)
+    }
 
   }
 

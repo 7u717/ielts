@@ -620,6 +620,8 @@ export function splitIntoN(arr: any[], n: number) {
 }
 
 export async function loadJsLib(key: string, url: string) {
+  // Public libraries must follow the Pages project subpath as well as app assets.
+  if (url.startsWith('/') && !url.startsWith('//')) url = withAppBaseURL(url.replace(/\/{2,}/g, '/'))
   // @ts-ignore
   if (window[key]) return window[key]
   return new Promise((resolve, reject) => {

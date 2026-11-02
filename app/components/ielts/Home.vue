@@ -3,90 +3,321 @@ import { computed, ref, watch } from 'vue'
 import topics from '@/core/ielts/topics.json'
 import { useBaseStore } from '@/core/stores/base'
 import { useSettingStore } from '@/core/stores/setting'
-import { selectTopic } from '@/core/ielts/session'
+import { selectTopic, selectSavedDictionary, selectReviewSession, selectModeSession } from '@/core/ielts/session'
 import { createStudyTask } from '@/core/composables/practice-words/study-task'
 import { usePracticeWordPersistence } from '@/core/composables/practice-words/practice-word-session'
 import { useDataSyncPersistence } from '@/core/composables/useDataSyncPersistence'
+import { useWordOptions } from '@/core/hooks/dict'
+import { usePlayWordAudio } from '@/core/hooks/sound'
 import { useNav } from '@/core/utils'
-import { WordPracticeMode } from '@/core/types/enum'
+import { WordPracticeMode, SyncDataType } from '@/core/types/enum'
+import type { Word } from '@/core/types'
+import { haptic, useIeltsUI } from '@/core/ielts/ui'
 import { Toast } from '@/base'
 import Sheet from './Sheet.vue'
+import Icon from './Icon.vue'
+import Ring from './Ring.vue'
+import Tabs from './Tabs.vue'
+import WordRow from './WordRow.vue'
 const store = useBaseStore()
 const settings = useSettingStore()
 const persistence = usePracticeWordPersistence()
+const dataSync = useDataSyncPersistence()
+const { delWrongWord } = useWordOptions()
+const speak = usePlayWordAudio()
 const { nav } = useNav()
-const panel = ref<'topics' | 'words' | null>(null)
-const tab = ref<'learn' | 'wrong' | 'review'>('learn')
+const { tab, topicsOpen } = useIeltsUI()
 const mode = ref(WordPracticeMode.System)
 const busy = ref(true)
 const error = ref('')
 const hasSession = ref(false)
+const wordDetails = ref<Word | null>(null)
+const vocabularyOpen = ref(false)
 const topic = computed(() => topics.find(t => t.id === store.sdict.id) || topics[0])
-const progress = computed(() => store.sdict.complete ? 1 : Math.min(1, store.sdict.lastLearnIndex / Math.max(1, store.sdict.length)))
-const review = computed(() => store.load && !busy.value ? createStudyTask().taskWords.review : [])
-const title = computed(() => tab.value === 'wrong' ? '让错词，变熟悉。' : tab.value === 'review' ? '在忘记之前，再见。' : '每天一点，离雅思更近。')
-watch(() => store.load, async loaded => {
-  if (!loaded) return
-  try {
-    await selectTopic(topic.value as any)
-    hasSession.value = !!await persistence.load()
-  } catch (e) { error.value = '词库加载失败，点此重试'; console.error(e) }
-  finally { busy.value = false }
-}, { immediate: true })
-async function choose(t: typeof topics[number]) {
-  busy.value = true
-  try { await selectTopic(t as any); hasSession.value = !!await persistence.load(); panel.value = null; error.value = '' }
-  catch (e) { error.value = '词库加载失败，点此重试'; console.error(e) }
-  finally { busy.value = false }
+const topicProgress = (id: string) => {
+  const dict = store.word.bookList.find(d => d.id === id)
+  return dict?.complete ? 1 : Math.min(1, (dict?.lastLearnIndex || 0) / (dict?.length || 24))
 }
-async function start() {
+const today = computed(() =>
+  store.word.bookList
+    .flatMap(d => d.statistics)
+    .filter(s => new Date(s.startDate).toDateString() === new Date().toDateString())
+    .reduce((n, s) => n + (s.new || 0), 0)
+)
+const dailyGoal = computed(() => store.sdict.perDayStudyNumber || 20)
+const review = computed(() => (store.load && !busy.value ? createStudyTask().taskWords.review : []))
+const list = computed(() => (tab.value === 'wrong' ? store.wrong.words : review.value))
+watch(
+  () => store.load,
+  async loaded => {
+    if (!loaded) return
+    try {
+      if (
+        [WordPracticeMode.System, WordPracticeMode.Free, WordPracticeMode.ListenOnly].includes(
+          settings.wordPracticeMode
+        )
+      )
+        mode.value = settings.wordPracticeMode
+      await selectTopic(topic.value as any)
+      await selectModeSession(mode.value)
+      hasSession.value = !!(await persistence.load())
+    } catch (e) {
+      error.value = '词库未载入，点此重试'
+      console.error(e)
+    } finally {
+      busy.value = false
+    }
+  },
+  { immediate: true }
+)
+async function choose(t: (typeof topics)[number]) {
   if (busy.value) return
   busy.value = true
   try {
+    await selectTopic(t as any)
+    await selectModeSession(mode.value)
+    hasSession.value = !!(await persistence.load())
+    topicsOpen.value = false
+    error.value = ''
+  } catch (e) {
+    error.value = '词库未载入，点此重试'
+    console.error(e)
+  } finally {
+    busy.value = false
+  }
+}
+async function chooseMode(next: WordPracticeMode) {
+  if (busy.value || next === mode.value) return
+  busy.value = true
+  try {
+    await selectModeSession(next)
+    mode.value = next
+    hasSession.value = !!(await persistence.load())
+  } catch (e) {
+    Toast.error('暂时无法切换，请重试')
+    console.error(e)
+  } finally {
+    busy.value = false
+  }
+}
+async function start() {
+  if (busy.value || error.value) return
+  busy.value = true
+  try {
+    if (tab.value === 'wrong') {
+      if (!store.wrong.words.length) return
+      await selectSavedDictionary(store.wrong)
+    }
+    if (tab.value === 'review') await selectReviewSession()
+    if (tab.value === 'learn') await selectModeSession(mode.value)
     const cached = await persistence.load()
-    if (cached) { nav('/practice-words/' + store.sdict.id, {}, cached); return }
+    if (cached) {
+      await dataSync.saveLocalAndSync(SyncDataType.setting, settings.$state)
+      nav('/practice-words/' + store.sdict.id, {}, cached)
+      return
+    }
     const task = createStudyTask().taskWords
-    if (tab.value === 'wrong') { task.new = []; task.review = store.wrong.words.filter(w => store.sdict.words.some(v => v.word === w.word)) }
+    if (tab.value === 'wrong') {
+      task.new = []
+      task.review = [...store.wrong.words]
+    }
     if (tab.value === 'review') task.new = []
-    if (!task.new.length && !task.review.length) { Toast.info(tab.value === 'wrong' ? '当前话题还没有错词' : '今天的复习已完成，去学几个新词吧'); return }
+    if (!task.new.length && !task.review.length) {
+      Toast.info('今天的复习已完成')
+      return
+    }
     settings.wordPracticeMode = tab.value === 'learn' ? mode.value : WordPracticeMode.Review
     settings.first = false
-    await useDataSyncPersistence().saveDictState()
+    await dataSync.saveDictState()
+    await dataSync.saveLocalAndSync(SyncDataType.setting, settings.$state)
+    await persistence.save({ taskWords: task })
     nav('/practice-words/' + store.sdict.id, {}, { taskWords: task })
-  } catch (e) { Toast.error('无法读取练习，请导出备份后重试'); console.error(e) }
-  finally { busy.value = false }
+  } catch (e) {
+    Toast.error('练习暂时无法打开，请先导出备份')
+    console.error(e)
+  } finally {
+    busy.value = false
+  }
 }
-const wrongWords = computed(() => store.wrong.words)
+function showVocabularyWord(word: Word) {
+  wordDetails.value = word
+  vocabularyOpen.value = false
+}
+function removeDetailedWord() {
+  if (wordDetails.value) void removeWord(wordDetails.value)
+  wordDetails.value = null
+}
+async function removeWord(word: Word) {
+  delWrongWord(word)
+  await dataSync.saveDictState()
+}
+let swipeStart: { x: number; y: number } | null = null
+function down(e: PointerEvent) {
+  if ((e.target as HTMLElement).closest('[data-horizontal], nav, dialog')) return
+  swipeStart = { x: e.clientX, y: e.clientY }
+}
+function up(e: PointerEvent) {
+  if (!swipeStart) return
+  const dx = e.clientX - swipeStart.x,
+    dy = e.clientY - swipeStart.y
+  swipeStart = null
+  if (Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+    const tabs = ['learn', 'wrong', 'review'] as const
+    const index = Math.max(0, Math.min(2, tabs.indexOf(tab.value) + (dx < 0 ? 1 : -1)))
+    if (tabs[index] !== tab.value) {
+      haptic()
+      tab.value = tabs[index]
+    }
+  }
+}
+let grabY = 0
+function grabDown(e: PointerEvent) {
+  grabY = e.clientY
+  ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+}
+function grabUp(e: PointerEvent) {
+  if (e.clientY < grabY - 20) topicsOpen.value = true
+}
 </script>
 <template>
-  <main class="ielts-home">
-    <div class="home-heading"><p>{{ title }}</p></div>
-    <button class="topic-orbit" aria-label="选择雅思话题" @click="panel = 'topics'">
-      <svg viewBox="0 0 200 200" aria-hidden="true" class="orbit"><circle class="orbit-track" cx="100" cy="100" r="79" /><circle class="orbit-progress" cx="100" cy="100" r="79" :stroke-dasharray="`${progress * 496.37} 496.37`" /><circle class="orbit-dot" cx="100" cy="21" r="3" /></svg>
-      <svg class="topic-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="topic.icon" /></svg>
-    </button>
-    <button class="topic-name" @click="panel = 'topics'">{{ topic.name }} <span aria-hidden="true">⌄</span></button>
-    <button class="quiet progress-caption" @click="panel = 'words'">{{ store.sdict.complete ? '已完成这一话题' : '已学 ' + store.sdict.lastLearnIndex + ' / ' + topic.length }}<span aria-hidden="true"> ↗</span></button>
-    <div class="study-actions">
-      <div v-if="tab === 'learn' && !hasSession" class="mode-picker" aria-label="学习模式">
-        <button v-for="m in [{id: WordPracticeMode.System, name: '学习'}, {id: WordPracticeMode.Free, name: '打字'}, {id: WordPracticeMode.ListenOnly, name: '听写'}]" :aria-pressed="mode === m.id" @click="mode = m.id">{{ m.name }}</button>
-      </div>
-      <p v-else class="quiet session-note">{{ hasSession ? '上次的练习，接着来' : tab === 'wrong' ? '从当前话题的错词开始' : review.length ? '今天的到期单词已准备好' : '今天没有到期单词' }}</p>
-      <button class="primary-action" :disabled="busy || !!error" @click="start">{{ busy ? '准备中' : hasSession ? '继续练习' : tab === 'wrong' ? '巩固错词' : tab === 'review' ? '开始复习' : '开始学习' }} <span aria-hidden="true">→</span></button>
-      <button v-if="error" class="error-action" @click="choose(topic)">{{ error }}</button>
-      <button v-else-if="tab === 'wrong'" class="quiet secondary-action" @click="panel = 'words'">查看错词本</button>
-    </div>
-    <nav class="home-tabs" aria-label="学习导航">
-      <button v-for="t in [{id: 'learn', name: '学习', path: 'M4 6h6a2 2 0 0 1 2 2v12a4 4 0 0 0-4-2H4V6Zm16 0h-6a2 2 0 0 0-2 2m8-2v12h-4a4 4 0 0 0-4 2'}, {id: 'wrong', name: '错词', path: 'M8 3h8v18l-4-3-4 3V3Z'}, {id: 'review', name: '复习', path: 'M4 8a8 8 0 1 1 0 8M4 3v5h5m3 0v5l3 2'}]" :aria-current="tab === t.id ? 'page' : undefined" @click="tab = t.id as any">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="t.path" /></svg><span>{{ t.name }}</span>
-      </button>
-    </nav>
-    <Sheet :open="panel === 'topics'" title="选择话题" @close="panel = null">
-      <div class="topic-list"><button v-for="t in topics" :disabled="busy" :aria-pressed="topic.id === t.id" @click="choose(t)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path :d="t.icon" /></svg><span>{{ t.name }}</span><span class="quiet">{{ topic.id === t.id ? '✓' : '↗' }}</span></button></div>
-    </Sheet>
-    <Sheet :open="panel === 'words'" :title="tab === 'wrong' ? '错词本' : topic.name" @close="panel = null">
-      <p v-if="tab === 'wrong' && !wrongWords.length" class="sheet-note">还没有错词，继续保持。</p>
-      <div class="vocabulary-list"><div v-for="w in tab === 'wrong' ? wrongWords : store.sdict.words" :key="w.word"><span>{{ w.word }}</span><span class="quiet">{{ w.trans[0]?.cn }}</span></div></div>
-    </Sheet>
+  <main class="ielts-home" @pointerdown="down" @pointerup="up" @pointercancel="swipeStart = null">
+    <Transition name="tab-page" mode="out-in">
+      <section
+        v-if="tab === 'learn'"
+        id="panel-learn"
+        key="learn"
+        role="tabpanel"
+        aria-labelledby="tab-learn"
+        class="overview-panel"
+      >
+        <div class="overview-hero">
+          <button
+            class="hero-ring-button"
+            :disabled="busy || !!error"
+            :aria-label="hasSession ? '继续学习' : '开始学习'"
+            @click="start"
+          >
+            <Ring :progress="today / dailyGoal"
+              ><span class="hero-topic">{{ topic.name }}</span
+              ><span class="hero-meta"
+                >今日 {{ today }}/{{ dailyGoal }} · 已学 {{ store.sdict.lastLearnIndex }}/{{ topic.length }}</span
+              ><span v-if="hasSession" class="resume-label">继续 <Icon name="arrow" /></span
+            ></Ring>
+          </button>
+          <div class="study-modes" aria-label="学习模式">
+            <button
+              v-for="m in [
+                { id: WordPracticeMode.System, name: '学习' },
+                { id: WordPracticeMode.Free, name: '打字' },
+                { id: WordPracticeMode.ListenOnly, name: '听写' },
+              ]"
+              :key="m.id"
+              :aria-pressed="mode === m.id"
+              :disabled="busy"
+              @click="chooseMode(m.id)"
+            >
+              {{ m.name }}
+            </button>
+          </div>
+          <button
+            class="overview-grab"
+            aria-label="选择主题，上拉展开"
+            @click="topicsOpen = true"
+            @pointerdown.stop="grabDown"
+            @pointerup.stop="grabUp"
+          >
+            <i /><Icon name="down" />
+          </button>
+        </div>
+        <div class="topic-progress">
+          <h2>主题进度</h2>
+          <div class="topic-strip" data-horizontal>
+            <button
+              v-for="t in topics"
+              :key="t.id"
+              class="topic-progress-item"
+              :aria-label="`${t.name}，已学 ${Math.round(topicProgress(t.id) * 100)}%`"
+              :aria-pressed="topic.id === t.id"
+              :disabled="busy"
+              @click="choose(t)"
+            >
+              <Ring :progress="topicProgress(t.id)" :size="80" small
+                ><span class="ring-percent">{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span></Ring
+              ><span>{{ t.name }}</span>
+            </button>
+          </div>
+        </div>
+        <button class="subtle-link" @click="vocabularyOpen = true">{{ topic.name }}词表 <Icon name="arrow" /></button>
+        <button v-if="error" class="error-action" @click="choose(topic)">{{ error }}</button>
+        <span v-if="busy" class="loading-note" role="status">正在载入</span>
+      </section>
+      <section
+        v-else
+        :id="'panel-' + tab"
+        :key="tab"
+        role="tabpanel"
+        :aria-labelledby="'tab-' + tab"
+        class="word-list-panel"
+      >
+        <div class="list-heading">
+          <button class="list-context" @click="topicsOpen = true">
+            {{ tab === 'wrong' ? '全部错词' : topic.name }}<Icon v-if="tab === 'review'" name="down" /></button
+          ><button
+            class="icon-button"
+            :aria-label="tab === 'wrong' ? '巩固错词' : '开始复习'"
+            :disabled="busy || !list.length"
+            @click="start"
+          >
+            <Icon name="play" />
+          </button>
+        </div>
+        <div v-if="list.length" class="word-list">
+          <WordRow
+            v-for="word in list"
+            :key="word.word"
+            :word="word"
+            :removable="tab === 'wrong'"
+            @open="wordDetails = $event"
+            @remove="removeWord"
+          />
+        </div>
+        <div v-else class="list-empty">
+          <Icon :name="tab === 'wrong' ? 'check' : 'review'" />
+          <p>{{ tab === 'wrong' ? '还没有错词' : '今天没有到期词' }}</p>
+        </div>
+      </section>
+    </Transition>
+    <Tabs v-model="tab" />
+    <Sheet :open="topicsOpen" title="主题" @close="topicsOpen = false"
+      ><div class="topic-list">
+        <button v-for="t in topics" :key="t.id" :disabled="busy" :aria-pressed="topic.id === t.id" @click="choose(t)">
+          <Ring :progress="topicProgress(t.id)" :size="36" small /><span>{{ t.name }}</span
+          ><span class="topic-count">{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span
+          ><Icon v-if="topic.id === t.id" name="check" />
+        </button></div
+    ></Sheet>
+    <Sheet :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
+      ><div class="word-list">
+        <WordRow v-for="word in store.sdict.words" :key="word.word" :word="word" @open="showVocabularyWord" /></div
+    ></Sheet>
+    <Sheet :open="!!wordDetails" :title="wordDetails?.word || ''" @close="wordDetails = null"
+      ><template v-if="wordDetails"
+        ><p class="detail-meaning">{{ wordDetails.trans.map(t => t.cn).join('；') }}</p>
+        <button class="icon-button detail-sound" aria-label="播放发音" @click="speak(wordDetails.word)">
+          <Icon name="sound" /></button
+        ><button v-if="tab === 'wrong'" class="icon-button" aria-label="从错词本移出" @click="removeDetailedWord">
+          <Icon name="remove" />
+        </button>
+        <div class="word-examples">
+          <div v-for="s in wordDetails.sentences" :key="s.c">
+            <p>{{ s.c }}</p>
+            <p class="sheet-note">{{ s.cn }}</p>
+          </div>
+        </div>
+        <p v-if="store.noteData[wordDetails.word]" class="sheet-note">
+          {{ store.noteData[wordDetails.word] }}
+        </p></template
+      ></Sheet
+    >
   </main>
 </template>

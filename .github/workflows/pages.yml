@@ -43,3 +43,24 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published app
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          python - <<'PYTHON'
+          import json, os, time, urllib.request
+          base = os.environ['PAGE_URL'].rstrip('/') + '/'
+          for attempt in range(12):
+              try:
+                  request = urllib.request.Request(base + '?verify=' + os.environ['GITHUB_SHA'], headers={'Cache-Control': 'no-cache'})
+                  html = urllib.request.urlopen(request, timeout=20).read().decode()
+                  manifest = json.load(urllib.request.urlopen(base + 'manifest.json?verify=' + os.environ['GITHUB_SHA'], timeout=20))
+                  assert 'data-design="iue-r3"' in html
+                  assert manifest['theme_color'] == '#000000'
+                  print('Published app and manifest verified:', base)
+                  break
+              except Exception:
+                  if attempt == 11:
+                      raise
+                  time.sleep(5)
+          PYTHON

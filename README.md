@@ -1,10 +1,14 @@
-# IELTS · 每天一点
+# 雅思
 
-个人雅思词汇学习应用，基于 [TypeWords](https://github.com/zyronon/TypeWords)（GPL-3.0）。
+个人雅思词汇应用，沿用 [iue](https://github.com/7u717/iue) 的单色界面系统：纯黑、系统 SF / PingFang 字体、细线圆环、悬浮胶囊导航与底部 sheet。iPhone 390px 优先，支持安全区与添加到主屏幕，无登录、广告和网络字体。
 
-六个精选话题（环境、教育、科技、社会、健康、经济），144 个词条；这是起步词库，不是官方完整词表。保留 TypeWords 的打字、听写、错词和 FSRS 间隔复习引擎。手机优先，SF Pro / PingFang SC，支持添加到主屏幕，无账号、广告或分析脚本。
+六个话题、144 个精选词条（起步词库，不代表官方完整考纲）。学习引擎基于 [TypeWords](https://github.com/zyronon/TypeWords)，保留打字、听写、错词与 FSRS 间隔复习。
 
-## 开发
+## 使用
+
+点首页圆环开始或继续；环下切换学习 / 打字 / 听写。底部图标和左右滑动切换学习、错词、复习。学习页点单词切换释义并唤起键盘，长按发音，左滑跳过；输入正确后自动继续。错词列表左滑移出，详情和备份在 sheet 中。
+
+## 开发与发布
 
 Node.js 24，pnpm 11.25.0。
 
@@ -13,22 +17,34 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-默认开发端口 5567。
+默认端口 5567，静态构建：
 
 ```sh
 NUXT_APP_BASE_URL=/ielts/ ORIGIN=https://7u717.github.io pnpm generate
 ```
 
-静态产物在 `.output/public`。GitHub Pages 的 Source 设置为 **GitHub Actions**，推送到 `master` 后自动部署：
+输出 `.output/public`。推送到 `master` 后 Actions 构建、部署并验证线上 HTML 与 PWA manifest：
 
 https://7u717.github.io/ielts/
 
-## 数据
+## 记录与兼容
 
-学习进度在同一浏览器、同一域名的 IndexedDB 中；更新不清空已有数据。沿用原存储键和版本，不改动已有词典进度、错词、FSRS 或历史备份。切换话题时单独归档未完成练习。旧词库数据保留用于兼容已有记录，不在新应用中展示。不同设备、浏览器或域名的数据不会自动迁移，请在「偏好 → 导出学习备份」备份。iOS 独立主屏幕应用的存储可能与 Safari 分开，不承诺自动迁移。
+沿用已有 IndexedDB / localStorage 键和版本，不重置词典进度、错词、FSRS、统计或笔记。不同主题、打字 / 听写 / 复习任务使用新增的 `ielts-session:*` 归档键；旧模式 `0` 和旧缓存仍兼容。首次手势提示仅新增 `ielts-gesture-hint-v1`。备份包含原导出内容及新增的任务归档。
 
-词义为话题精选，部分音标和例句沿用仓库原词库。发音使用浏览器/系统英语语音，iPhone 需要先进行用户交互；离线语音取决于系统已下载的声音。网页缓存只保留访问过的公开资源，不承诺首次使用即可完整离线。
+记录只在此浏览器/域名内保存，换设备或清理浏览器前请导出；iOS 主屏幕应用与 Safari 的存储可能分开。网页缓存不清理 IndexedDB，也不承诺首次使用即可完整离线。系统语音能否离线发音取决于设备已安装的声音。
+
+## 移动回归检查
+
+用独立浏览器上下文测试，不读取真实用户记录。
+
+```sh
+npm install --prefix /tmp/ielts-browser playwright
+PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright \
+  node scripts/verify-mobile.cjs
+```
+
+设置 `CHROMIUM_BIN` 指定浏览器（默认 `/usr/bin/chromium`），`IELTS_TEST_URL` 指定开发或静态站点地址，`IELTS_SCREENSHOTS` 指定截图目录。检查导航/拖动、sheet、原生 input 事件、自动学习与 FSRS、旧记录恢复、模式归档、错词移除及导出。测试模拟系统语音，不能替代 iPhone 真机音频检查。
 
 ## 许可
 
-继承 TypeWords 的 GPL-3.0，参见 [LICENSE](LICENSE)。
+保留 TypeWords 的 GPL-3.0，参见 [LICENSE](LICENSE)。部分音标、例句沿用原词库；界面参考 iue，头像复用用户公开的 iue 资源。

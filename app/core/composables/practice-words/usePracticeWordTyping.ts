@@ -137,10 +137,7 @@ export function usePracticeWordTyping(options: PracticeWordTypingOptions) {
     if (options.getPracticeType() === WordPracticeType.Listen && !options.getShowWordResult()) {
       options.setShowWordResult(true)
     }
-    if (
-      [WordPracticeType.FollowWrite, WordPracticeType.Spell].includes(options.getPracticeType()) &&
-      options.getSettings().autoNextWord
-    ) {
+    if (options.getSettings().autoNextWord) {
       completeTypeWord(true)
     }
   }
@@ -162,7 +159,6 @@ export function usePracticeWordTyping(options: PracticeWordTypingOptions) {
       if (isSpace(event)) {
         if (isWordCorrect.value) {
           if (
-            [WordPracticeType.FollowWrite, WordPracticeType.Spell].includes(options.getPracticeType()) &&
             options.getSettings().autoNextWord
           ) {
             return
@@ -211,7 +207,16 @@ export function usePracticeWordTyping(options: PracticeWordTypingOptions) {
       input.value += event.key
       wrong.value = ''
       options.playKeyboardAudio()
-      inputLock.value = false
+      if (options.getSettings().autoNextWord && isWordCorrect.value) {
+        options.setShowWordResult(true)
+        completeCurrentInput()
+      } else if (options.getSettings().autoNextWord && input.value.length >= target.length) {
+        options.setShowWordResult(true)
+        options.playBeep()
+        typo()
+      } else {
+        inputLock.value = false
+      }
       return
     }
 
