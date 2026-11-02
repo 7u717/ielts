@@ -76,14 +76,24 @@ function key(event: KeyboardEvent) {
       <div class="goal-heading">
         <label for="daily-goal-dial" class="preference-label">每日新词</label>
         <output for="daily-goal-dial" class="goal-value" :class="{ quiet: dragging }"
-          >{{ store.sdict.perDayStudyNumber }} <span>词 / 天</span></output
+          ><span class="goal-number-wrap"
+            ><Transition name="goal-digit"
+              ><span class="goal-number" :key="store.sdict.perDayStudyNumber">{{
+                store.sdict.perDayStudyNumber
+              }}</span></Transition
+            ></span
+          ><span>词 / 天</span></output
         >
       </div>
       <div class="goal-dial" :class="{ dragging }" :style="{ '--goal-position': progress + '%' }">
         <div class="goal-track" aria-hidden="true">
           <div class="goal-ticks"><i v-for="goal in goals" :key="goal" /></div>
           <span class="goal-cursor"
-            ><span class="goal-floating-value">{{ preview }}</span></span
+            ><span class="goal-floating-value"
+              ><Transition name="goal-digit"
+                ><span :key="preview" class="goal-number">{{ preview }}</span></Transition
+              ></span
+            ></span
           >
         </div>
         <input

@@ -12,6 +12,7 @@ import { EventKey, useEvents } from '@/core/utils/eventBus'
 import { useWordOptions } from '@/core/hooks/dict'
 import { focusPracticeKeyboard, haptic } from '@/core/ielts/ui'
 import WordTypingCore from './WordTypingCore.vue'
+import Footer from './Footer.vue'
 import Sheet from '@/components/ielts/Sheet.vue'
 import Icon from '@/components/ielts/Icon.vue'
 const props = defineProps<{
@@ -280,6 +281,7 @@ function saveNote() {
               <Icon name="detail" />
             </button>
           </div>
+          <Footer />
         </div>
       </div>
     </Transition>

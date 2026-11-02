@@ -22,7 +22,8 @@ const dot = computed(() => ({
         :stroke-dasharray="circumference"
         :stroke-dashoffset="circumference * (1 - ratio)"
       />
-      <circle v-if="!small && ratio > 0" class="ring-end-glow" :cx="dot.x" :cy="dot.y" r="4" />
+      <circle v-if="ratio === 0" class="ring-origin" cx="120" cy="10" :r="small ? 3.5 : 1.6" />
+      <circle v-if="!small" class="ring-end-glow" :cx="dot.x" :cy="dot.y" r="4" />
     </svg>
     <div class="ring-content"><slot /></div>
   </div>

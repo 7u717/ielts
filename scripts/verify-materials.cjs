@@ -60,12 +60,9 @@ async function saved(page, value) {
       await page.goto(base, { waitUntil: 'networkidle' })
       await page.locator('.hero-ring-button:enabled').waitFor()
       assert.equal(await page.locator('html').getAttribute('data-appearance'), scheme)
-      assert.equal(
-        await page
-          .locator('.hero-ring-button .ring-dot,.hero-ring-button .ring-end-glow,.hero-ring-button .ring-arc')
-          .count(),
-        0
-      )
+      assert.equal(await page.locator('.hero-ring-button .ring-arc').count(), 0)
+      assert.equal(await page.locator('.hero-ring-button .ring-origin').count(), 1)
+      assert.equal(await page.locator('.hero-ring-button .ring-end-glow').count(), 1)
       assert.equal((await page.locator('.hero-ring-button').innerText()).trim(), '环境')
       assert.equal(await page.locator('.hero-meta,.resume-label,.overview-grab').count(), 0)
       assert.equal(
@@ -128,7 +125,7 @@ async function saved(page, value) {
       await page.screenshot({ path: `${output}/preferences-${scheme}-390.png`, fullPage: true })
       await page.keyboard.press('Escape')
       await prefs.waitFor({ state: 'hidden' })
-      await page.getByRole('button', { name: '环境词表，上拉展开', exact: true }).click()
+      await page.getByRole('button', { name: '环境词表', exact: true }).click()
       const vocab = page.getByRole('dialog', { name: '环境', exact: true })
       await vocab.waitFor()
       await page.waitForTimeout(470)

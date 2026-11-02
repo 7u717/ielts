@@ -2463,3 +2463,172 @@ html.light .word-tools .icon-button,
 html.light .practice-header .header-actions .iue-icon {
   color: #656b75;
 }
+/* Four balanced segments; the list belongs to the capsule rather than beside it. */
+.mode-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+}
+.mode-switch {
+  width: 224px;
+}
+.mode-switch .vocabulary-entry-button {
+  width: 54px;
+  height: 36px;
+  color: var(--muted);
+}
+/* A precise origin hint, including when there is no learned arc yet. */
+:root {
+  --hero-track: rgba(255, 255, 255, 0.15);
+  --meter-track: rgba(255, 255, 255, 0.24);
+  --mini-track: rgba(255, 255, 255, 0.19);
+}
+html.light {
+  --hero-track: rgba(25, 30, 40, 0.16);
+  --meter-track: rgba(25, 30, 40, 0.25);
+  --mini-track: rgba(25, 30, 40, 0.22);
+}
+.hero-ring-button .ring-track {
+  stroke: var(--hero-track);
+  stroke-width: 1;
+}
+.ring-origin {
+  fill: var(--text);
+  opacity: 0.5;
+}
+.small .ring-origin {
+  opacity: 0.6;
+}
+.overview-meters {
+  width: min(184px, 100%);
+  margin: 27px auto;
+}
+.overview-meter-row {
+  grid-template-columns: minmax(0, 1fr) 38px;
+  gap: 9px;
+}
+.overview-meter-row small {
+  white-space: nowrap;
+}
+.overview-meter {
+  position: relative;
+  background: var(--meter-track);
+  overflow: visible;
+}
+.overview-meter::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text);
+  opacity: 0.48;
+  transform: translate(-50%, -50%);
+}
+.overview-meter i {
+  border-radius: 999px;
+  opacity: 0.76;
+}
+.floating-sheet.sheet-closing {
+  animation-timing-function: var(--r-spring);
+}
+/* The word's center sits near 38.2% of the available screen, not the cluster's center. */
+.typing-word {
+  align-items: flex-start;
+  padding-top: clamp(125px, calc(38.2svh - var(--header-h) - 38px), 270px);
+}
+.word-meaning-slot {
+  height: 54px;
+}
+.word-tools {
+  margin-top: 14px;
+}
+html[data-keyboard-open='true'] .typing-word {
+  padding-top: clamp(22px, calc(38.2svh - var(--keyboard-inset, 0px) * 0.382 - var(--header-h) - 38px), 150px);
+}
+.practice-mini-progress {
+  width: 32px;
+  height: 1px;
+  margin: 22px auto 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--mini-track);
+}
+.practice-mini-progress i {
+  display: block;
+  width: 100%;
+  height: 1px;
+  transform-origin: left;
+  background: var(--text);
+  opacity: 0.48;
+  transition: transform 0.26s var(--r-spring);
+}
+/* Quiet values, with a small spring for each changed integer. */
+.goal-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--muted);
+  font: 12px var(--r-num);
+}
+.goal-value > span:last-child {
+  margin-left: 0;
+  font-size: 9px;
+  opacity: 0.72;
+}
+.goal-number-wrap {
+  display: inline-grid;
+  min-width: 2ch;
+}
+.goal-number-wrap .goal-number {
+  grid-area: 1 / 1;
+  color: var(--muted);
+  font: 12px var(--r-num);
+  margin: 0;
+}
+.goal-floating-value {
+  display: inline-grid;
+  place-items: center;
+  width: 3ch;
+  height: 15px;
+  font: 12px var(--r-num);
+  color: var(--muted);
+}
+.goal-floating-value .goal-number {
+  grid-area: 1 / 1;
+}
+.goal-digit-enter-active {
+  transition:
+    transform 0.18s var(--r-spring),
+    opacity 0.12s var(--r-ease);
+}
+.goal-digit-leave-active {
+  transition:
+    transform 0.1s var(--r-ease),
+    opacity 0.1s var(--r-ease);
+}
+.goal-digit-enter-from {
+  opacity: 0;
+  transform: translateY(2px) scale(0.94);
+}
+.goal-digit-leave-to {
+  opacity: 0;
+  transform: translateY(-2px);
+}
+.goal-ticks i {
+  width: 0.5px;
+  height: 5px;
+}
+.goal-cursor {
+  width: 1px;
+  height: 16px;
+}
+.goal-dial.dragging .goal-cursor {
+  height: 19px;
+}
+html.light .goal-value,
+html.light .goal-floating-value {
+  color: var(--muted);
+}

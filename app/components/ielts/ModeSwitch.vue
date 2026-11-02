@@ -3,8 +3,8 @@ import { computed, ref } from 'vue'
 import { WordPracticeMode } from '@/core/types/enum'
 import { haptic } from '@/core/ielts/ui'
 import Icon from './Icon.vue'
-const props = defineProps<{ modelValue: WordPracticeMode; disabled?: boolean }>()
-const emit = defineEmits<{ 'update:modelValue': [WordPracticeMode] }>()
+const props = defineProps<{ modelValue: WordPracticeMode; disabled?: boolean; vocabularyLabel: string }>()
+const emit = defineEmits<{ 'update:modelValue': [WordPracticeMode]; vocabulary: [] }>()
 const modes = [
   { id: WordPracticeMode.System, label: '学习', icon: 'learn' },
   { id: WordPracticeMode.Free, label: '打字', icon: 'keyboard' },
@@ -26,6 +26,13 @@ function choose(value: WordPracticeMode) {
     emit('update:modelValue', value)
   }
 }
+function selectSegment(segment: number) {
+  if (props.disabled) return
+  if (segment === 3) {
+    haptic()
+    emit('vocabulary')
+  } else choose(modes[segment].id)
+}
 function down(e: PointerEvent) {
   if (props.disabled || !e.isPrimary) return
   tracking = true
@@ -35,12 +42,12 @@ function down(e: PointerEvent) {
 function move(e: PointerEvent) {
   if (!tracking) return
   if (Math.abs(e.clientX - origin) > 5) {
-    offset.value = Math.max(0, Math.min(108, e.clientX - bar.value!.getBoundingClientRect().left - 31))
+    offset.value = Math.max(0, Math.min(162, e.clientX - bar.value!.getBoundingClientRect().left - 31))
   }
 }
 function up(e: PointerEvent) {
   if (!tracking) return
-  choose(modes[Math.max(0, Math.min(2, Math.floor((e.clientX - bar.value!.getBoundingClientRect().left - 4) / 54)))].id)
+  selectSegment(Math.max(0, Math.min(3, Math.floor((e.clientX - bar.value!.getBoundingClientRect().left - 4) / 54))))
   tracking = false
   offset.value = null
 }
@@ -78,6 +85,16 @@ function cancel() {
       @click="choose(m.id)"
     >
       <Icon :name="m.icon" />
+    </button>
+    <button
+      class="vocabulary-entry-button"
+      type="button"
+      :aria-label="vocabularyLabel"
+      aria-haspopup="dialog"
+      :disabled="disabled"
+      @click="selectSegment(3)"
+    >
+      <Icon name="list" />
     </button>
   </div>
 </template>

@@ -188,7 +188,7 @@ defineExpose({
       }}</span></template
     >
     <span v-if="wrong" class="wrong">{{ wrong }}</span>
-    <span v-if="active && !isWordCorrect" class="typing-caret" aria-hidden="true" />
+    <span v-if="minimalInput && active && !isWordCorrect" class="typing-caret" aria-hidden="true" />
     <span class="letter" v-if="isWordMasked && !showFullWord">{{
       minimalInput ? '' : displayWord.replace(/[^ ]/g, '·')
     }}</span>

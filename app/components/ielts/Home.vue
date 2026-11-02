@@ -186,14 +186,6 @@ function up(e: PointerEvent) {
     }
   }
 }
-let grabY = 0
-function grabDown(e: PointerEvent) {
-  grabY = e.clientY
-  ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
-}
-function grabUp(e: PointerEvent) {
-  if (e.clientY < grabY - 20) vocabularyOpen.value = true
-}
 </script>
 <template>
   <main class="ielts-home" @pointerdown="down" @pointerup="up" @pointercancel="swipeStart = null">
@@ -221,17 +213,13 @@ function grabUp(e: PointerEvent) {
             >
           </button>
           <div class="mode-controls">
-            <span aria-hidden="true" />
-            <ModeSwitch :model-value="mode" :disabled="busy" @update:model-value="chooseMode" />
-            <button
-              class="icon-button vocabulary-entry-button"
-              :aria-label="topic.name + '词表，上拉展开'"
-              @click="vocabularyOpen = true"
-              @pointerdown.stop="grabDown"
-              @pointerup.stop="grabUp"
-            >
-              <Icon name="list" />
-            </button>
+            <ModeSwitch
+              :model-value="mode"
+              :disabled="busy"
+              :vocabulary-label="topic.name + '词表'"
+              @update:model-value="chooseMode"
+              @vocabulary="vocabularyOpen = true"
+            />
           </div>
         </div>
         <div class="topic-progress">
