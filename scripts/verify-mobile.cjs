@@ -124,17 +124,30 @@ async function uiAndLearning() {
   assert.equal(await page.getByRole('tab', { name: '复习', exact: true }).getAttribute('aria-selected'), 'true')
   await page.getByRole('tab', { name: '学习', exact: true }).click()
   await page.getByRole('button', { name: '选择主题', exact: true }).click()
-  const sheet = page.getByRole('dialog', { name: '主题', exact: true })
-  await sheet.waitFor()
-  await sheet.evaluate(el => Promise.all(el.getAnimations().map(animation => animation.finished.catch(() => {}))))
-  assert.equal(await sheet.getByRole('button', { name: '关闭', exact: true }).count(), 0)
-  assert.equal(await sheet.locator('.topic-count, .topic-peek').count(), 0)
-  assert.equal(await sheet.locator('.topic-current-dot').count(), 1)
-  assert.equal(await sheet.evaluate(el => getComputedStyle(el).backdropFilter), 'blur(20px)')
-  assert.ok(Math.abs((await sheet.boundingBox()).y + (await sheet.boundingBox()).height - 844) < 2)
+  const menu = page.getByRole('menu', { name: '主题', exact: true })
+  await menu.waitFor()
+  await page.waitForTimeout(850)
+  const orbs = menu.getByRole('menuitemradio')
+  assert.equal(await orbs.count(), 6)
+  assert.equal(await page.getByRole('dialog', { name: '主题', exact: true }).count(), 0)
+  const sizes = await orbs.evaluateAll(nodes =>
+    nodes.map(node => ({
+      width: node.getBoundingClientRect().width,
+      height: node.getBoundingClientRect().height,
+      delay: getComputedStyle(node).transitionDelay,
+    }))
+  )
+  assert.ok(sizes.every(s => Math.abs(s.width - 38) < 0.1 && Math.abs(s.height - 38) < 0.1))
+  assert.equal(sizes[1].delay, '0.05s')
+  assert.equal(sizes[5].delay, '0.25s')
+  assert.equal(
+    await menu.getByRole('menuitemradio', { name: '环境', exact: true }).getAttribute('aria-checked'),
+    'true'
+  )
   await page.screenshot({ path: `${shots}/topics.png`, fullPage: true })
-  await swipe(page, sheet.locator('.sheet-grab'), 0, 110)
-  await sheet.waitFor({ state: 'hidden' })
+  await page.getByRole('button', { name: '选择主题', exact: true }).click()
+  await menu.waitFor({ state: 'hidden' })
+  await page.waitForTimeout(300)
   await page.getByRole('button', { name: '开始学习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)
@@ -209,7 +222,7 @@ async function uiAndLearning() {
   assert.ok((await page.evaluate(() => window.testHaptics)).every(n => n === 8))
   await ctx.close()
   console.log(
-    'PASS: monochrome layout, tabs/swipe, sheet drag, automatic typing/listening, long press, skip, note, mode-0 resume, backup'
+    'PASS: monochrome layout, tabs/swipe, orb geometry/toggle, automatic typing/listening, long press, skip, note, mode-0 resume, backup'
   )
 }
 async function legacyAndReview() {

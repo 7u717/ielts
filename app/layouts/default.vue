@@ -10,7 +10,7 @@ import Preferences from '@/components/ielts/Preferences.vue'
 const init = useInit()
 const route = useRoute()
 const store = useBaseStore()
-const { topicsOpen, preferencesOpen, tab } = useIeltsUI()
+const { preferencesOpen, tab } = useIeltsUI()
 const practicing = computed(() => route.path.startsWith('/practice-words'))
 onMounted(() => {
   document.documentElement.className = 'dark'
@@ -32,10 +32,10 @@ function tap(e: MouseEvent) {
       }}</span>
       <div class="header-actions">
         <button v-if="practicing" class="icon-button" aria-label="打开键盘" @click="focusPracticeKeyboard">
-          <Icon name="keyboard" /></button
-        ><button v-else class="icon-button" aria-label="选择主题" @click="topicsOpen = true">
-          <Icon name="topics" /></button
-        ><button class="icon-button" aria-label="偏好设置" @click="preferencesOpen = true">
+          <Icon name="keyboard" />
+        </button>
+        <div v-else id="topic-menu-mount" class="topic-menu-mount"></div>
+        <button class="icon-button" aria-label="偏好设置" @click="preferencesOpen = true">
           <Icon name="settings" />
         </button>
       </div>

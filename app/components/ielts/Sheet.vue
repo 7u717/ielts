@@ -2,11 +2,10 @@
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import Icon from './Icon.vue'
 import { haptic } from '@/core/ielts/ui'
-const props = defineProps<{ open: boolean; title: string; variant?: 'topics' }>()
+const props = defineProps<{ open: boolean; title: string }>()
 const emit = defineEmits<{ close: [] }>()
 const dialog = ref<HTMLDialogElement>()
 const closing = ref(false)
-const entered = ref(false)
 const drag = ref(0)
 let previous: HTMLElement | null = null
 let timer: ReturnType<typeof setTimeout> | undefined
@@ -24,7 +23,7 @@ function beginClose(notify = false) {
   if (closing.value || !dialog.value?.open) return
   closing.value = true
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  timer = setTimeout(() => finishClose(notify), reduced ? 0 : props.variant === 'topics' ? 380 : 180)
+  timer = setTimeout(() => finishClose(notify), reduced ? 0 : 180)
 }
 function close() {
   beginClose(true)
@@ -36,7 +35,6 @@ watch(
     if (disposed) return
     if (open) {
       clearTimeout(timer)
-      entered.value = false
       closing.value = false
       drag.value = 0
       previous = document.activeElement as HTMLElement
@@ -48,7 +46,6 @@ watch(
   { immediate: true }
 )
 function down(e: PointerEvent) {
-  entered.value = true
   startY = e.clientY
   tracking.value = true
   ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
@@ -77,12 +74,9 @@ onBeforeUnmount(() => {
     :class="{
       'sheet-closing': closing,
       'sheet-dragging': tracking,
-      'topic-sheet': variant === 'topics',
-      'sheet-entered': entered,
     }"
     :aria-label="title"
     :style="{ '--sheet-drag': drag + 'px' }"
-    @animationend.self="entered = true"
     @cancel.prevent="close"
     @click="
       e => {
@@ -92,9 +86,9 @@ onBeforeUnmount(() => {
   >
     <div class="sheet-surface">
       <div class="sheet-grab" @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up"><i /></div>
-      <div class="sheet-head" @pointerdown="variant === 'topics' && down($event)" @pointermove="move" @pointerup="up">
+      <div class="sheet-head">
         <h2>{{ title }}</h2>
-        <button v-if="variant !== 'topics'" class="icon-button" aria-label="关闭" @click="close">
+        <button class="icon-button" aria-label="关闭" @click="close">
           <Icon name="close" />
         </button>
       </div>

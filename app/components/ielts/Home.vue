@@ -19,7 +19,7 @@ import Icon from './Icon.vue'
 import Ring from './Ring.vue'
 import Tabs from './Tabs.vue'
 import WordRow from './WordRow.vue'
-import TopicRow from './TopicRow.vue'
+import TopicMenu from './TopicMenu.vue'
 const store = useBaseStore()
 const settings = useSettingStore()
 const persistence = usePracticeWordPersistence()
@@ -86,6 +86,10 @@ async function choose(t: (typeof topics)[number]) {
   } finally {
     busy.value = false
   }
+}
+function chooseFromMenu(id: string) {
+  const found = topics.find(t => t.id === id)
+  if (found) void choose(found)
 }
 async function chooseMode(next: WordPracticeMode) {
   if (busy.value || next === mode.value) return
@@ -289,20 +293,17 @@ function grabUp(e: PointerEvent) {
       </section>
     </Transition>
     <Tabs v-model="tab" />
-    <Sheet :open="topicsOpen" title="主题" variant="topics" @close="topicsOpen = false">
-      <div class="topic-list">
-        <TopicRow
-          v-for="t in topics"
-          :key="t.id"
-          :name="t.name"
-          :active="topicsOpen"
-          :progress="topicProgress(t.id)"
-          :selected="topic.id === t.id"
-          :disabled="busy"
-          @select="choose(t)"
-        />
-      </div>
-    </Sheet>
+    <ClientOnly
+      ><Teleport to="#topic-menu-mount"
+        ><TopicMenu
+          :open="topicsOpen"
+          :selected="topic.id"
+          :topics="topics"
+          :busy="busy"
+          @toggle="topicsOpen = !topicsOpen"
+          @close="topicsOpen = false"
+          @select="chooseFromMenu" /></Teleport
+    ></ClientOnly>
     <Sheet :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
       ><div class="word-list">
         <WordRow v-for="word in store.sdict.words" :key="word.word" :word="word" @open="showVocabularyWord" /></div
