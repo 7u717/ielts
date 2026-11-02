@@ -14,6 +14,7 @@ const dot = computed(() => ({
     <svg viewBox="0 0 240 240" aria-hidden="true">
       <circle class="ring-track" cx="120" cy="120" :r="radius" />
       <circle
+        v-if="ratio > 0"
         class="ring-arc"
         cx="120"
         cy="120"
@@ -21,7 +22,7 @@ const dot = computed(() => ({
         :stroke-dasharray="circumference"
         :stroke-dashoffset="circumference * (1 - ratio)"
       />
-      <circle class="ring-dot" :cx="dot.x" :cy="dot.y" :r="small ? 3.4 : 2.8" />
+      <circle v-if="!small" class="ring-dot" :cx="dot.x" :cy="dot.y" :r="small ? 3.4 : 2.8" />
     </svg>
     <div class="ring-content"><slot /></div>
   </div>

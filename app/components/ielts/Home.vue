@@ -253,7 +253,7 @@ function grabUp(e: PointerEvent) {
               :disabled="busy"
               @click="peekProgress(t)"
             >
-              <Ring :progress="topicProgress(t.id)" :size="80" small
+              <Ring :progress="topicProgress(t.id)" :size="76" small
                 ><Transition name="meaning"
                   ><span v-if="progressPeek === t.id" class="ring-peek"
                     >{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span
@@ -318,7 +318,6 @@ function grabUp(e: PointerEvent) {
       <template #heading
         ><div class="vocabulary-heading">
           <h2>{{ topic.name }}</h2>
-          <span>{{ store.sdict.words.length }} 词</span>
         </div></template
       >
       <Vocabulary :words="store.sdict.words" :open="vocabularyOpen" />

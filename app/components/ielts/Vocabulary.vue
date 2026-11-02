@@ -3,6 +3,7 @@ import { ref, nextTick, watch, onBeforeUnmount } from 'vue'
 import type { Word } from '@/core/types'
 import { usePlayWordAudio } from '@/core/hooks/sound'
 import { haptic } from '@/core/ielts/ui'
+import Icon from './Icon.vue'
 const props = defineProps<{ words: Word[]; open: boolean }>()
 const speak = usePlayWordAudio()
 const detail = ref<Word | null>(null)
@@ -26,11 +27,8 @@ function tap(word: Word) {
     return
   }
   haptic()
-  if (lastWord.value === word.word) void show(word)
-  else {
-    lastWord.value = word.word
-    speak(word.word)
-  }
+  lastWord.value = lastWord.value === word.word ? '' : word.word
+  if (lastWord.value) speak(word.word)
 }
 function down(event: PointerEvent) {
   if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
@@ -90,7 +88,8 @@ onBeforeUnmount(() => {
         type="button"
         class="vocabulary-word"
         :aria-label="word.word"
-        aria-haspopup="dialog"
+        :aria-expanded="lastWord === word.word"
+        :aria-controls="'vocab-' + word.id"
         @pointerdown="down"
         @pointermove="move"
         @pointerup="up(word)"
@@ -99,8 +98,23 @@ onBeforeUnmount(() => {
         @click="tap(word)"
       >
         <span class="vocabulary-english">{{ word.word }}</span>
-        <span class="vocabulary-meaning">{{ word.trans.map(t => t.cn).join('；') }}</span>
       </button>
+      <div
+        :id="'vocab-' + word.id"
+        class="vocabulary-expansion"
+        :class="{ expanded: lastWord === word.word }"
+        :aria-hidden="lastWord !== word.word"
+        :inert="lastWord !== word.word"
+      >
+        <div>
+          <div class="vocabulary-inline-detail">
+            <p>{{ word.trans.map(t => (t.pos ? t.pos + ' ' : '') + t.cn).join('；') }}</p>
+            <button class="icon-button" :aria-label="'播放 ' + word.word + ' 发音'" @click="speak(word.word)">
+              <Icon name="sound" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <dialog
       ref="popup"

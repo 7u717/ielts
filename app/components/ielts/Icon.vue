@@ -6,6 +6,8 @@ const paths: Record<string, string> = {
   review: 'M4 8a8 8 0 1 1 0 8M4 3v5h5m3-1v5l3 2',
   topics: 'M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z',
   settings: 'M3 7h18M3 17h18M9 4v6m6 4v6',
+  bookmark: 'M7 3.5h10v17l-5-3-5 3v-17Z',
+  pen: 'm15 4 5 5M4 20l4-1 12-12a2 2 0 0 0-4-4L4 15v5Z',
   profile: 'M8 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0Zm-4 13v-1c0-7 16-7 16 0v1',
   back: 'm14 5-7 7 7 7',
   close: 'm6 6 12 12M6 18 18 6',

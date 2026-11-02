@@ -322,7 +322,7 @@ export function useStartKeyboardEventListener() {
 
   useEventListener('keydown', (e: KeyboardEvent) => {
     // Native sheets own focus and Escape; practice shortcuts must not intercept them.
-    if (document.querySelector('dialog[open]')) return
+    if (document.querySelector('dialog[open], .study-menu.open')) return
     // console.log('keydown', e)
     // debugger
     //解决无法复制、全选的问题
@@ -383,7 +383,7 @@ export function useStartKeyboardEventListener() {
     }
   })
   useEventListener('keyup', (e: KeyboardEvent) => {
-    if (document.querySelector('dialog[open]')) return
+    if (document.querySelector('dialog[open], .study-menu.open')) return
     if (!window?.disableEventListener) {
       emitter.emit(EventKey.keyup, e)
     }

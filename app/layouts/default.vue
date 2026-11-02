@@ -7,6 +7,7 @@ import { focusPracticeKeyboard, haptic, useIeltsUI } from '@/core/ielts/ui'
 import Sheet from '@/components/ielts/Sheet.vue'
 import Icon from '@/components/ielts/Icon.vue'
 import Preferences from '@/components/ielts/Preferences.vue'
+import PracticeMenu from '@/components/ielts/PracticeMenu.vue'
 const init = useInit()
 const route = useRoute()
 const store = useBaseStore()
@@ -31,14 +32,9 @@ function tap(e: MouseEvent) {
         practicing ? store.sdict.name : tab === 'wrong' ? '错词' : tab === 'review' ? '复习' : '雅思'
       }}</span>
       <div class="header-actions">
-        <button v-if="practicing" class="icon-button" aria-label="打开键盘" @click="focusPracticeKeyboard">
-          <Icon name="keyboard" />
-        </button>
+        <PracticeMenu v-if="practicing" @keyboard="focusPracticeKeyboard" @preferences="preferencesOpen = true" />
         <!-- Keep the Teleport target stable across lesson navigation. -->
         <div v-show="!practicing" id="topic-menu-mount" class="topic-menu-mount"></div>
-        <button v-if="practicing" class="icon-button" aria-label="偏好设置" @click="preferencesOpen = true">
-          <Icon name="settings" />
-        </button>
       </div>
     </header>
     <slot />

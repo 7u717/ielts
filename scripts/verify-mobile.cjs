@@ -1,3 +1,4 @@
+const { headerAction } = require('./mobile-actions.cjs')
 /* Run against `pnpm dev` or the generated /ielts/ site.
  * npm install --prefix /tmp/ielts-browser playwright
  * PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright node scripts/verify-mobile.cjs
@@ -160,7 +161,7 @@ async function uiAndLearning() {
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   const first = await word(page)
-  await page.getByRole('button', { name: '打开键盘', exact: true }).click()
+  await headerAction(page, '打开键盘')
   await input(page, first.slice(0, 2))
   await input(page, 'x')
   assert.equal(
@@ -190,8 +191,8 @@ async function uiAndLearning() {
   await page.getByRole('button', { name: '笔记', exact: true }).click()
   await page.getByRole('textbox', { name: '单词笔记' }).fill('雅思备考笔记')
   await page.getByRole('button', { name: '保存', exact: true }).click()
-  await page.getByRole('button', { name: '关闭', exact: true }).click()
-  await page.waitForTimeout(260)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(430)
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.getByRole('button', { name: '继续学习', exact: true }).waitFor()
   await page.getByRole('button', { name: '选择主题', exact: true }).click()
@@ -225,7 +226,7 @@ async function uiAndLearning() {
   await page.screenshot({ path: `${shots}/practice.png`, fullPage: true })
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await page.getByRole('button', { name: '偏好设置' }).click()
+  await headerAction(page, '偏好设置')
   const preferences = page.getByRole('dialog', { name: '偏好', exact: true })
   assert.equal(await preferences.getByRole('slider', { name: '每日新词' }).count(), 1)
   assert.equal(await preferences.getByRole('switch', { name: '自动发音' }).count(), 1)

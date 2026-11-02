@@ -36,6 +36,12 @@ const meaning = ref(false)
 const hint = ref(false)
 const note = ref('')
 const editing = ref(false)
+const bookmarkBounce = ref(false)
+function toggleCollection() {
+  haptic()
+  toggleWordCollect(props.word)
+  bookmarkBounce.value = isWordCollect(props.word)
+}
 const typing = ref<InstanceType<typeof WordTypingCore>>()
 const speak = usePlayWordAudio()
 const { isWordCollect, toggleWordCollect } = useWordOptions()
@@ -196,6 +202,7 @@ useEvents([
   [ShortcutKey.ShowWord, tapWord],
 ])
 function closeDetails() {
+  bookmarkBounce.value = false
   detailsOpen.value = false
   editing.value = false
 }
@@ -276,9 +283,18 @@ function saveNote() {
     <Sheet
       :open="detailsOpen"
       :title="effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"
+      minimal
+      class="word-detail-sheet"
       @close="closeDetails"
     >
       <template v-if="!effective.isWordMasked || controller.showWordResult.value">
+        <div class="detail-word-heading">
+          <h2>{{ word.word }}</h2>
+          <div class="detail-sound-row">
+            <span v-if="word.phonetic0">/{{ word.phonetic0 }}/</span
+            ><button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button>
+          </div>
+        </div>
         <p class="detail-meaning">{{ word.trans.map(t => t.pos + ' ' + t.cn).join('；') }}</p>
         <div class="word-examples">
           <div v-for="s in word.sentences" :key="s.c">
@@ -288,12 +304,28 @@ function saveNote() {
         </div>
         <p v-if="store.noteData[word.word] && !editing" class="sheet-note">{{ store.noteData[word.word] }}</p>
         <div class="word-detail-actions">
-          <button class="text-action" @click="toggleWordCollect(word)">
-            {{ isWordCollect(word) ? '已收藏' : '收藏' }}</button
-          ><button class="text-action" @click="editNote">笔记</button>
+          <button
+            class="icon-button detail-bookmark"
+            aria-label="收藏"
+            :aria-pressed="isWordCollect(word)"
+            :class="{ 'bookmark-bounce': bookmarkBounce }"
+            @animationend="bookmarkBounce = false"
+            @click="toggleCollection"
+          >
+            <Icon name="bookmark" />
+          </button>
+          <button class="icon-button" aria-label="笔记" :aria-expanded="editing" @click="editNote">
+            <Icon name="pen" />
+          </button>
         </div>
         <div v-if="editing" class="note-editor">
-          <textarea v-model="note" aria-label="单词笔记" /><button class="text-action" @click="saveNote">保存</button>
+          <textarea v-model="note" aria-label="单词笔记" /><button
+            class="icon-button"
+            aria-label="保存"
+            @click="saveNote"
+          >
+            <Icon name="check" />
+          </button>
         </div>
       </template>
       <p v-else class="sheet-note">完成这一词后查看详情。</p>
