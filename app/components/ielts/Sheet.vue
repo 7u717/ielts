@@ -2,28 +2,32 @@
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import Icon from './Icon.vue'
 import { haptic } from '@/core/ielts/ui'
-const props = defineProps<{ open: boolean; title: string }>()
+const props = defineProps<{ open: boolean; title: string; variant?: 'topics' }>()
 const emit = defineEmits<{ close: [] }>()
 const dialog = ref<HTMLDialogElement>()
 const closing = ref(false)
+const entered = ref(false)
 const drag = ref(0)
 let previous: HTMLElement | null = null
 let timer: ReturnType<typeof setTimeout> | undefined
 let startY = 0
-let tracking = false
+const tracking = ref(false)
 let disposed = false
-async function close() {
-  if (closing.value || !props.open) return
+function finishClose(notify: boolean) {
+  dialog.value?.close()
+  closing.value = false
+  drag.value = 0
+  previous?.focus({ preventScroll: true })
+  if (notify) emit('close')
+}
+function beginClose(notify = false) {
+  if (closing.value || !dialog.value?.open) return
   closing.value = true
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  timer = setTimeout(
-    () => {
-      emit('close')
-      closing.value = false
-      drag.value = 0
-    },
-    reduced ? 0 : 180
-  )
+  timer = setTimeout(() => finishClose(notify), reduced ? 0 : props.variant === 'topics' ? 380 : 180)
+}
+function close() {
+  beginClose(true)
 }
 watch(
   () => props.open,
@@ -31,28 +35,30 @@ watch(
     await nextTick()
     if (disposed) return
     if (open) {
+      clearTimeout(timer)
+      entered.value = false
       closing.value = false
       drag.value = 0
       previous = document.activeElement as HTMLElement
       if (!dialog.value?.open) dialog.value?.showModal()
     } else {
-      dialog.value?.close()
-      previous?.focus({ preventScroll: true })
+      beginClose()
     }
   },
   { immediate: true }
 )
 function down(e: PointerEvent) {
+  entered.value = true
   startY = e.clientY
-  tracking = true
+  tracking.value = true
   ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
 }
 function move(e: PointerEvent) {
-  if (tracking) drag.value = Math.max(0, e.clientY - startY)
+  if (tracking.value) drag.value = Math.max(0, e.clientY - startY)
 }
 function up() {
-  if (!tracking) return
-  tracking = false
+  if (!tracking.value) return
+  tracking.value = false
   if (drag.value > 65) {
     haptic()
     void close()
@@ -68,9 +74,15 @@ onBeforeUnmount(() => {
   <dialog
     ref="dialog"
     class="ielts-sheet"
-    :class="{ 'sheet-closing': closing, 'sheet-dragging': tracking }"
+    :class="{
+      'sheet-closing': closing,
+      'sheet-dragging': tracking,
+      'topic-sheet': variant === 'topics',
+      'sheet-entered': entered,
+    }"
     :aria-label="title"
     :style="{ '--sheet-drag': drag + 'px' }"
+    @animationend.self="entered = true"
     @cancel.prevent="close"
     @click="
       e => {
@@ -80,9 +92,11 @@ onBeforeUnmount(() => {
   >
     <div class="sheet-surface">
       <div class="sheet-grab" @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up"><i /></div>
-      <div class="sheet-head">
+      <div class="sheet-head" @pointerdown="variant === 'topics' && down($event)" @pointermove="move" @pointerup="up">
         <h2>{{ title }}</h2>
-        <button class="icon-button" aria-label="关闭" @click="close"><Icon name="close" /></button>
+        <button v-if="variant !== 'topics'" class="icon-button" aria-label="关闭" @click="close">
+          <Icon name="close" />
+        </button>
       </div>
       <div class="sheet-body"><slot /></div>
     </div>

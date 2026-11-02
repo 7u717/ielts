@@ -19,6 +19,7 @@ import Icon from './Icon.vue'
 import Ring from './Ring.vue'
 import Tabs from './Tabs.vue'
 import WordRow from './WordRow.vue'
+import TopicRow from './TopicRow.vue'
 const store = useBaseStore()
 const settings = useSettingStore()
 const persistence = usePracticeWordPersistence()
@@ -288,14 +289,20 @@ function grabUp(e: PointerEvent) {
       </section>
     </Transition>
     <Tabs v-model="tab" />
-    <Sheet :open="topicsOpen" title="主题" @close="topicsOpen = false"
-      ><div class="topic-list">
-        <button v-for="t in topics" :key="t.id" :disabled="busy" :aria-pressed="topic.id === t.id" @click="choose(t)">
-          <Ring :progress="topicProgress(t.id)" :size="36" small /><span>{{ t.name }}</span
-          ><span class="topic-count">{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span
-          ><Icon v-if="topic.id === t.id" name="check" />
-        </button></div
-    ></Sheet>
+    <Sheet :open="topicsOpen" title="主题" variant="topics" @close="topicsOpen = false">
+      <div class="topic-list">
+        <TopicRow
+          v-for="t in topics"
+          :key="t.id"
+          :name="t.name"
+          :active="topicsOpen"
+          :progress="topicProgress(t.id)"
+          :selected="topic.id === t.id"
+          :disabled="busy"
+          @select="choose(t)"
+        />
+      </div>
+    </Sheet>
     <Sheet :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
       ><div class="word-list">
         <WordRow v-for="word in store.sdict.words" :key="word.word" :word="word" @open="showVocabularyWord" /></div
