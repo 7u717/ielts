@@ -280,7 +280,12 @@ function up(e: PointerEvent) {
     >
       <h2>{{ topic.name }}</h2>
       <div class="disc-progress">
-        <Ring :progress="topicProgress(topic.id)" :review-progress="dueReviewCount / topic.length" :size="104" />
+        <Ring
+          :progress="topicProgress(topic.id)"
+          :review-progress="dueReviewCount / topic.length"
+          :size="152"
+          :animate="false"
+        />
         <span
           class="sr-only"
           role="progressbar"

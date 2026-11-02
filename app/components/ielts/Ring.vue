@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 const props = withDefaults(
-  defineProps<{ progress: number; reviewProgress?: number; size?: number; small?: boolean }>(),
-  { size: 230 }
+  defineProps<{ progress: number; reviewProgress?: number; size?: number; small?: boolean; animate?: boolean }>(),
+  { size: 230, animate: true }
 )
 const ratio = computed(() => Math.max(0, Math.min(1, props.progress || 0)))
 const review = computed(() => Math.max(0, Math.min(1, props.reviewProgress || 0)))
@@ -12,7 +12,7 @@ const innerCircumference = 2 * Math.PI * 101
 <template>
   <div
     class="iue-ring"
-    :class="{ small, 'dual-ring': reviewProgress !== undefined }"
+    :class="{ small, 'dual-ring': reviewProgress !== undefined, 'ring-continuous': !animate }"
     :style="{ width: size + 'px', height: size + 'px' }"
   >
     <svg viewBox="0 0 240 240" aria-hidden="true">

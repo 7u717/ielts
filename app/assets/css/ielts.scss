@@ -1720,9 +1720,6 @@ body:has(.study-menu.open) .practice-shell {
 .preference-sheet:not(.vocabulary-sheet) {
   background: rgba(22, 22, 24, 0.96);
 }
-body:has(.preference-sheet[open]) .iue-tabs {
-  visibility: hidden;
-}
 .word-detail-sheet .sheet-body {
   padding: 16px 32px calc(28px + env(safe-area-inset-bottom, 0px));
   text-align: center;
@@ -3344,4 +3341,157 @@ button.word-translation {
 }
 .study-menu.open .header-link-button:active {
   transform: rotate(-90deg) scale(0.96);
+}
+
+/* Carry the existing arcs through the disc's scale, without restarting their drawing. */
+.ring-disc .sheet-body {
+  padding: 28px 0 26px;
+}
+.ring-disc h2 {
+  font-size: 15px;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
+}
+.disc-progress {
+  height: 152px;
+}
+.ring-continuous.dual-ring .ring-arc {
+  animation: disc-arc-breathe 6s var(--r-ease) infinite;
+  stroke-width: 2;
+  filter: none;
+}
+.ring-continuous.dual-ring .ring-review-arc {
+  animation: disc-review-breathe 6s var(--r-ease) infinite;
+  stroke-width: 1.05;
+}
+.ring-continuous .ring-track {
+  opacity: 0.16;
+}
+.ring-continuous .ring-review-track {
+  opacity: 0.1;
+}
+@keyframes disc-arc-breathe {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes disc-review-breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.74;
+  }
+}
+/* Every modal lowers the dock; keep it rendered so its return can spring back. */
+.iue-tabs {
+  transition:
+    opacity 0.2s var(--r-ease),
+    translate 0.3s var(--r-spring),
+    scale 0.3s var(--r-spring);
+}
+body:has(dialog[open], .topic-menu.open, .study-menu.open) .iue-tabs {
+  opacity: 0;
+  translate: 0 16px;
+  scale: 0.96;
+  pointer-events: none;
+}
+body:has(.vocabulary-sheet[open]) .hero-ring-button {
+  opacity: 0;
+}
+/* The list shares the preferences' optical surface, with no background light source. */
+.ielts-sheet.vocabulary-sheet,
+.vocabulary-detail {
+  background: var(--floating-fill);
+  border: 0;
+  box-shadow: inset 0 0.5px 0 var(--floating-edge);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+.vocabulary-word {
+  height: 76px;
+  min-height: 76px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  text-align: left;
+}
+.vocabulary-gloss {
+  flex: none;
+  max-width: 100%;
+  text-align: left;
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.48;
+}
+.vocabulary-detail-content {
+  text-align: center;
+}
+.vocabulary-detail-word {
+  margin: 0 auto 18px;
+}
+.vocabulary-example {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.practice-mini-progress {
+  left: 64px;
+  width: calc(100% - 128px);
+  background: rgba(255, 255, 255, 0.035);
+  opacity: 1;
+}
+html.light .practice-mini-progress {
+  background: rgba(25, 30, 40, 0.035);
+}
+.practice-mini-progress i {
+  opacity: 1;
+  background: var(--text);
+  height: 0.5px;
+  transition: transform 0.36s var(--r-spring);
+}
+.wrong-panel.empty-panel {
+  position: relative;
+}
+.wrong-panel.empty-panel .list-empty {
+  position: absolute;
+  left: 0;
+  top: calc(42svh - var(--header-h));
+  transform: translateY(-50%);
+}
+.wrong-panel.empty-panel .list-empty > .iue-icon {
+  stroke-width: 0.9;
+}
+.wrong-panel.empty-panel .list-empty > .iue-icon path {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 0;
+  animation: empty-check-draw 0.7s var(--r-ease) both;
+}
+@keyframes empty-check-draw {
+  from {
+    stroke-dashoffset: 32;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.vocabulary-detail-word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.vocabulary-detail-word .iue-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
 }

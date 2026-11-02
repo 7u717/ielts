@@ -130,6 +130,33 @@ async function skip(page) {
       assert.equal(await overview.evaluate(el => getComputedStyle(el).borderRadius), '50%')
       assert.equal(await overview.evaluate(el => getComputedStyle(el).boxShadow), 'none')
       assert.equal(await overview.locator('.ring-arc').count(), 2)
+      assert.equal((await overview.locator('.iue-ring').boundingBox()).width, 152)
+      const actualArc = await overview
+        .locator('.ring-arc')
+        .first()
+        .evaluate(el => ({
+          vector: getComputedStyle(el).vectorEffect,
+          fraction: 1 - Number(el.getAttribute('stroke-dashoffset')) / Number(el.getAttribute('stroke-dasharray')),
+        }))
+      assert.equal(actualArc.vector, 'none')
+      assert.ok(Math.abs(actualArc.fraction - 0.25) < 0.0001)
+      assert.ok(
+        !(
+          await overview
+            .locator('.ring-arc')
+            .first()
+            .evaluate(el => getComputedStyle(el).animationName)
+        ).includes('arc-draw')
+      )
+      assert.ok(
+        Number(
+          await overview
+            .locator('.ring-arc')
+            .first()
+            .evaluate(el => getComputedStyle(el).opacity)
+        ) > Number(await overview.locator('.ring-review-arc').evaluate(el => getComputedStyle(el).opacity))
+      )
+      assert.equal(await page.locator('.iue-tabs').evaluate(el => getComputedStyle(el).opacity), '0')
       assert.equal(await page.locator('.ring-origin, .ring-end-glow').count(), 0)
       await page.screenshot({ path: `${output}/overview-${scheme}-390.png`, fullPage: true })
       await page.mouse.click(10, 110)
@@ -153,7 +180,7 @@ async function skip(page) {
           .locator('.vocabulary-gloss')
           .first()
           .evaluate(el => getComputedStyle(el).opacity),
-        '0.4'
+        '0.48'
       )
       assert.ok(
         (await vocab.locator('.sheet-body').evaluate(el => getComputedStyle(el).maskImage)).includes('linear-gradient')
@@ -161,10 +188,47 @@ async function skip(page) {
       const heights = await vocab
         .locator('.vocabulary-word')
         .evaluateAll(nodes => nodes.map(el => el.getBoundingClientRect().height))
-      assert.ok(heights.every(h => h === 58))
+      assert.ok(heights.every(h => h === 76))
+      const vocabFill = await vocab.evaluate(el => getComputedStyle(el).backgroundColor)
+      assert.equal((await vocab.boundingBox()).x, 12)
+      assert.equal(await vocab.evaluate(el => getComputedStyle(el).borderTopWidth), '0px')
+      assert.equal(await page.locator('.hero-ring-button').evaluate(el => getComputedStyle(el).opacity), '0')
+      assert.equal(await page.locator('.iue-tabs').evaluate(el => getComputedStyle(el).opacity), '0')
+      assert.equal(
+        await vocab
+          .locator('.vocabulary-word')
+          .first()
+          .evaluate(el => getComputedStyle(el).flexDirection),
+        'column'
+      )
       await page.screenshot({ path: `${output}/vocabulary-${scheme}-390.png`, fullPage: true })
-      await page.mouse.click(8, 110)
+      await vocab.getByRole('button', { name: 'biodiversity', exact: true }).click()
+      const vocabDetail = page.locator('.vocabulary-detail')
+      await vocabDetail.waitFor()
+      await page.waitForTimeout(450)
+      assert.ok((await vocabDetail.locator('.vocabulary-example').innerText()).includes('Protecting biodiversity'))
+      await vocabDetail.getByRole('button', { name: '播放发音', exact: true }).click()
+      await page.screenshot({ path: `${output}/vocabulary-detail-${scheme}-390.png`, fullPage: true })
+      await page.mouse.click(8, 100)
+      await vocabDetail.waitFor({ state: 'hidden' })
+      const grab = await vocab.locator('.sheet-grab').boundingBox()
+      await page.mouse.move(grab.x + grab.width / 2, grab.y + 10)
+      await page.mouse.down()
+      await page.mouse.move(grab.x + grab.width / 2, grab.y + 140, { steps: 8 })
+      await page.mouse.up()
       await vocab.waitFor({ state: 'hidden' })
+      await page.getByRole('button', { name: '偏好设置', exact: true }).click()
+      const prefs = page.getByRole('dialog', { name: '偏好', exact: true })
+      await prefs.waitFor()
+      await page.waitForTimeout(450)
+      assert.equal(await prefs.evaluate(el => getComputedStyle(el).backgroundColor), vocabFill)
+      assert.equal(await page.locator('.iue-tabs').evaluate(el => getComputedStyle(el).opacity), '0')
+      assert.equal(await page.locator('.iue-tabs').evaluate(el => getComputedStyle(el).visibility), 'visible')
+      await page.screenshot({ path: `${output}/preferences-${scheme}-390.png`, fullPage: true })
+      await page.mouse.click(8, 100)
+      await prefs.waitFor({ state: 'hidden' })
+      await page.waitForTimeout(350)
+      assert.equal(await page.locator('.iue-tabs').evaluate(el => getComputedStyle(el).opacity), '1')
       await startStudy(page)
       await page.locator('#word-wrap').waitFor()
       await page.waitForTimeout(500)
@@ -172,12 +236,19 @@ async function skip(page) {
       await example.waitFor()
       assert.equal(await example.evaluate(el => getComputedStyle(el).fontSize), '15px')
       assert.equal(await example.evaluate(el => getComputedStyle(el).webkitLineClamp), '2')
+      await skip(page)
       const stage = await page.locator('.word-stage').boundingBox()
       assert.ok(Math.abs(stage.y + stage.height / 2 - (844 + 57) / 2) < 2)
       await page.screenshot({ path: `${output}/learning-${scheme}-390.png`, fullPage: true })
       const progress = await page.getByRole('progressbar', { name: '本组学习进度' }).boundingBox()
       assert.equal(progress.y, 57)
-      assert.equal(progress.width, 326)
+      assert.equal(progress.width, 262)
+      const progressBar = page.getByRole('progressbar', { name: '本组学习进度' })
+      assert.equal(await progressBar.getAttribute('aria-valuenow'), '1')
+      assert.equal(await progressBar.locator('i').evaluate(el => getComputedStyle(el).opacity), '1')
+      assert.ok(
+        (await progressBar.locator('i').evaluate(el => getComputedStyle(el).transitionTimingFunction)).includes('1.3')
+      )
       await page.locator('#word-wrap').click()
       await page.locator('.word-detail-sheet').waitFor()
       await page.waitForTimeout(400)
@@ -225,13 +296,20 @@ async function skip(page) {
       await page.getByText('还没有错词', { exact: true }).waitFor()
       assert.equal(await page.getByText('全部错词', { exact: true }).count(), 0)
       assert.equal(await page.getByRole('button', { name: '巩固错词', exact: true }).count(), 0)
+      await page.waitForTimeout(750)
+      const empty = await page.locator('.wrong-panel .list-empty').boundingBox()
+      assert.ok(Math.abs(empty.y + empty.height / 2 - 844 * 0.42) < 2)
+      assert.equal(
+        await page.locator('.wrong-panel .list-empty svg path').evaluate(el => getComputedStyle(el).animationName),
+        'empty-check-draw'
+      )
       await page.screenshot({ path: `${output}/wrong-empty-${scheme}-390.png`, fullPage: true })
       await page.getByRole('button', { name: '复习', exact: true }).click()
       await page.getByRole('button', { name: '开始复习', exact: true }).waitFor()
       assert.deepEqual(errors, [])
       assert.ok((await page.evaluate(() => window.haptics)).every(n => n === 8))
       console.log(
-        `PASS: ${scheme} dual clockwise arcs without endpoints, source-aligned circular glass disc, header progress, centered study cluster, tap/drag/outside word details, centered empty wrong state, unchanged topic menu and preserved notes`
+        `PASS: ${scheme} continuous brighter disc arcs, matched floating glass without source glow, word popup examples/audio, modal dock motion, short bright progress, 42% drawn-check empty state, unchanged topic menu and preserved notes`
       )
       await ctx.close()
     }

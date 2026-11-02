@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, nextTick, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, nextTick, watch, onBeforeUnmount } from 'vue'
+import { practiceExamples } from '@/core/ielts/examples'
 import type { Word } from '@/core/types'
 import { usePlayWordAudio } from '@/core/hooks/sound'
 import { haptic } from '@/core/ielts/ui'
@@ -8,7 +9,7 @@ const props = defineProps<{ words: Word[]; open: boolean }>()
 const speak = usePlayWordAudio()
 const detail = ref<Word | null>(null)
 const popup = ref<HTMLDialogElement>()
-const lastWord = ref('')
+const examples = computed(() => (detail.value ? practiceExamples(detail.value).slice(0, 2) : []))
 const closing = ref(false)
 let closeTimer: ReturnType<typeof setTimeout> | undefined
 let hold: ReturnType<typeof setTimeout> | undefined
@@ -31,8 +32,8 @@ function tap(word: Word) {
     return
   }
   haptic()
-  lastWord.value = lastWord.value === word.word ? '' : word.word
-  if (lastWord.value) speak(word.word)
+  speak(word.word)
+  void show(word)
 }
 function down(event: PointerEvent) {
   if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
@@ -54,7 +55,6 @@ function up(word: Word) {
   clearTimeout(hold)
   if (held && !moved) {
     suppressClick = true
-    lastWord.value = word.word
     speak(word.word) // Playback stays in the release gesture, never in the hold timer.
     void show(word)
   } else if (moved) suppressClick = true
@@ -79,7 +79,6 @@ function close() {
 watch(
   () => props.open,
   () => {
-    lastWord.value = ''
     cancel()
     close()
   }
@@ -102,8 +101,9 @@ onBeforeUnmount(() => {
         type="button"
         class="vocabulary-word"
         :aria-label="word.word"
-        :aria-expanded="lastWord === word.word"
-        :aria-controls="'vocab-' + word.id"
+        :aria-expanded="detail?.word === word.word && !closing"
+        aria-haspopup="dialog"
+        aria-controls="vocabulary-word-detail"
         @pointerdown="down"
         @pointermove="move"
         @pointerup="up(word)"
@@ -114,25 +114,10 @@ onBeforeUnmount(() => {
         <span class="vocabulary-english">{{ word.word }}</span>
         <span class="vocabulary-gloss" aria-hidden="true">{{ word.trans.map(t => t.cn).join('；') }}</span>
       </button>
-      <div
-        :id="'vocab-' + word.id"
-        class="vocabulary-expansion"
-        :class="{ expanded: lastWord === word.word }"
-        :aria-hidden="lastWord !== word.word"
-        :inert="lastWord !== word.word"
-      >
-        <div>
-          <div class="vocabulary-inline-detail">
-            <p>{{ word.trans.map(t => (t.pos ? t.pos + ' ' : '') + t.cn).join('；') }}</p>
-            <button class="icon-button" :aria-label="'播放 ' + word.word + ' 发音'" @click="speak(word.word)">
-              <Icon name="sound" />
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
     <dialog
       ref="popup"
+      id="vocabulary-word-detail"
       class="vocabulary-detail"
       :class="{ 'vocabulary-closing': closing }"
       @cancel.prevent="close"
@@ -147,6 +132,7 @@ onBeforeUnmount(() => {
       <div v-if="detail" class="vocabulary-detail-content">
         <button class="vocabulary-detail-word" aria-label="播放发音" @click="speak(detail.word)">
           {{ detail.word }}
+          <Icon name="sound" />
         </button>
         <p class="vocabulary-detail-meaning">
           <span v-for="(translation, index) in detail.trans" :key="index"
@@ -154,9 +140,9 @@ onBeforeUnmount(() => {
             >{{ translation.cn }}<br v-if="index < detail.trans.length - 1"
           /></span>
         </p>
-        <div v-for="sentence in detail.sentences?.slice(0, 2)" :key="sentence.c" class="vocabulary-example">
+        <div v-for="sentence in examples" :key="sentence.c" class="vocabulary-example">
           <p>{{ sentence.c }}</p>
-          <p>{{ sentence.cn }}</p>
+          <p v-if="sentence.cn">{{ sentence.cn }}</p>
         </div>
       </div>
     </dialog>
