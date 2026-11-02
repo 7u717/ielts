@@ -24,7 +24,7 @@ function tap(e: MouseEvent) {
   <div class="ielts-app" data-design="iue-r3" @click.capture="tap">
     <header class="app-header">
       <NuxtLink v-if="practicing" to="/" class="avatar-button" aria-label="保存并返回"><Icon name="back" /></NuxtLink>
-      <button v-else class="avatar-button" aria-label="本地学习档案" @click="preferencesOpen = true">
+      <button v-else class="avatar-button" aria-label="偏好设置" @click="preferencesOpen = true">
         <img :src="withAppBaseURL('/imgs/profile-avatar.jpg')" alt="" />
       </button>
       <span class="header-title">{{
@@ -34,8 +34,9 @@ function tap(e: MouseEvent) {
         <button v-if="practicing" class="icon-button" aria-label="打开键盘" @click="focusPracticeKeyboard">
           <Icon name="keyboard" />
         </button>
-        <div v-else id="topic-menu-mount" class="topic-menu-mount"></div>
-        <button class="icon-button" aria-label="偏好设置" @click="preferencesOpen = true">
+        <!-- Keep the Teleport target stable across lesson navigation. -->
+        <div v-show="!practicing" id="topic-menu-mount" class="topic-menu-mount"></div>
+        <button v-if="practicing" class="icon-button" aria-label="偏好设置" @click="preferencesOpen = true">
           <Icon name="settings" />
         </button>
       </div>
