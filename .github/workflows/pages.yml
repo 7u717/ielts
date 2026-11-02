@@ -21,9 +21,6 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 11.25.0
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - run: pnpm install --frozen-lockfile
       - run: pnpm run generate
         env:
@@ -40,6 +37,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
