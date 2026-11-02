@@ -3158,3 +3158,190 @@ body:has(.study-menu.open) .topic-orb-backdrop {
     transform: translateX(-50%) scale(0.94);
   }
 }
+/* Two concentric topic arcs; glow belongs to the stroke, never a detached point. */
+.dual-ring .ring-arc {
+  stroke: var(--text);
+  stroke-width: 1.35;
+  transition: stroke-dashoffset 0.9s var(--r-spring);
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.1));
+  animation:
+    arc-draw 0.9s var(--r-spring) both,
+    arc-breathe 6s var(--r-ease) infinite;
+}
+.dual-ring .ring-review-arc {
+  stroke-width: 0.65;
+  animation-delay:
+    0s,
+    -2s;
+}
+.dual-ring .ring-review-track {
+  stroke-width: 0.6;
+  opacity: 0.12;
+}
+html.light .dual-ring .ring-arc {
+  filter: drop-shadow(0 0 1.5px rgba(25, 30, 40, 0.07));
+}
+@keyframes arc-breathe {
+  0%,
+  100% {
+    opacity: 0.78;
+  }
+  50% {
+    opacity: 0.94;
+  }
+}
+.hero-ring-button.ring-expanded {
+  opacity: 0;
+  pointer-events: none;
+}
+/* The disc shares the source ring's center and expands from its exact diameter. */
+.ielts-sheet.ring-disc {
+  position: fixed;
+  inset: var(--disc-y) auto auto 50%;
+  margin: 0;
+  width: min(314px, calc(100vw - 40px));
+  height: min(314px, calc(100vw - 40px));
+  max-width: none;
+  max-height: none;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  transform: translate(-50%, -50%) translateY(var(--sheet-drag, 0px));
+  transition: transform 0.3s var(--r-spring);
+}
+html.light .ielts-sheet.ring-disc {
+  background: rgba(255, 255, 255, 0.38);
+}
+.ring-disc .sheet-surface {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  touch-action: none;
+}
+.ring-disc .sheet-body {
+  box-sizing: border-box;
+  padding: 37px 0 30px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.ring-disc h2 {
+  font-size: 17px;
+}
+.disc-progress {
+  height: 104px;
+}
+.ring-disc .overview-start {
+  width: 32px;
+  height: 32px;
+}
+.ielts-sheet.ring-disc[open]:not(.sheet-entered):not(.sheet-dragging):not(.sheet-closing) {
+  animation: ring-disc-in 0.36s var(--r-spring) both;
+}
+.ielts-sheet.ring-disc.sheet-closing {
+  animation: ring-disc-out 0.2s var(--r-spring) both;
+}
+.ielts-sheet.ring-disc.sheet-dragging {
+  transition: none;
+}
+@keyframes ring-disc-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.873);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+@keyframes ring-disc-out {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.873);
+  }
+}
+/* Progress sits beneath the header; the complete word cluster uses the visible center. */
+.practice-mini-progress {
+  top: var(--header-h);
+  bottom: auto;
+  left: 32px;
+  width: calc(100% - 64px);
+  height: 0.5px;
+  opacity: 0.7;
+}
+html[data-keyboard-open='true'] .practice-mini-progress {
+  top: var(--header-h);
+  bottom: auto;
+}
+.word-stage {
+  top: calc((100svh - var(--header-h)) / 2);
+}
+html[data-keyboard-open='true'] .word-stage {
+  top: max(110px, calc((100svh - var(--keyboard-inset, 0px) - var(--header-h)) / 2));
+}
+button.word-translation {
+  border: 0;
+  padding: 0;
+  background: none;
+  font-family: var(--r-font);
+  cursor: pointer;
+}
+.word-detail-sheet .sheet-surface {
+  touch-action: auto;
+}
+.word-detail-sheet .detail-word-heading {
+  touch-action: none;
+}
+.word-detail-sheet .sheet-body {
+  overscroll-behavior: contain;
+}
+.wrong-panel.empty-panel {
+  min-height: calc(100svh - var(--header-h) - var(--nav-h) - 32px);
+  padding-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wrong-panel .list-empty {
+  min-height: 0;
+  width: 100%;
+  text-align: center;
+}
+.wrong-heading {
+  justify-content: center;
+}
+.ielts-app [role='button'] {
+  transition: transform 0.16s var(--r-spring);
+}
+.ielts-app [role='button']:active {
+  transform: scale(0.96);
+}
+.ielts-sheet::backdrop,
+.vocabulary-detail::backdrop {
+  animation-timing-function: var(--r-spring);
+}
+.vocabulary-detail[open] {
+  animation: floating-in 0.3s var(--r-spring) both;
+}
+.vocabulary-detail.vocabulary-closing {
+  animation: floating-out 0.2s var(--r-spring) both;
+}
+
+@keyframes arc-draw {
+  from {
+    stroke-dashoffset: var(--arc-length);
+  }
+}
+.topic-menu.open .header-link-button:active {
+  transform: rotate(-45deg) scale(0.96);
+}
+.study-menu.open .header-link-button:active {
+  transform: rotate(-90deg) scale(0.96);
+}

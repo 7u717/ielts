@@ -1,4 +1,4 @@
-const { headerAction, startStudy } = require('./mobile-actions.cjs')
+const { headerAction, startStudy, closeWordDetails } = require('./mobile-actions.cjs')
 // Real Chromium media playback against a local WAV fixture at the HTTPS dictionary URL.
 // This verifies playback/gesture plumbing, not external Youdao availability or physical iPhone output.
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright')
@@ -174,6 +174,7 @@ async function nativeType(page, text) {
     const word = (await page.locator('#word-wrap').innerText()).replace(/\s/g, '')
     let count = (await primary()).length
     await page.locator('#word-wrap').click()
+    await closeWordDetails(page)
     await page.waitForTimeout(200)
     assert.ok((await primary()).length > count, 'word tap plays audio')
     const box = await page.locator('#word-wrap').boundingBox()
@@ -195,6 +196,7 @@ async function nativeType(page, text) {
     await page.waitForTimeout(700)
     assert.equal((await primary()).length, count, 'automatic sound off stays silent on the next word')
     await page.locator('#word-wrap').click()
+    await closeWordDetails(page)
     await page.waitForTimeout(200)
     assert.ok((await primary()).length > count, 'manual word taps still work when automatic sound is off')
     await headerAction(page, '偏好设置')

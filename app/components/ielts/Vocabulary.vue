@@ -9,6 +9,8 @@ const speak = usePlayWordAudio()
 const detail = ref<Word | null>(null)
 const popup = ref<HTMLDialogElement>()
 const lastWord = ref('')
+const closing = ref(false)
+let closeTimer: ReturnType<typeof setTimeout> | undefined
 let hold: ReturnType<typeof setTimeout> | undefined
 let held = false,
   moved = false,
@@ -17,6 +19,8 @@ let held = false,
   suppressClick = false
 async function show(word: Word) {
   haptic()
+  clearTimeout(closeTimer)
+  closing.value = false
   detail.value = word
   await nextTick()
   if (props.open && !popup.value?.open) popup.value?.showModal()
@@ -61,7 +65,16 @@ function cancel() {
   suppressClick = true
 }
 function close() {
-  popup.value?.close()
+  if (!popup.value?.open || closing.value) return
+  closing.value = true
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  closeTimer = setTimeout(
+    () => {
+      popup.value?.close()
+      closing.value = false
+    },
+    reduced ? 0 : 200
+  )
 }
 watch(
   () => props.open,
@@ -73,7 +86,8 @@ watch(
 )
 onBeforeUnmount(() => {
   clearTimeout(hold)
-  close()
+  clearTimeout(closeTimer)
+  popup.value?.close()
 })
 </script>
 <template>
@@ -120,6 +134,8 @@ onBeforeUnmount(() => {
     <dialog
       ref="popup"
       class="vocabulary-detail"
+      :class="{ 'vocabulary-closing': closing }"
+      @cancel.prevent="close"
       :aria-label="detail?.word || '单词详情'"
       @close="detail = null"
       @click="

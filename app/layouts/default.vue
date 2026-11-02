@@ -17,7 +17,7 @@ onMounted(() => {
   void init()
 })
 function tap(e: MouseEvent) {
-  if ((e.target as HTMLElement).closest('button, a, select, summary')) haptic()
+  if ((e.target as HTMLElement).closest('button, a, select, summary, [role=button]')) haptic()
 }
 </script>
 <template>

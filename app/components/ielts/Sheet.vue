@@ -2,7 +2,13 @@
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import Icon from './Icon.vue'
 import { haptic } from '@/core/ielts/ui'
-const props = defineProps<{ open: boolean; title: string; minimal?: boolean; floating?: boolean }>()
+const props = defineProps<{
+  open: boolean
+  title: string
+  minimal?: boolean
+  floating?: boolean
+  draggable?: boolean
+}>()
 const emit = defineEmits<{ close: [] }>()
 const dialog = ref<HTMLDialogElement>()
 const closing = ref(false)
@@ -54,6 +60,7 @@ function animationEnd(event: AnimationEvent) {
   if (!event.pseudoElement && !closing.value) entered.value = true
 }
 function down(e: PointerEvent) {
+  if ((e.target as HTMLElement).closest('button, input, textarea, a, [role=button]')) return
   entered.value = true
   startY = e.clientY
   tracking.value = true
@@ -104,8 +111,20 @@ onBeforeUnmount(() => {
       }
     "
   >
-    <div class="sheet-surface">
-      <div class="sheet-grab" @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="cancelDrag">
+    <div
+      class="sheet-surface"
+      @pointerdown="props.draggable && down($event)"
+      @pointermove="props.draggable && move($event)"
+      @pointerup="props.draggable && up()"
+      @pointercancel="props.draggable && cancelDrag()"
+    >
+      <div
+        class="sheet-grab"
+        @pointerdown.stop="down"
+        @pointermove.stop="move"
+        @pointerup.stop="up"
+        @pointercancel.stop="cancelDrag"
+      >
         <i />
       </div>
       <div v-if="!minimal" class="sheet-head">

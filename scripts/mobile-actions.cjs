@@ -13,4 +13,12 @@ async function startStudy(page) {
   await overview.locator('.overview-start').click()
   await page.waitForURL('**/practice-words/**')
 }
-module.exports = { headerAction, startStudy }
+async function closeWordDetails(page) {
+  const detail = page.locator('.word-detail-sheet')
+  if (await detail.isVisible()) {
+    await page.mouse.click(8, 100)
+    await detail.waitFor({ state: 'hidden' })
+    await page.waitForTimeout(230)
+  }
+}
+module.exports = { headerAction, startStudy, closeWordDetails }

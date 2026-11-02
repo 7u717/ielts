@@ -123,24 +123,25 @@ async function skip(page) {
       const overview = page.getByRole('dialog', { name: '学习概览', exact: true })
       await overview.waitFor()
       await page.waitForTimeout(450)
-      assert.equal(
-        await overview.getByRole('progressbar', { name: '本话题已学进度' }).getAttribute('aria-valuenow'),
-        '6'
-      )
-      assert.equal(
-        await overview.getByRole('progressbar', { name: '本话题待复习比例' }).getAttribute('aria-valuenow'),
-        '1'
-      )
-      assert.ok(!/\d/.test(await overview.innerText()))
-      assert.equal(
-        await overview
-          .getByRole('progressbar', { name: '本话题已学进度' })
-          .locator('i')
-          .evaluate(el => getComputedStyle(el).transform),
-        'matrix(0.25, 0, 0, 1, 0, 0)'
-      )
+      const discBox = await overview.boundingBox()
+      assert.equal(discBox.width, 314)
+      assert.equal(discBox.height, 314)
+      assert.ok(Math.abs(discBox.y + 157 - (ring.y + ring.height / 2)) < 1)
+      assert.equal(await overview.evaluate(el => getComputedStyle(el).borderRadius), '50%')
+      assert.equal(await overview.evaluate(el => getComputedStyle(el).boxShadow), 'none')
+      assert.equal(await overview.locator('.ring-arc').count(), 2)
+      assert.equal(await page.locator('.ring-origin, .ring-end-glow').count(), 0)
       await page.screenshot({ path: `${output}/overview-${scheme}-390.png`, fullPage: true })
       await page.mouse.click(10, 110)
+      await overview.waitFor({ state: 'hidden' })
+      await page.locator('.hero-ring-button').click()
+      await overview.waitFor()
+      await page.waitForTimeout(450)
+      const discHeading = await overview.locator('h2').boundingBox()
+      await page.mouse.move(discHeading.x + discHeading.width / 2, discHeading.y + 5)
+      await page.mouse.down()
+      await page.mouse.move(discHeading.x + discHeading.width / 2, discHeading.y + 135, { steps: 8 })
+      await page.mouse.up()
       await overview.waitFor({ state: 'hidden' })
       await page.getByRole('button', { name: '环境词表', exact: true }).click()
       const vocab = page.getByRole('dialog', { name: '环境', exact: true })
@@ -172,8 +173,26 @@ async function skip(page) {
       assert.equal(await example.evaluate(el => getComputedStyle(el).fontSize), '15px')
       assert.equal(await example.evaluate(el => getComputedStyle(el).webkitLineClamp), '2')
       const stage = await page.locator('.word-stage').boundingBox()
-      assert.ok(Math.abs(stage.y + stage.height / 2 - 844 * 0.39) < 2)
+      assert.ok(Math.abs(stage.y + stage.height / 2 - (844 + 57) / 2) < 2)
       await page.screenshot({ path: `${output}/learning-${scheme}-390.png`, fullPage: true })
+      const progress = await page.getByRole('progressbar', { name: '本组学习进度' }).boundingBox()
+      assert.equal(progress.y, 57)
+      assert.equal(progress.width, 326)
+      await page.locator('#word-wrap').click()
+      await page.locator('.word-detail-sheet').waitFor()
+      await page.waitForTimeout(400)
+      await page.screenshot({ path: `${output}/details-${scheme}-390.png`, fullPage: true })
+      await page.mouse.click(8, 100)
+      await page.locator('.word-detail-sheet').waitFor({ state: 'hidden' })
+      await page.getByRole('button', { name: '查看释义详情', exact: true }).click()
+      await page.locator('.word-detail-sheet').waitFor()
+      await page.waitForTimeout(400)
+      const heading = await page.locator('.word-detail-sheet .detail-word-heading').boundingBox()
+      await page.mouse.move(heading.x + heading.width / 2, heading.y + 5)
+      await page.mouse.down()
+      await page.mouse.move(heading.x + heading.width / 2, heading.y + 135, { steps: 8 })
+      await page.mouse.up()
+      await page.locator('.word-detail-sheet').waitFor({ state: 'hidden' })
       await example.click()
       const detail = page.locator('.word-detail-sheet')
       await detail.waitFor()
@@ -204,12 +223,15 @@ async function skip(page) {
       }
       await page.getByRole('button', { name: '错词', exact: true }).click()
       await page.getByText('还没有错词', { exact: true }).waitFor()
+      assert.equal(await page.getByText('全部错词', { exact: true }).count(), 0)
+      assert.equal(await page.getByRole('button', { name: '巩固错词', exact: true }).count(), 0)
+      await page.screenshot({ path: `${output}/wrong-empty-${scheme}-390.png`, fullPage: true })
       await page.getByRole('button', { name: '复习', exact: true }).click()
       await page.getByRole('button', { name: '开始复习', exact: true }).waitFor()
       assert.deepEqual(errors, [])
       assert.ok((await page.evaluate(() => window.haptics)).every(n => n === 8))
       console.log(
-        `PASS: ${scheme} single dock, 274px centered ring, topic icons/hold/selection, real learned/due values, two-line examples, first-three hints, no tool blur, uniform gloss rows, preserved notes`
+        `PASS: ${scheme} dual clockwise arcs without endpoints, source-aligned circular glass disc, header progress, centered study cluster, tap/drag/outside word details, centered empty wrong state, unchanged topic menu and preserved notes`
       )
       await ctx.close()
     }

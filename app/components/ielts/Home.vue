@@ -36,6 +36,12 @@ const hasSession = ref(false)
 const wordDetails = ref<Word | null>(null)
 const vocabularyOpen = ref(false)
 const overviewOpen = ref(false)
+const discY = ref(0)
+function openOverview(event: MouseEvent) {
+  const box = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  discY.value = box.y + box.height / 2
+  overviewOpen.value = true
+}
 const topic = computed(() => topics.find(t => t.id === store.sdict.id) || topics[0])
 const topicProgress = (id: string) => {
   const dict = store.word.bookList.find(d => d.id === id)
@@ -184,13 +190,18 @@ function up(e: PointerEvent) {
         <div class="overview-hero">
           <button
             class="hero-ring-button"
+            :class="{ 'ring-expanded': overviewOpen }"
             :disabled="busy || !!error"
             :aria-label="hasSession ? '继续学习' : '开始学习'"
             aria-haspopup="dialog"
-            @click="overviewOpen = true"
+            @click="openOverview"
           >
             <Transition name="hero-theme" mode="out-in"
-              ><Ring :key="topic.id" :progress="topicProgress(topic.id)" :size="274"
+              ><Ring
+                :key="topic.id"
+                :progress="topicProgress(topic.id)"
+                :review-progress="dueReviewCount / topic.length"
+                :size="274"
                 ><span class="hero-topic">{{ topic.name }}</span></Ring
               ></Transition
             >
@@ -206,10 +217,11 @@ function up(e: PointerEvent) {
         role="tabpanel"
         :aria-labelledby="'tab-' + tab"
         class="word-list-panel"
+        :class="{ 'wrong-panel': tab === 'wrong', 'empty-panel': !list.length }"
       >
-        <div class="list-heading">
-          <button class="list-context" @click="topicsOpen = true">
-            {{ tab === 'wrong' ? '全部错词' : topic.name }}<Icon v-if="tab === 'review'" name="down" /></button
+        <div v-if="tab !== 'wrong' || list.length" class="list-heading" :class="{ 'wrong-heading': tab === 'wrong' }">
+          <button v-if="tab !== 'wrong'" class="list-context" @click="topicsOpen = true">
+            {{ topic.name }}<Icon v-if="tab === 'review'" name="down" /></button
           ><button
             class="icon-button"
             :aria-label="tab === 'wrong' ? '巩固错词' : '开始复习'"
@@ -256,35 +268,35 @@ function up(e: PointerEvent) {
           @close="topicsOpen = false"
           @select="chooseFromMenu" /></Teleport
     ></ClientOnly>
-    <Sheet :open="overviewOpen" title="学习概览" minimal floating class="study-overview" @close="overviewOpen = false">
+    <Sheet
+      :open="overviewOpen"
+      title="学习概览"
+      minimal
+      floating
+      draggable
+      class="study-overview ring-disc"
+      :style="{ '--disc-y': discY + 'px' }"
+      @close="overviewOpen = false"
+    >
       <h2>{{ topic.name }}</h2>
-      <div class="overview-meters topic-meters">
-        <div class="topic-meter-row">
-          <Icon name="check" />
-          <div
-            class="overview-meter"
-            role="progressbar"
-            aria-label="本话题已学进度"
-            :aria-valuenow="store.sdict.complete ? topic.length : store.sdict.lastLearnIndex"
-            :aria-valuemax="topic.length"
-            aria-valuemin="0"
-          >
-            <i :style="{ transform: `scaleX(${topicProgress(topic.id)})` }" />
-          </div>
-        </div>
-        <div class="topic-meter-row">
-          <Icon name="review" />
-          <div
-            class="overview-meter"
-            role="progressbar"
-            aria-label="本话题待复习比例"
-            :aria-valuenow="dueReviewCount"
-            :aria-valuemax="topic.length"
-            aria-valuemin="0"
-          >
-            <i :style="{ transform: `scaleX(${Math.min(1, dueReviewCount / topic.length)})` }" />
-          </div>
-        </div>
+      <div class="disc-progress">
+        <Ring :progress="topicProgress(topic.id)" :review-progress="dueReviewCount / topic.length" :size="104" />
+        <span
+          class="sr-only"
+          role="progressbar"
+          aria-label="本话题已学进度"
+          :aria-valuenow="store.sdict.complete ? topic.length : store.sdict.lastLearnIndex"
+          :aria-valuemax="topic.length"
+          aria-valuemin="0"
+        />
+        <span
+          class="sr-only"
+          role="progressbar"
+          aria-label="本话题待复习比例"
+          :aria-valuenow="dueReviewCount"
+          :aria-valuemax="topic.length"
+          aria-valuemin="0"
+        />
       </div>
       <button class="overview-start" :aria-label="hasSession ? '继续学习' : '开始学习'" :disabled="busy" @click="start">
         <Icon name="play" />

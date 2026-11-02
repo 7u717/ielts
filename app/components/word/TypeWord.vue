@@ -106,9 +106,9 @@ function tapWord() {
     return
   }
   play()
-  meaning.value = !meaning.value
-  if (meaning.value) controller.checkMaskedRevealWrong(!!typing.value?.isWordRight())
-  focusPracticeKeyboard()
+  meaning.value = true
+  controller.checkMaskedRevealWrong(!!typing.value?.isWordRight())
+  detailsOpen.value = true
 }
 function onWrong() {
   haptic()
@@ -260,7 +260,7 @@ function saveNote() {
             class="practice-word-target"
             role="button"
             tabindex="0"
-            aria-label="单词，点按释义，长按发音，左滑跳过"
+            aria-label="单词，点按详情，长按发音，左滑跳过"
             :style="{ fontSize: size + 'px' }"
             @pointerdown="down"
             @pointermove="move"
@@ -289,9 +289,14 @@ function saveNote() {
           </div>
           <div class="word-meaning-slot">
             <Transition name="meaning"
-              ><p v-if="meaning || controller.showWordResult.value" class="word-translation">
+              ><button
+                v-if="meaning || controller.showWordResult.value"
+                class="word-translation"
+                aria-label="查看释义详情"
+                @click="tapWord"
+              >
                 {{ word.trans.map(t => t.cn).join('；') }}
-              </p></Transition
+              </button></Transition
             >
           </div>
           <div
@@ -330,6 +335,7 @@ function saveNote() {
       :title="effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"
       minimal
       floating
+      draggable
       class="word-detail-sheet"
       @close="closeDetails"
     >

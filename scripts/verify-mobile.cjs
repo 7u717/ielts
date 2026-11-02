@@ -1,4 +1,4 @@
-const { headerAction, startStudy } = require('./mobile-actions.cjs')
+const { headerAction, startStudy, closeWordDetails } = require('./mobile-actions.cjs')
 /* Run against `pnpm dev` or the generated /ielts/ site.
  * npm install --prefix /tmp/ielts-browser playwright
  * PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright node scripts/verify-mobile.cjs
@@ -178,7 +178,9 @@ async function uiAndLearning() {
   const second = await word(page)
   assert.notEqual(second, first, 'correct answer advances automatically')
   await page.locator('#word-wrap').click()
+  await closeWordDetails(page)
   await page.locator('#word-wrap').click()
+  await closeWordDetails(page)
   const target = await page.locator('#word-wrap').boundingBox()
   await page.mouse.move(target.x + target.width / 2, target.y + 10)
   await page.mouse.down()
