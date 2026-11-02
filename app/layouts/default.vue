@@ -14,7 +14,6 @@ const store = useBaseStore()
 const { preferencesOpen, tab } = useIeltsUI()
 const practicing = computed(() => route.path.startsWith('/practice-words'))
 onMounted(() => {
-  document.documentElement.className = 'dark'
   void init()
 })
 function tap(e: MouseEvent) {

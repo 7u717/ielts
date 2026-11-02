@@ -21,6 +21,7 @@ import Tabs from './Tabs.vue'
 import WordRow from './WordRow.vue'
 import TopicMenu from './TopicMenu.vue'
 import Vocabulary from './Vocabulary.vue'
+import ModeSwitch from './ModeSwitch.vue'
 const store = useBaseStore()
 const settings = useSettingStore()
 const persistence = usePracticeWordPersistence()
@@ -35,6 +36,7 @@ const error = ref('')
 const hasSession = ref(false)
 const wordDetails = ref<Word | null>(null)
 const vocabularyOpen = ref(false)
+const overviewOpen = ref(false)
 const progressPeek = ref('')
 let progressTimer: ReturnType<typeof setTimeout> | undefined
 function peekProgress(t: (typeof topics)[number]) {
@@ -119,6 +121,7 @@ async function chooseMode(next: WordPracticeMode) {
 }
 async function start() {
   if (busy.value || error.value) return
+  overviewOpen.value = false
   busy.value = true
   try {
     if (tab.value === 'wrong') {
@@ -208,39 +211,28 @@ function grabUp(e: PointerEvent) {
             class="hero-ring-button"
             :disabled="busy || !!error"
             :aria-label="hasSession ? '继续学习' : '开始学习'"
-            @click="start"
+            aria-haspopup="dialog"
+            @click="overviewOpen = true"
           >
-            <Ring :progress="today / dailyGoal"
-              ><span class="hero-topic">{{ topic.name }}</span
-              ><span class="hero-meta"
-                >今日 {{ today }}/{{ dailyGoal }} · 已学 {{ store.sdict.lastLearnIndex }}/{{ topic.length }}</span
-              ><span v-if="hasSession" class="resume-label">继续 <Icon name="arrow" /></span
-            ></Ring>
-          </button>
-          <div class="study-modes" aria-label="学习模式">
-            <button
-              v-for="m in [
-                { id: WordPracticeMode.System, name: '学习' },
-                { id: WordPracticeMode.Free, name: '打字' },
-                { id: WordPracticeMode.ListenOnly, name: '听写' },
-              ]"
-              :key="m.id"
-              :aria-pressed="mode === m.id"
-              :disabled="busy"
-              @click="chooseMode(m.id)"
+            <Transition name="hero-theme" mode="out-in"
+              ><Ring :key="topic.id" :progress="today / dailyGoal" :size="250"
+                ><span class="hero-topic">{{ topic.name }}</span></Ring
+              ></Transition
             >
-              {{ m.name }}
+          </button>
+          <div class="mode-controls">
+            <span aria-hidden="true" />
+            <ModeSwitch :model-value="mode" :disabled="busy" @update:model-value="chooseMode" />
+            <button
+              class="icon-button vocabulary-entry-button"
+              :aria-label="topic.name + '词表，上拉展开'"
+              @click="vocabularyOpen = true"
+              @pointerdown.stop="grabDown"
+              @pointerup.stop="grabUp"
+            >
+              <Icon name="list" />
             </button>
           </div>
-          <button
-            class="overview-grab"
-            :aria-label="topic.name + '词表，上拉展开'"
-            @click="vocabularyOpen = true"
-            @pointerdown.stop="grabDown"
-            @pointerup.stop="grabUp"
-          >
-            <i />
-          </button>
         </div>
         <div class="topic-progress">
           <div class="topic-strip" data-horizontal>
@@ -253,7 +245,7 @@ function grabUp(e: PointerEvent) {
               :disabled="busy"
               @click="peekProgress(t)"
             >
-              <Ring :progress="topicProgress(t.id)" :size="76" small
+              <Ring :progress="topicProgress(t.id)" :size="38" small
                 ><Transition name="meaning"
                   ><span v-if="progressPeek === t.id" class="ring-peek"
                     >{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span
@@ -314,6 +306,26 @@ function grabUp(e: PointerEvent) {
           @close="topicsOpen = false"
           @select="chooseFromMenu" /></Teleport
     ></ClientOnly>
+    <Sheet :open="overviewOpen" title="学习概览" minimal floating class="study-overview" @close="overviewOpen = false">
+      <h2>{{ topic.name }}</h2>
+      <div class="overview-facts">
+        <p>
+          <span>今日</span
+          ><strong
+            >{{ today }}<small> / {{ dailyGoal }}</small></strong
+          >
+        </p>
+        <p>
+          <span>已学</span
+          ><strong
+            >{{ store.sdict.lastLearnIndex }}<small> / {{ topic.length }}</small></strong
+          >
+        </p>
+      </div>
+      <button class="overview-start" :aria-label="hasSession ? '继续学习' : '开始学习'" :disabled="busy" @click="start">
+        <Icon name="play" />
+      </button>
+    </Sheet>
     <Sheet :open="vocabularyOpen" :title="topic.name" minimal class="vocabulary-sheet" @close="vocabularyOpen = false">
       <template #heading
         ><div class="vocabulary-heading">

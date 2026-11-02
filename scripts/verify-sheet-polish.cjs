@@ -1,3 +1,4 @@
+const { startStudy } = require('./mobile-actions.cjs')
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
@@ -8,6 +9,7 @@ fs.mkdirSync(output, { recursive: true })
   const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox'] })
   try {
     const ctx = await browser.newContext({
+      colorScheme: 'dark',
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 2,
       isMobile: true,

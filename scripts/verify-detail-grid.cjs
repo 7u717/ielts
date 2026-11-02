@@ -1,5 +1,5 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright')
-const { headerAction } = require('./mobile-actions.cjs')
+const { headerAction, startStudy } = require('./mobile-actions.cjs')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const output = process.env.IELTS_SCREENSHOTS || '/tmp/ielts-detail-grid'
@@ -9,6 +9,7 @@ fs.mkdirSync(output, { recursive: true })
   const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox'] })
   try {
     const ctx = await browser.newContext({
+      colorScheme: 'dark',
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 2,
       isMobile: true,
@@ -59,7 +60,7 @@ fs.mkdirSync(output, { recursive: true })
       0,
       'zero progress has no orphan endpoint or arc'
     )
-    assert.equal(await page.locator('.overview-grab').count(), 1)
+    assert.equal(await page.locator('.vocabulary-entry-button').count(), 1)
     await page.screenshot({ path: `${output}/home-six-390.png`, fullPage: true })
     await page.getByRole('button', { name: '环境词表，上拉展开', exact: true }).click()
     const vocabulary = page.getByRole('dialog', { name: '环境', exact: true })
@@ -81,7 +82,7 @@ fs.mkdirSync(output, { recursive: true })
     assert.equal(await entry.getAttribute('aria-expanded'), 'false')
     await page.keyboard.press('Escape')
     await vocabulary.waitFor({ state: 'hidden' })
-    await page.locator('.hero-ring-button').click()
+    await startStudy(page)
     await page.waitForURL('**/practice-words/**')
     await page.locator('#word-wrap').waitFor()
     assert.equal(await page.locator('.practice-header .header-actions > button').count(), 0)
@@ -135,7 +136,7 @@ fs.mkdirSync(output, { recursive: true })
     const prefs = page.getByRole('dialog', { name: '偏好', exact: true })
     await prefs.waitFor()
     await page.waitForTimeout(450)
-    assert.equal(await prefs.evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(22, 22, 24, 0.96)')
+    assert.equal(await prefs.evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(22, 22, 24, 0.6)')
     await page.screenshot({ path: `${output}/preferences-390.png`, fullPage: true })
     await page.keyboard.press('Escape')
     await prefs.waitFor({ state: 'hidden' })
@@ -143,7 +144,7 @@ fs.mkdirSync(output, { recursive: true })
     await page.locator('.hero-ring-button:enabled').waitFor()
     await page.reload({ waitUntil: 'networkidle' })
     await page.locator('.hero-ring-button:enabled').waitFor()
-    await page.locator('.hero-ring-button').click()
+    await startStudy(page)
     await page.locator('#word-wrap').waitFor()
     await page.getByRole('button', { name: '单词详情', exact: true }).click()
     await detail.waitFor()

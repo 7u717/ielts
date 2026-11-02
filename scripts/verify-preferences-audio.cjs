@@ -1,4 +1,4 @@
-const { headerAction } = require('./mobile-actions.cjs')
+const { headerAction, startStudy } = require('./mobile-actions.cjs')
 // Real Chromium media playback against a local WAV fixture at the HTTPS dictionary URL.
 // This verifies playback/gesture plumbing, not external Youdao availability or physical iPhone output.
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright')
@@ -59,6 +59,7 @@ async function nativeType(page, text) {
   })
   try {
     const ctx = await browser.newContext({
+      colorScheme: 'dark',
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 2,
       isMobile: true,
@@ -160,7 +161,7 @@ async function nativeType(page, text) {
     assert.equal(saved.val.word.bookList.find(d => d.id === 'ielts-environment').lastLearnIndex, 0)
     assert.equal(saved.val.noteData.preferenceSentinel, '已有笔记')
     assert.equal(saved.val.fsrsData.preferenceSentinel.reps, 3)
-    await page.getByRole('button', { name: '开始学习', exact: true }).click()
+    await startStudy(page)
     await page.waitForURL('**/practice-words/**')
     await page.locator('#word-wrap').waitFor()
     await page.waitForTimeout(500)
@@ -226,6 +227,7 @@ async function nativeType(page, text) {
     await topics.getByRole('menuitemradio', { name: '教育', exact: true }).click()
     await topics.waitFor({ state: 'hidden' })
     await page.getByRole('button', { name: '开始学习', exact: true }).waitFor()
+    await page.waitForFunction(() => document.querySelector('.hero-topic')?.textContent.includes('教育'))
     assert.match(await page.locator('.hero-ring-button').innerText(), /教育/)
     await avatar.click()
     await sheet.waitFor()

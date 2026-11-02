@@ -73,7 +73,7 @@ onBeforeUnmount(() => {
           :style="{ '--x': '0px', '--y': 52 + index * 46 + 'px', '--delay': index * 0.05 + 's' }"
           @click="choose(action.id)"
         >
-          <Icon :name="action.icon" /><span>{{ action.name }}</span>
+          <Icon :name="action.icon" />
         </button>
       </div>
     </div>

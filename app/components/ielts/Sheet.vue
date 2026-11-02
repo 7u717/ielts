@@ -2,7 +2,7 @@
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import Icon from './Icon.vue'
 import { haptic } from '@/core/ielts/ui'
-const props = defineProps<{ open: boolean; title: string; minimal?: boolean }>()
+const props = defineProps<{ open: boolean; title: string; minimal?: boolean; floating?: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 const dialog = ref<HTMLDialogElement>()
 const closing = ref(false)
@@ -24,7 +24,7 @@ function beginClose(notify = false) {
   if (closing.value || !dialog.value?.open) return
   closing.value = true
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  timer = setTimeout(() => finishClose(notify), reduced ? 0 : props.minimal ? 380 : 180)
+  timer = setTimeout(() => finishClose(notify), reduced ? 0 : props.floating ? 200 : props.minimal ? 280 : 180)
 }
 function close() {
   beginClose(true)
@@ -57,7 +57,14 @@ function down(e: PointerEvent) {
   ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
 }
 function move(e: PointerEvent) {
-  if (tracking.value) drag.value = Math.max(0, e.clientY - startY)
+  if (tracking.value) {
+    const distance = Math.max(0, e.clientY - startY)
+    drag.value = distance / (1 + distance / 360)
+  }
+}
+function cancelDrag() {
+  tracking.value = false
+  drag.value = 0
 }
 function up() {
   if (!tracking.value) return
@@ -81,6 +88,7 @@ onBeforeUnmount(() => {
       'sheet-closing': closing,
       'sheet-dragging': tracking,
       'preference-sheet': minimal,
+      'floating-sheet': floating,
       'sheet-entered': entered,
     }"
     :aria-label="title"
@@ -94,7 +102,9 @@ onBeforeUnmount(() => {
     "
   >
     <div class="sheet-surface">
-      <div class="sheet-grab" @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up"><i /></div>
+      <div class="sheet-grab" @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="cancelDrag">
+        <i />
+      </div>
       <div v-if="!minimal" class="sheet-head">
         <h2>{{ title }}</h2>
         <button class="icon-button" aria-label="关闭" @click="close">

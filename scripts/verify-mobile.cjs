@@ -1,4 +1,4 @@
-const { headerAction } = require('./mobile-actions.cjs')
+const { headerAction, startStudy } = require('./mobile-actions.cjs')
 /* Run against `pnpm dev` or the generated /ielts/ site.
  * npm install --prefix /tmp/ielts-browser playwright
  * PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright node scripts/verify-mobile.cjs
@@ -13,6 +13,7 @@ fs.mkdirSync(shots, { recursive: true })
 let browser
 async function context() {
   const ctx = await browser.newContext({
+    colorScheme: 'dark',
     viewport: { width: 390, height: 844 },
     deviceScaleFactor: 2,
     isMobile: true,
@@ -157,7 +158,7 @@ async function uiAndLearning() {
   await page.getByRole('button', { name: '选择主题', exact: true }).click()
   await menu.waitFor({ state: 'hidden' })
   await page.waitForTimeout(300)
-  await page.getByRole('button', { name: '开始学习', exact: true }).click()
+  await startStudy(page)
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   const first = await word(page)
@@ -202,7 +203,7 @@ async function uiAndLearning() {
   await menu.waitFor({ state: 'hidden' })
   await page.getByRole('button', { name: '听写', exact: true }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await page.getByRole('button', { name: '开始学习', exact: true }).click()
+  await startStudy(page)
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   await page.getByRole('button', { name: '播放发音', exact: true }).click()
@@ -217,7 +218,7 @@ async function uiAndLearning() {
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
   await page.getByRole('button', { name: '学习', exact: true }).click()
-  await page.getByRole('button', { name: '继续学习', exact: true }).click()
+  await startStudy(page)
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   assert.equal(await word(page), third, 'System mode 0 session is restored')
@@ -282,7 +283,7 @@ async function legacyAndReview() {
   assert.equal(after.val.word.bookList.find(d => d.id === 1).lastLearnIndex, 137)
   assert.deepEqual(after.val.fsrsData.biodiversity, saved.val.fsrsData.biodiversity)
   assert.equal(after.val.noteData.legacy, '保留已有笔记')
-  await page.getByRole('button', { name: '开始学习', exact: true }).click()
+  await startStudy(page)
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   const first = await word(page)
@@ -304,7 +305,7 @@ async function legacyAndReview() {
   )
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.getByRole('tab', { name: '学习', exact: true }).click()
-  await page.getByRole('button', { name: '继续学习', exact: true }).click()
+  await startStudy(page)
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   assert.equal(await word(page), next, 'review preserves unfinished new-word session')
@@ -332,7 +333,7 @@ async function completeCycle() {
   await record(page, 'typing-word-dict', JSON.stringify(saved))
   await page.reload({ waitUntil: 'networkidle' })
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await page.getByRole('button', { name: '开始学习', exact: true }).click()
+  await startStudy(page)
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   const phases = new Set()

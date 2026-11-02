@@ -1,3 +1,4 @@
+const { startStudy } = require('./mobile-actions.cjs')
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
@@ -8,6 +9,7 @@ fs.mkdirSync(output, { recursive: true })
   const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox'] })
   try {
     const ctx = await browser.newContext({
+      colorScheme: 'dark',
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 2,
       isMobile: true,
@@ -44,11 +46,11 @@ fs.mkdirSync(output, { recursive: true })
     const prefs = page.getByRole('dialog', { name: '偏好', exact: true })
     await prefs.waitFor()
     await page.waitForTimeout(450)
-    assert.equal(await prefs.evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(22, 22, 24, 0.96)')
+    assert.equal(await prefs.evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(22, 22, 24, 0.6)')
     await page.screenshot({ path: `${output}/preferences-390.png`, fullPage: true })
     await page.keyboard.press('Escape')
     await prefs.waitFor({ state: 'hidden' })
-    await page.locator('.hero-ring-button').click()
+    await startStudy(page)
     await page.waitForURL('**/practice-words/**')
     await page.locator('#word-wrap').waitFor()
     await page.waitForTimeout(400)
@@ -100,7 +102,7 @@ fs.mkdirSync(output, { recursive: true })
     assert.notEqual((await word.innerText()).replace(/\s/g, ''), first, 'full swipe skips')
     await page.getByRole('link', { name: '保存并返回' }).click()
     await page.locator('.hero-ring-button:enabled').waitFor()
-    await page.locator('.hero-ring-button').click()
+    await startStudy(page)
     await page.locator('#word-wrap').waitFor()
     await page.waitForTimeout(400)
     assert.equal(
