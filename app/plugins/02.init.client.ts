@@ -4,30 +4,10 @@ import { ENV } from '@/core/config/env.ts'
 import { withAppBaseURL } from '@/core/utils/base-url'
 
 export default defineNuxtPlugin(async nuxtApp => {
-  if (
-    !location.href.includes('localhost') &&
-    !location.href.includes('192.168') &&
-    !location.href.includes('172.16') &&
-    !location.href.includes('10.0')
-  ) {
-    ;(function () {
-      var t = document.createElement('script')
-      t.src = ENV.LIBS_URL + 't.js?t=' + Date.now()
-      document.head.appendChild(t)
-    })()
-  }
-
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker
-        .register(withAppBaseURL('/service-worker.js'))
-        .then(registration => {
-          console.log('ServiceWorker registration successful with scope: ', registration.scope)
-        })
-        .catch(error => {
-          console.log('ServiceWorker registration failed: ', error)
-        })
-    })
+  if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    const register = () => navigator.serviceWorker.register(withAppBaseURL('/service-worker.js')).catch(console.error)
+    if (document.readyState === 'complete') void register()
+    else window.addEventListener('load', register, { once: true })
   }
 
   console.json = function (v: any, space = 0) {

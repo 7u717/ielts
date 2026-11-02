@@ -1,0 +1,747 @@
+[
+  {
+    "id": "ielts-economy-globalisation",
+    "word": "globalisation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "全球化"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-inflation",
+    "word": "inflation",
+    "phonetic0": "ɪnˈfleɪʃ(ə)n",
+    "phonetic1": "ɪnˈfleɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "通货膨胀"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Inflation is a constant threat.",
+        "cn": "通货膨胀是一种持续的威胁。"
+      },
+      {
+        "c": "Inflation was running at 26%.",
+        "cn": "通货膨胀达到了26%。"
+      },
+      {
+        "c": "Inflation is in double figures.",
+        "cn": "通货膨胀率达两位数。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "inflation rate",
+        "cn": "通货膨胀率"
+      },
+      {
+        "c": "price inflation",
+        "cn": "物价膨胀"
+      },
+      {
+        "c": "inflation pressure",
+        "cn": "膨胀压力；充气压力；轮胎压力"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-recession",
+    "word": "recession",
+    "phonetic0": "rɪˈseʃ(ə)n",
+    "phonetic1": "rɪˈseʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "经济衰退"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The country was mired in recession.",
+        "cn": "这个国家陷入了经济衰退的困境。"
+      },
+      {
+        "c": "The company has weathered the recession.",
+        "cn": "公司度过了萧条期。"
+      },
+      {
+        "c": "The economy is in recession.",
+        "cn": "经济处于衰退之中。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "economic recession",
+        "cn": "经济衰退"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-investment",
+    "word": "investment",
+    "phonetic0": "ɪnˈvestmənt",
+    "phonetic1": "ɪnˈvestmənt",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "投资"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Training is an investment not a cost.",
+        "cn": "培训是一种投资而不是一种花费。"
+      },
+      {
+        "c": "Investment is all about running risks.",
+        "cn": "投资就是要冒风险。"
+      },
+      {
+        "c": "Investment is becoming a chancy business.",
+        "cn": "投资正在成为一项冒险的事业。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "investment in",
+        "cn": "对……的投资；在……方面投资"
+      },
+      {
+        "c": "foreign investment",
+        "cn": "国外投资"
+      },
+      {
+        "c": "direct investment",
+        "cn": "[经]直接投资"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-entrepreneur",
+    "word": "entrepreneur",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "企业家"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-employment",
+    "word": "employment",
+    "phonetic0": "ɪmˈplɔɪmənt",
+    "phonetic1": "ɪmˈplɔɪmənt",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "就业"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Employment is a very sensitive issue.",
+        "cn": "就业是一个非常敏感的问题。"
+      },
+      {
+        "c": "The terms of employment are negotiable.",
+        "cn": "雇用的条件可以协商。"
+      },
+      {
+        "c": "The government is aiming at full employment.",
+        "cn": "政府在力求达到全面就业。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "obtain employment",
+        "cn": "就业，找到工作"
+      },
+      {
+        "c": "in employment",
+        "cn": "在工作"
+      },
+      {
+        "c": "employment rate",
+        "cn": "就业率；雇用率；人力资源新进率"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-productivity",
+    "word": "productivity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "生产率"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-revenue",
+    "word": "revenue",
+    "phonetic0": "ˈrevənjuː",
+    "phonetic1": "ˈrevənuː",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "收入；收益"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "If they overestimate, they lose revenue.",
+        "cn": "如果他们过高地估算，就会损失收入。"
+      },
+      {
+        "c": "France derives 16% of revenue from air freight.",
+        "cn": "法国国家税收的16%来自于航空货运。"
+      },
+      {
+        "c": "This contract represents 20% of the company's annual revenue.",
+        "cn": "这份合约相当于公司20%的年收入。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "tax revenue",
+        "cn": "税收；赋税收入"
+      },
+      {
+        "c": "sales revenue",
+        "cn": "产品销售收入"
+      },
+      {
+        "c": "revenue and expenditure",
+        "cn": "收支"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-consumption",
+    "word": "consumption",
+    "phonetic0": "kənˈsʌmpʃ(ə)n",
+    "phonetic1": "kənˈsʌmpʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "消费"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Energy consumption rises as countries industrialize.",
+        "cn": "能源消耗随着各国工业化而增加。"
+      },
+      {
+        "c": "Gas and oil consumption always increases in cold weather.",
+        "cn": "燃气和燃油的消耗量在天冷时总会增加。"
+      },
+      {
+        "c": "In the developing world cigarette consumption is increasing.",
+        "cn": "在发展中国家香烟消费正在增长。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "energy consumption",
+        "cn": "[化]能量损耗"
+      },
+      {
+        "c": "power consumption",
+        "cn": "能量功耗"
+      },
+      {
+        "c": "water consumption",
+        "cn": "耗水量"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-expenditure",
+    "word": "expenditure",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "支出"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-subsidy",
+    "word": "subsidy",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "补贴"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-taxation",
+    "word": "taxation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "税收"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-trade",
+    "word": "trade",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "贸易"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-manufacture",
+    "word": "manufacture",
+    "phonetic0": "ˌmænjuˈfæktʃə(r)",
+    "phonetic1": "ˌmænjuˈfæktʃər",
+    "trans": [
+      {
+        "pos": "v.",
+        "cn": "制造"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "They manufacture the class of plastics known as thermoplastic materials.",
+        "cn": "他们生产被称为热塑材料的塑料类制品。"
+      },
+      {
+        "c": "Coca-Cola, Pepsi and Cadbury use franchisers to manufacture, bottle and distribute their products within geographical areas.",
+        "cn": "可口可乐、百事可乐和吉百利公司利用特许经销商在一定的地区内生产、罐装和销售其产品。"
+      },
+      {
+        "c": "Brookman & Langdon were said to manufacture the most desirable pens and these necessarily command astonishingly high prices.",
+        "cn": "据说布鲁克曼兰登公司制造的钢笔最令人满意，而这必然地导致高得惊人的价格。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "manufacture process",
+        "cn": "制造工艺；建造过程"
+      },
+      {
+        "c": "manufacture management",
+        "cn": "制造管理"
+      },
+      {
+        "c": "steel manufacture",
+        "cn": "钢铁工业；炼钢业"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-labour",
+    "word": "labour",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "劳动力；劳动"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-prosperity",
+    "word": "prosperity",
+    "phonetic0": "prɒˈsperəti",
+    "phonetic1": "prɑːˈsperəti",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "繁荣"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Their prosperity depends on export-led growth.",
+        "cn": "他们的繁荣依靠的是出口带来的增长。"
+      },
+      {
+        "c": "Our future prosperity depends on economic growth.",
+        "cn": "我们未来的繁荣昌盛依赖经济的发展。"
+      },
+      {
+        "c": "He was pursuing a utopian dream of world prosperity.",
+        "cn": "他那时在追求一个不切实际的世界繁荣之梦。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-competition",
+    "word": "competition",
+    "phonetic0": "ˌkɒmpəˈtɪʃ(ə)n",
+    "phonetic1": "ˌkɑːmpəˈtɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "竞争"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Competition for jobs is acute.",
+        "cn": "求职竞争非常激烈。"
+      },
+      {
+        "c": "1 000 children entered the competition.",
+        "cn": "1 000名孩子报名参加了比赛。"
+      },
+      {
+        "c": "She won first prize in the competition.",
+        "cn": "她在竞赛中获得头奖。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "market competition",
+        "cn": "市场竞争"
+      },
+      {
+        "c": "fierce competition",
+        "cn": "激烈的竞争"
+      },
+      {
+        "c": "intense competition",
+        "cn": "激烈的竞争"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-commodity",
+    "word": "commodity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "商品"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-demand",
+    "word": "demand",
+    "phonetic0": "dɪˈmɑːnd",
+    "phonetic1": "dɪˈmænd",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "需求"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Demand is outstripping supply.",
+        "cn": "需求快超过供给了。"
+      },
+      {
+        "c": "Demand is outpacing production.",
+        "cn": "需求正在超过生产。"
+      },
+      {
+        "c": "I demand to see the manager.",
+        "cn": "我坚决要求见经理。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "demand of",
+        "cn": "v. 要求；向…索取"
+      },
+      {
+        "c": "demand for",
+        "cn": "对…的需求"
+      },
+      {
+        "c": "market demand",
+        "cn": "市场需求"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-supply",
+    "word": "supply",
+    "phonetic0": "səˈplaɪ",
+    "phonetic1": "səˈplaɪ",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "供应"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Demand is outstripping supply.",
+        "cn": "需求快超过供给了。"
+      },
+      {
+        "c": "Prices change according to supply and demand.",
+        "cn": "价格根据供应量和需求量而变化。"
+      },
+      {
+        "c": "The electricity supply here is quite erratic.",
+        "cn": "这里的电力供应相当不稳定。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "power supply",
+        "cn": "电源；电源供应器"
+      },
+      {
+        "c": "supply chain",
+        "cn": "供应链；供给链；供需链"
+      },
+      {
+        "c": "water supply",
+        "cn": "供水系统；水源"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-affordable",
+    "word": "affordable",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "负担得起的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-incentive",
+    "word": "incentive",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "激励；刺激"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-enterprise",
+    "word": "enterprise",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "企业"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-economy-fluctuation",
+    "word": "fluctuation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "波动"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  }
+]

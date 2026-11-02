@@ -1,0 +1,664 @@
+[
+  {
+    "id": "ielts-education-curriculum",
+    "word": "curriculum",
+    "phonetic0": "kəˈrɪkjələm",
+    "phonetic1": "kəˈrɪkjələm",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "课程体系"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The curriculum needs breadth and balance.",
+        "cn": "课程设置应该内容广泛而且均衡。"
+      },
+      {
+        "c": "The curriculum was too narrow and too rigid.",
+        "cn": "课程设置过于狭窄和死板。"
+      },
+      {
+        "c": "The subjects of the curriculum form a coherent whole.",
+        "cn": "课程中的科目构成了一个连贯的整体。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "curriculum reform",
+        "cn": "课程改革"
+      },
+      {
+        "c": "curriculum design",
+        "cn": "课程设计"
+      },
+      {
+        "c": "curriculum development",
+        "cn": "课程开发；课程编制"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-literacy",
+    "word": "literacy",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "读写能力"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-tuition",
+    "word": "tuition",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "学费；教学"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-vocational",
+    "word": "vocational",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "职业的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-compulsory",
+    "word": "compulsory",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "义务的；强制的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-scholarship",
+    "word": "scholarship",
+    "phonetic0": "ˈskɒləʃɪp",
+    "phonetic1": "ˈskɑːlərʃɪp",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "奖学金"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "He went to drama school on a scholarship.",
+        "cn": "他靠奖学金上了戏剧学校。"
+      },
+      {
+        "c": "But this does not vitiate his scholarship.",
+        "cn": "但这不会威胁到他的奖学金。"
+      },
+      {
+        "c": "He got a scholarship to the Pratt Institute of Art.",
+        "cn": "他得到了一笔普拉特艺术学院的奖学金。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-assessment",
+    "word": "assessment",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "评估"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-qualification",
+    "word": "qualification",
+    "phonetic0": "ˌkwɒlɪfɪˈkeɪʃ(ə)n",
+    "phonetic1": "ˌkwɑːlɪfɪˈkeɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "资格；资历"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The plan was approved without qualification.",
+        "cn": "这项计划获得无条件批准。"
+      },
+      {
+        "c": "The qualification has gained currency all over the world.",
+        "cn": "这种资格在全世界都得到了普遍认可。"
+      },
+      {
+        "c": "There are two types of qualification—either is acceptable.",
+        "cn": "有两种资格证明—任何一种都可以接受。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "qualification certificate",
+        "cn": "资格证书"
+      },
+      {
+        "c": "professional qualification",
+        "cn": "专业资格；职称等级"
+      },
+      {
+        "c": "qualification test",
+        "cn": "资格考试；合格试验；质量鉴定试验"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-academic",
+    "word": "academic",
+    "phonetic0": "ˌækəˈdemɪk",
+    "phonetic1": "ˌækəˈdemɪk",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "学术的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "He is unsuited to academic work.",
+        "cn": "他不适合做学术工作。"
+      },
+      {
+        "c": "It is a purely academic question.",
+        "cn": "这是一个纯理论问题。"
+      },
+      {
+        "c": "Their academic standards are high.",
+        "cn": "他们的学术水平很高。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "academic research",
+        "cn": "学术研究"
+      },
+      {
+        "c": "academic circles",
+        "cn": "学术界"
+      },
+      {
+        "c": "academic year",
+        "cn": "学年"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-discipline",
+    "word": "discipline",
+    "phonetic0": "ˈdɪsəplɪn",
+    "phonetic1": "ˈdɪsəplɪn",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "学科；纪律"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Discipline was the new coach's secret weapon.",
+        "cn": "严格的训练是这位新教练的秘密武器。"
+      },
+      {
+        "c": "Running a kitchen involves lots of discipline and speed.",
+        "cn": "管理厨房需要讲究纪律和速度。"
+      },
+      {
+        "c": "Discipline in the company was strict and no one shirked.",
+        "cn": "公司有严格的纪律，没有人偷懒。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "academic discipline",
+        "cn": "n. 学术科目"
+      },
+      {
+        "c": "engineering discipline",
+        "cn": "工程学科；工程规范"
+      },
+      {
+        "c": "fiscal discipline",
+        "cn": "财政纪律"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-critical",
+    "word": "critical",
+    "phonetic0": "ˈkrɪtɪk(ə)l",
+    "phonetic1": "ˈkrɪtɪk(ə)l",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "批判性的；关键的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "We need to become critical text-readers.",
+        "cn": "我们需要成为批判性的文本阅读者。"
+      },
+      {
+        "c": "She viewed the findings with a critical eye.",
+        "cn": "她以批评的眼光看待这些研究结果。"
+      },
+      {
+        "c": "Tom's parents were highly critical of the school.",
+        "cn": "汤姆的父母对学校提出了强烈的批评。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "critical point",
+        "cn": "临界点"
+      },
+      {
+        "c": "critical thinking",
+        "cn": "批判性思维，批判性的思考；批判思考能力，判断思维"
+      },
+      {
+        "c": "critical factor",
+        "cn": "关键因素；临界因素"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-innovation",
+    "word": "innovation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "创新"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-creativity",
+    "word": "creativity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "创造力"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-cognitive",
+    "word": "cognitive",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "认知的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-competence",
+    "word": "competence",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "能力；胜任"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-undergraduate",
+    "word": "undergraduate",
+    "phonetic0": "ˌʌndəˈɡrædʒuət",
+    "phonetic1": "ˌʌndərˈɡrædʒuət",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "本科生"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Every day, there's going to be a TA in the undergraduate lounge.",
+        "cn": "每天都会有一名助教在本科休息室里。"
+      },
+      {
+        "c": "One idea is to allow people to study law as an undergraduate degree.",
+        "cn": "一个想法是允许人们在本科阶段学习法律。"
+      },
+      {
+        "c": "This leaves today's average law-school graduate with $100000 of debt on top of undergraduate debts.",
+        "cn": "这让如今的法学院毕业生平均承担10万美元的债务，居本科生债务之首。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "undergraduate course",
+        "cn": "本科课程"
+      },
+      {
+        "c": "undergraduate education",
+        "cn": "大学本科教育"
+      },
+      {
+        "c": "undergraduate degree",
+        "cn": "学士学位"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-postgraduate",
+    "word": "postgraduate",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "研究生"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-lecture",
+    "word": "lecture",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "讲座；授课"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-mentor",
+    "word": "mentor",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "导师"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-pedagogy",
+    "word": "pedagogy",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "教学法"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-attainment",
+    "word": "attainment",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "成就；达到"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-collaborate",
+    "word": "collaborate",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "v.",
+        "cn": "合作"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-concentration",
+    "word": "concentration",
+    "phonetic0": "ˌkɒns(ə)nˈtreɪʃ(ə)n",
+    "phonetic1": "ˌkɑːns(ə)nˈtreɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "专注；集中"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Tiredness affects your powers of concentration.",
+        "cn": "疲劳影响注意力的集中。"
+      },
+      {
+        "c": "She frowned with concentration.",
+        "cn": "她全神贯注，紧锁双眉。"
+      },
+      {
+        "c": "Her brow furrowed in concentration.",
+        "cn": "她眉头紧锁全神贯注。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-education-coeducation",
+    "word": "coeducation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "男女同校教育"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  }
+]

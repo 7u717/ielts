@@ -55,12 +55,8 @@ export class Supabase {
 
   /** 是否允许执行同步：仅当 config 存在、url/key 有值且 status === 'success' 时返回 true */
   static check(): boolean {
-    const c = getConfig()
-    if (!c?.url || !c?.key) return false
-    if (c.status !== 'success') return false
-    this.supabaseUrl = c.url
-    this.supabaseKey = c.key
-    return true
+    // Personal IELTS app: keep existing local records, never connect old sync accounts.
+    return false
   }
 
   static saveConfig(url: string, key: string): void {

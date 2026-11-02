@@ -1,0 +1,794 @@
+[
+  {
+    "id": "ielts-society-urbanisation",
+    "word": "urbanisation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "城市化"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-inequality",
+    "word": "inequality",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "不平等"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-demographic",
+    "word": "demographic",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "人口的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-migration",
+    "word": "migration",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "迁移"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-community",
+    "word": "community",
+    "phonetic0": "kəˈmjuːnəti",
+    "phonetic1": "kəˈmjuːnəti",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "社区；群体"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The sense of community is lost.",
+        "cn": "团体意识没有了。"
+      },
+      {
+        "c": "My father is a pillar of the community.",
+        "cn": "我父亲是社区的顶梁柱。"
+      },
+      {
+        "c": "The centre will serve the whole community.",
+        "cn": "这个中心将为整个社区提供服务。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "international community",
+        "cn": "国际社会；国际共同体"
+      },
+      {
+        "c": "community health",
+        "cn": "社区卫生（健康）；公共卫生；社会健康"
+      },
+      {
+        "c": "community service",
+        "cn": "社会服务；社区服务性劳役"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-poverty",
+    "word": "poverty",
+    "phonetic0": "ˈpɒvəti",
+    "phonetic1": "ˈpɑːvərti",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "贫困"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "He ended his days in poverty.",
+        "cn": "他在贫穷中度过余生。"
+      },
+      {
+        "c": "Disease often goes with poverty.",
+        "cn": "疾病与贫穷常常相伴而生。"
+      },
+      {
+        "c": "It's horrifying to see such poverty.",
+        "cn": "看到这种贫困状况令人震惊。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "in poverty",
+        "cn": "贫困；处于贫困当中"
+      },
+      {
+        "c": "poverty alleviation",
+        "cn": "扶贫"
+      },
+      {
+        "c": "poverty line",
+        "cn": "贫困线；贫穷线（指维持一般生活所需收入的最低标准）"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-welfare",
+    "word": "welfare",
+    "phonetic0": "ˈwelfeə(r)",
+    "phonetic1": "ˈwelfer",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "福利"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Welfare provides a cushion against hardship.",
+        "cn": "福利给困苦提供了一个缓解。"
+      },
+      {
+        "c": "The children's welfare must be seen as paramount.",
+        "cn": "孩子们的福利必须被视为是最为重要的。"
+      },
+      {
+        "c": "The court assumed responsibility for the girl's welfare.",
+        "cn": "法庭承担了保障这个女孩福利的责任。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "social welfare",
+        "cn": "社会福利；社会福利工作（等于social work）"
+      },
+      {
+        "c": "public welfare",
+        "cn": "公共福利，公用福利设施；社会福利"
+      },
+      {
+        "c": "welfare system",
+        "cn": "福利体系"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-inclusion",
+    "word": "inclusion",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "包容；纳入"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-diversity",
+    "word": "diversity",
+    "phonetic0": "daɪˈvɜːsəti",
+    "phonetic1": "daɪˈvɜːrsəti; dɪˈvɜːsɪti",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "多样性"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Two of our greatest strengths are diversity and community.",
+        "cn": "我们的两个最大优点是多样性和团体精神。"
+      },
+      {
+        "c": "There is a need for greater diversity and choice in education.",
+        "cn": "教育方面需要更加多元化和更大的选择性。"
+      },
+      {
+        "c": "We have nothing against diversity; indeed, we want more of it.",
+        "cn": "我们并不反对多样化；其实，我们希望有更多的多样化。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "species diversity",
+        "cn": "物种多样性；歧异度"
+      },
+      {
+        "c": "biological diversity",
+        "cn": "生物多样性；生物差异"
+      },
+      {
+        "c": "diversity index",
+        "cn": "多样性指数；歧异度指数"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-heritage",
+    "word": "heritage",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "遗产"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-tradition",
+    "word": "tradition",
+    "phonetic0": "trəˈdɪʃ(ə)n",
+    "phonetic1": "trəˈdɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "传统"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "This region is steeped in tradition.",
+        "cn": "这个地区有着深厚的传统。"
+      },
+      {
+        "c": "It was a radical departure from tradition.",
+        "cn": "这从根本上违背了传统。"
+      },
+      {
+        "c": "This was a practice sanctified by tradition.",
+        "cn": "这是一种合乎传统的做法。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "cultural tradition",
+        "cn": "文化传统"
+      },
+      {
+        "c": "by tradition",
+        "cn": "照传统；根据口传"
+      },
+      {
+        "c": "oral tradition",
+        "cn": "口头传统；口传；口传"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-cohesion",
+    "word": "cohesion",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "凝聚力"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-prejudice",
+    "word": "prejudice",
+    "phonetic0": "ˈpredʒədɪs",
+    "phonetic1": "ˈpredʒədɪs",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "偏见"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "I try to rise above prejudice.",
+        "cn": "我尽力摆脱偏见。"
+      },
+      {
+        "c": "He was a victim of racial prejudice.",
+        "cn": "他是种族偏见的一个牺牲品。"
+      },
+      {
+        "c": "His judgement was warped by prejudice.",
+        "cn": "他因偏见而判断有误。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-discrimination",
+    "word": "discrimination",
+    "phonetic0": "dɪˌskrɪmɪˈneɪʃn",
+    "phonetic1": "dɪˌskrɪmɪˈneɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "歧视"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "She is exempt from sex discrimination laws.",
+        "cn": "她不用遵守性别歧视法规。"
+      },
+      {
+        "c": "Women's groups denounced sexual discrimination.",
+        "cn": "妇女组织谴责性别歧视。"
+      },
+      {
+        "c": "\"This,\" huffed Mr. Buthelezi, \"was discrimination.\"",
+        "cn": "“这么做” 布特莱齐先生愤怒地说，“是歧视。”"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "racial discrimination",
+        "cn": "种族歧视"
+      },
+      {
+        "c": "sex discrimination",
+        "cn": "性别歧视；雌雄鉴别"
+      },
+      {
+        "c": "price discrimination",
+        "cn": "价格歧视，差别取价"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-legislation",
+    "word": "legislation",
+    "phonetic0": "ˌledʒɪsˈleɪʃn",
+    "phonetic1": "ˌledʒɪsˈleɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "立法；法律"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Legislation requires approval by both houses of parliament.",
+        "cn": "立法须得到议会两院的一致通过。"
+      },
+      {
+        "c": "The legislation is still in draft form.",
+        "cn": "这条法规还只是项草案。"
+      },
+      {
+        "c": "The legislation will be difficult to enforce.",
+        "cn": "这一法规将难以实施。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-authority",
+    "word": "authority",
+    "phonetic0": "ɔːˈθɒrəti",
+    "phonetic1": "əˈθɔːrəti",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "权威；当局"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "She had an aura of authority.",
+        "cn": "她有一种权威气质。"
+      },
+      {
+        "c": "His authority is steadily weakening.",
+        "cn": "他的权威日趋减弱。"
+      },
+      {
+        "c": "Her speech carried the ring of authority.",
+        "cn": "她的讲话带着权威的口吻。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "competent authority",
+        "cn": "[法]主管当局，主管部门"
+      },
+      {
+        "c": "authority on",
+        "cn": "有关…的权威；…的专家"
+      },
+      {
+        "c": "local authority",
+        "cn": "地方当局；地方政权"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-voluntary",
+    "word": "voluntary",
+    "phonetic0": "ˈvɒləntri",
+    "phonetic1": "ˈvɑːlənteri",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "自愿的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "He took voluntary redundancy.",
+        "cn": "他选择了自愿裁汰。"
+      },
+      {
+        "c": "She works there on a voluntary basis.",
+        "cn": "她自愿在那里无偿工作。"
+      },
+      {
+        "c": "We rely entirely on voluntary contribution.",
+        "cn": "我们全靠自愿捐赠。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-citizen",
+    "word": "citizen",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "公民"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-suburb",
+    "word": "suburb",
+    "phonetic0": "ˈsʌbɜːb",
+    "phonetic1": "ˈsʌbɜːrb",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "郊区"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "They live in a wealthy suburb of Chicago.",
+        "cn": "他们住在芝加哥郊区的一处富人区。"
+      },
+      {
+        "c": "Park Ridge is the prototypical American suburb.",
+        "cn": "里奇公园是美国郊区的模范。"
+      },
+      {
+        "c": "Anna was born in 1923 in a suburb of Philadelphia.",
+        "cn": "安娜1923年出生在费城市郊。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-congestion",
+    "word": "congestion",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "拥堵"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-justice",
+    "word": "justice",
+    "phonetic0": "ˈdʒʌstɪs",
+    "phonetic1": "ˈdʒʌstɪs",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "公正；司法"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "My sense of justice was offended.",
+        "cn": "我的正义感受到了冒犯。"
+      },
+      {
+        "c": "Justice will prevail over tyranny.",
+        "cn": "正义必将战胜暴虐。"
+      },
+      {
+        "c": "Access to justice is a basic right.",
+        "cn": "享有公正是一种基本权利。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "social justice",
+        "cn": "[法]社会主义"
+      },
+      {
+        "c": "justice department",
+        "cn": "司法部门"
+      },
+      {
+        "c": "administration of justice",
+        "cn": "司法；司法行政；执法"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-consensus",
+    "word": "consensus",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "共识"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-individual",
+    "word": "individual",
+    "phonetic0": "ˌɪndɪˈvɪdʒuəl",
+    "phonetic1": "ˌɪndɪˈvɪdʒuəl",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "个人；个体的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Some individual investors exulted at the record.",
+        "cn": "一些个人投资者为这一记录欢欣鼓舞。"
+      },
+      {
+        "c": "Japan won the Men's 200 metre individual medley.",
+        "cn": "日本赢得了男子200米个人混合泳比赛。"
+      },
+      {
+        "c": "It's impossible to hold any individual responsible.",
+        "cn": "不可能让任何个人承担责任。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "individual character",
+        "cn": "个性；单字"
+      },
+      {
+        "c": "individual income tax",
+        "cn": "[经]个人所得税"
+      },
+      {
+        "c": "individual freedom",
+        "cn": "个人自由"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-society-responsibility",
+    "word": "responsibility",
+    "phonetic0": "rɪˌspɒnsəˈbɪləti",
+    "phonetic1": "rɪˌspɑːnsəˈbɪləti",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "责任"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "They frankly admitted their responsibility.",
+        "cn": "他们坦率地承认了责任。"
+      },
+      {
+        "c": "That's too much responsibility for a child.",
+        "cn": "对于一个孩子来说，这责任是太重了。"
+      },
+      {
+        "c": "She has sole responsibility for the project.",
+        "cn": "那个项目由她一人负责。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "responsibility for",
+        "cn": "责任；负责"
+      },
+      {
+        "c": "sense of responsibility",
+        "cn": "责任感，责任心"
+      },
+      {
+        "c": "social responsibility",
+        "cn": "社会责任"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  }
+]

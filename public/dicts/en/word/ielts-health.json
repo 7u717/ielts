@@ -1,0 +1,617 @@
+[
+  {
+    "id": "ielts-health-nutrition",
+    "word": "nutrition",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "营养"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-obesity",
+    "word": "obesity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "肥胖"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-sedentary",
+    "word": "sedentary",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "久坐的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-prevention",
+    "word": "prevention",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "预防"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-immunity",
+    "word": "immunity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "免疫力"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-epidemic",
+    "word": "epidemic",
+    "phonetic0": "ˌepɪˈdemɪk",
+    "phonetic1": "ˌepɪˈdemɪk",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "流行病"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Today, doctors are fearing a worldwide epidemic.",
+        "cn": "如今，医生们在担心一次世界性的流行。"
+      },
+      {
+        "c": "Hospitals were already fully extended because of the epidemic.",
+        "cn": "这场流行病已使各医院以最大负荷运转。"
+      },
+      {
+        "c": "Health officials have successfully confined the epidemic to the Tabatinga area.",
+        "cn": "卫生官员们已经成功地将该传染病控制在塔巴廷加地区。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-diagnosis",
+    "word": "diagnosis",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "诊断"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-therapy",
+    "word": "therapy",
+    "phonetic0": "ˈθerəpi",
+    "phonetic1": "ˈθerəpi",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "治疗"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "I was ready for a little retail therapy.",
+        "cn": "我准备去进行一下购物治疗。"
+      },
+      {
+        "c": "She's in therapy.",
+        "cn": "她在接受心理治疗。"
+      },
+      {
+        "c": "Group therapy classes have been his salvation.",
+        "cn": "他一直靠参加集体疗法班来调节心理。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "gene therapy",
+        "cn": "n. 基因治疗"
+      },
+      {
+        "c": "radiation therapy",
+        "cn": "放射治疗"
+      },
+      {
+        "c": "drug therapy",
+        "cn": "药物治疗；药物疗法"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-chronic",
+    "word": "chronic",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "慢性的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-wellbeing",
+    "word": "wellbeing",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "身心健康"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-physical",
+    "word": "physical",
+    "phonetic0": "ˈfɪzɪk(ə)l",
+    "phonetic1": "ˈfɪzɪk(ə)l",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "身体的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Bob failed his physical.",
+        "cn": "鲍勃没有通过体格检查。"
+      },
+      {
+        "c": "Physical activity promotes good health.",
+        "cn": "身体运动促进健康。"
+      },
+      {
+        "c": "He tends to avoid all physical contact.",
+        "cn": "他倾向于避免一切身体接触。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "physical education",
+        "cn": "n. 体育课；体育教育"
+      },
+      {
+        "c": "physical model",
+        "cn": "物理模型；实体模型"
+      },
+      {
+        "c": "physical property",
+        "cn": "物理性质；实物财产"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-psychological",
+    "word": "psychological",
+    "phonetic0": "ˌsaɪkəˈlɒdʒɪk(ə)l",
+    "phonetic1": "ˌsaɪkəˈlɑːdʒɪk(ə)l",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "心理的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The problem was psychological rather than physiological.",
+        "cn": "这是个心理而不是生理问题。"
+      },
+      {
+        "c": "Lack of confidence is a psychological barrier to success.",
+        "cn": "缺乏信心是阻碍成功的心理因素。"
+      },
+      {
+        "c": "Abuse can lead to both psychological and emotional problems.",
+        "cn": "虐待可造成心理和情绪上的问题。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "psychological quality",
+        "cn": "心理素质"
+      },
+      {
+        "c": "psychological characteristics",
+        "cn": "心理特点"
+      },
+      {
+        "c": "psychological counseling",
+        "cn": "心理咨询；心理辅导"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-stress",
+    "word": "stress",
+    "phonetic0": "stres",
+    "phonetic1": "stres",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "压力"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "It's vital to zap stress fast.",
+        "cn": "快速消除压力非常重要。"
+      },
+      {
+        "c": "Her depression was misdiagnosed as stress.",
+        "cn": "她的抑郁症被误认为是紧张。"
+      },
+      {
+        "c": "Massage is a wonderful antidote to stress.",
+        "cn": "按摩是一种极妙的对抗压力的良方。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "stress on",
+        "cn": "对…的强调"
+      },
+      {
+        "c": "stress distribution",
+        "cn": "应力分布"
+      },
+      {
+        "c": "stress field",
+        "cn": "n. 应力场；胁强场"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-rehabilitation",
+    "word": "rehabilitation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "康复"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-vaccination",
+    "word": "vaccination",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "疫苗接种"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-hygiene",
+    "word": "hygiene",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "卫生"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-symptom",
+    "word": "symptom",
+    "phonetic0": "ˈsɪmptəm",
+    "phonetic1": "ˈsɪmptəm",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "症状"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "One prominent symptom of the disease is progressive loss of memory.",
+        "cn": "这种病的一个突出症状是记忆的逐步丧失。"
+      },
+      {
+        "c": "Victoria was strangely undisturbed by this symptom, even though her husband and family were frightened.",
+        "cn": "维多利亚奇怪地没有因这种症状而感到不安，尽管她的丈夫和家人都吓坏了。"
+      },
+      {
+        "c": "Your problem with keeping boyfriends is just a symptom of a larger problem: making and keeping friends.",
+        "cn": "你无法留住男友的问题只是一个更大的问题的征兆：结交朋友并与其维持关系。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "symptom complex",
+        "cn": "症候群"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-addiction",
+    "word": "addiction",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "成瘾"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-longevity",
+    "word": "longevity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "长寿"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-malnutrition",
+    "word": "malnutrition",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "营养不良"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-metabolism",
+    "word": "metabolism",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "新陈代谢"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-clinical",
+    "word": "clinical",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "临床的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-resilience",
+    "word": "resilience",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "适应力；韧性"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-health-accessible",
+    "word": "accessible",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "可获得的；易使用的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  }
+]

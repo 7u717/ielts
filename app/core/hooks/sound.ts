@@ -177,60 +177,14 @@ export function cancelWordPracticeAudio() {
 }
 
 export function usePlayWordAudio() {
-  const settingStore = useSettingStore()
-
-  onMounted(() => {
-    // @ts-ignore SSR guard
-    if (import.meta.server) return
-    getCachedWordAudio()
-  })
-
-  function playAudio(word: string, handle: boolean = true, onEnd?: () => void, onPlay?: () => void) {
-    const wordAudio = getCachedWordAudio()
-    if (!word || !wordAudio) return
+  const settings = useSettingStore()
+  const speak = useTTsPlayAudio()
+  return (word: string, manual = true, onEnd?: () => void, onPlay?: () => void) => {
+    if (!word) return
     cancelWordPracticeAudio()
-    const generation = ++wordPlaybackGeneration
-    let playbackRate = settingStore.wordSoundSpeed
-    if (handle) {
-      const key = word.trim().toLowerCase()
-      const count = activeWordPlayCountMap.get(key) ?? 0
-      if (count % 3 !== 0) {
-        playbackRate = playbackRate * 0.75
-        Toast.success('0.75倍速播放')
-      } else {
-        Toast.closeAll()
-      }
-      activeWordPlayCountMap.set(key, count + 1)
-
-      //5秒后重置，以免隔了很久播放，还是0.75倍
-      clearTimeout(resetWordPlayCountTimer)
-      resetWordPlayCountTimer = setTimeout(() => {
-        activeWordPlayCountMap.set(key, 0)
-      }, 5000)
-    }
-    // console.log('playAudio-handle', handle, playbackRate)
-    let url = `${PronunciationApi}${word}&type=2`
-    if (settingStore.soundType === 'uk') {
-      url = `${PronunciationApi}${word}&type=1`
-    }
-    let onended = () => {
-      if (generation !== wordPlaybackGeneration) return
-      onEnd?.()
-    }
-    wordAudio.onended = onended
-    wordAudio.onplay = () => onPlay?.()
-    wordAudio.onerror = () => {
-      if (generation !== wordPlaybackGeneration) return
-      const ttsPlay = useTTsPlayAudio()
-      ttsPlay(word, { rate: playbackRate, onEnd: onended })
-    }
-    wordAudio.src = url
-    wordAudio.volume = settingStore.wordSoundVolume / 100
-    wordAudio.playbackRate = playbackRate
-    void wordAudio.play()
+    onPlay?.()
+    speak(word, { lang: settings.soundType === 'uk' ? 'en-GB' : 'en-US', onEnd })
   }
-
-  return playAudio
 }
 
 function getVoicesAsync() {
@@ -266,26 +220,13 @@ export function useTTsPlayAudio() {
     msg.lang = options.lang ?? 'en-US'
     msg.onend = () => options.onEnd?.()
     msg.onerror = () => options.onEnd?.()
-    getVoicesAsync().then((voices: any[]) => {
-      if (generation !== ttsPlaybackGeneration) return
-      // 优先使用用户在当前浏览器配置的声色
-      const browserKey = getBrowserKey()
-      const savedVoiceName = settingStore?.ttsVoiceMap?.find(v => v.key === browserKey)?.voice
-      if (savedVoiceName) {
-        const savedVoice = voices.find(v => v.name === savedVoiceName)
-        if (savedVoice) {
-          msg.voice = savedVoice
-          speechSynthesis.speak(msg)
-          return
-        }
-      }
-      // 回退：优先找 Emma / US，否则取第一个英文声色
-      let voiceList = voices.filter(v => v.lang === 'en-US')
-      if (voiceList && voiceList.length) {
-        msg.voice = voiceList.find(v => v.name.includes('US') || v.name.includes('Emma')) ?? voiceList[0]
-      }
-      speechSynthesis.speak(msg)
-    })
+    // Use installed system voices directly; no third-party audio requests.
+    // Avoid awaiting voiceschanged: Safari needs speak() during the tap gesture.
+    const voices = speechSynthesis.getVoices()
+    const matching = voices.filter(voice => voice.lang === msg.lang)
+    msg.voice = matching[0] ?? voices.find(voice => voice.lang.startsWith('en')) ?? null
+    if (generation === ttsPlaybackGeneration) speechSynthesis.speak(msg)
+
   }
 
   return play

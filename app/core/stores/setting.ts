@@ -81,7 +81,7 @@ export interface SettingState {
 }
 
 export const getDefaultSettingState = (): SettingState => ({
-  soundType: 'us',
+  soundType: 'uk',
 
   wordSound: true,
   wordSoundVolume: 100,
@@ -96,7 +96,7 @@ export const getDefaultSettingState = (): SettingState => ({
   articleSoundVolume: 100,
   articleSoundSpeed: 1,
 
-  keyboardSound: true,
+  keyboardSound: false,
   keyboardSoundVolume: 100,
   keyboardSoundFile: '笔记本键盘',
 
@@ -107,7 +107,7 @@ export const getDefaultSettingState = (): SettingState => ({
   repeatCustomCount: null,
   dictation: false,
   translate: true,
-  showNearWord: true,
+  showNearWord: false,
   ignoreCase: true,
   allowWordTip: true,
   waitTimeForChangeWord: 300,
@@ -119,16 +119,16 @@ export const getDefaultSettingState = (): SettingState => ({
     wordTranslateFontSize: 20,
   },
   showToolbar: true,
-  showPanel: true,
+  showPanel: false,
   sideExpand: true,
-  theme: 'auto',
+  theme: 'dark',
   shortcutKeyMap: cloneDeep(DefaultShortcutKeyMap),
   first: true,
   firstTime: Date.now(),
   webAppVersion: APP_VERSION.version,
   load: false,
-  conflictNotice: true,
-  showConflictNotice2: true,
+  conflictNotice: false,
+  showConflictNotice2: false,
   showUsageTips: true,
   ignoreSimpleWord: false,
   wordPracticeMode: WordPracticeMode.System,
@@ -138,7 +138,7 @@ export const getDefaultSettingState = (): SettingState => ({
   mobileNavCollapsed: false,
   ignoreSymbol: true,
   practiceSentence: false,
-  autoPlayFirstSentence: true,
+  autoPlayFirstSentence: false,
   fsrsEasyLimit: 0,
   fsrsGoodLimit: 3,
   fsrsHardLimit: 6,

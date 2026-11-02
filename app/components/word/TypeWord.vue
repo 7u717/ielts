@@ -30,6 +30,7 @@ import { openWordCollectPicker } from '@/core/hooks/useWordCollectPicker.ts'
 import WordTypingCore from './WordTypingCore.vue'
 import WordIdentifyPanel from './WordIdentifyPanel.vue'
 import WordMetaPanel from './WordMetaPanel.vue'
+import Sheet from '@/components/ielts/Sheet.vue'
 import { useOnKeyboardEventListener } from '@/core/hooks/event.ts'
 import { _nextTick, throttle } from '@/core'
 import { usePracticeTypeWordController } from '@/core/composables/practice-words/usePracticeTypeWordController.ts'
@@ -44,6 +45,8 @@ interface IProps {
   /** 当前练习阶段标识，用于重置“显示单词”计错状态。 */
   phaseKey: string
 }
+
+const detailsOpen = ref(false)
 
 const props = withDefaults(defineProps<IProps>(), {
   word: () => getDefaultWord(),
@@ -76,7 +79,7 @@ const typeWordController = usePracticeTypeWordController({
   getPracticeType: () => props.practiceType,
   getPhaseKey: () => props.phaseKey,
   getIsWordMasked: () => effective.value.isWordMasked,
-  getAutoPlayFirstSentence: () => settingStore.autoPlayFirstSentence,
+  getAutoPlayFirstSentence: () => false,
   onWrong: source => emit('wrong', source),
   playWordAudio: (word, manual, onEnd) =>
     playWordAudio(word, manual, onEnd, () => {
@@ -97,14 +100,6 @@ function playWord(trigger: WordPlayTrigger) {
 }
 
 function onTypingCoreComplete() {
-  if (
-    [WordPracticeType.FollowWrite, WordPracticeType.Spell].includes(props.practiceType) &&
-    settingStore.practiceSentence &&
-    props.word.sentences.length
-  ) {
-    isTypingWord = false
-    return wordMetaPanelRef.startPracticeSentence()
-  }
   emit('complete')
 }
 
@@ -314,210 +309,47 @@ useEvents([
 
 <template>
   <div class="typing-word" v-if="word.word.length">
-    <div class="flex flex-col items-center">
-      <!-- 音标 + 发音按钮（通过 slot 传入 VolumeIcon） -->
-      <div class="flex gap-1 mt-10 md:mt-30">
-        <div
-          class="phonetic"
-          :class="effective.isWordMasked && 'word-shadow'"
-          v-if="settingStore.soundType === 'uk' && word.phonetic0"
-        >
-          / {{ word.phonetic0 }} /
-        </div>
-        <div
-          class="phonetic"
-          :class="effective.isWordMasked && 'word-shadow'"
-          v-if="settingStore.soundType === 'us' && word.phonetic1"
-        >
-          / {{ word.phonetic1 }} /
-        </div>
-        <VolumeIcon
-          :title="`发音(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
-          ref="volumeIconRef"
-          :cb="onVolumeIconClick"
-        />
-      </div>
-
-      <!-- 单词键入区 -->
-      <Tooltip :title="`快捷键(${settingStore.shortcutKeyMap[ShortcutKey.ShowWord]})显示单词信息`">
-        <div
-          id="word-wrap"
-          ref="word-wrap"
-          class="word my-1"
-          :style="{ fontSize: settingStore.fontSize.wordForeignFontSize + 'px' }"
-          @mouseenter="onMouseEnter"
-          @mouseleave="hideWord"
-        >
-          <WordTypingCore
-            ref="typingCoreRef"
-            :word="word"
-            :active="isTypingWord && !editingNote"
-            :practiceType="practiceType"
-            :isWordMasked="effective.isWordMasked"
-            v-model:showWordResult="showWordResult"
-            :showFullWord="showFullWord"
-            :wordFontSize="settingStore.fontSize.wordForeignFontSize"
-            @play="playWord"
-            @complete="onTypingCoreComplete"
-            @wrong="onTypingCoreWrong"
-          />
-        </div>
-      </Tooltip>
-
-      <!-- 操作按钮行 -->
-      <div class="mt-1 flex gap-4">
-        <BaseIcon
-          @click="emit('toggleSimple')"
-          :title="
-            (!isSimple ? $t('mark_mastered') : $t('unmark_mastered')) +
-            `(${settingStore.shortcutKeyMap[ShortcutKey.ToggleSimple]})`
-          "
-        >
-          <IconFluentCheckmarkCircle16Regular v-if="!isSimple" />
-          <IconFluentCheckmarkCircle16Filled v-else />
-        </BaseIcon>
-        <BaseIcon @click="editNote" :title="editingNote ? '完成编辑笔记' : '编辑笔记'">
-          <IconFluentClipboardTextEdit20Regular />
-        </BaseIcon>
-        <BaseIcon
-          @click="collect"
-          :title="
-            (!isCollect ? $t('collect') : $t('uncollect')) +
-            `(${settingStore.shortcutKeyMap[ShortcutKey.ToggleCollect]})`
-          "
-        >
-          <IconFluentStar20Regular v-if="!isCollect" />
-          <IconFluentStar20Filled v-else />
-        </BaseIcon>
-        <span ref="collectAnchorRef" class="inline-flex">
-          <BaseIcon
-            class="word-collect-anchor"
-            @click="openCollectPicker"
-            :title="`${$t('collect_to_dict')}(${settingStore.shortcutKeyMap[ShortcutKey.CollectToDict]})`"
-          >
-            <IconFluentStarAdd16Regular />
-          </BaseIcon>
-        </span>
-        <BaseIcon @click="emit('skip')" :title="`${$t('skip_word')}(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`">
-          <IconFluentArrowBounce20Regular class="transform-rotate-180" />
-        </BaseIcon>
-      </div>
-
-      <!-- 笔记编辑区 -->
-      <template v-if="showNote">
-        <div class="flex flex-col gap-2 w-full mt-4">
-          <div class="flex">
-            <div class="label">笔记</div>
-            <Textarea
-              autofocus
-              v-if="editingNote"
-              v-model="noteInputValue"
-              placeholder="记录这个单词的个人笔记"
-              :autosize="{ minRows: 4, maxRows: 8 }"
-              class="note-textarea"
-            />
-            <div v-else class="note-content">{{ store.noteData[word.word] }}</div>
-          </div>
-          <div v-if="editingNote" class="flex justify-end mt-2">
-            <BaseButton size="large" type="info" v-if="store.noteData[word.word]" @click="deleteNote">删除</BaseButton>
-            <BaseButton size="large" @click="cancelNote">取消</BaseButton>
-            <BaseButton size="large" type="primary" @click="saveNote">保存</BaseButton>
-          </div>
-        </div>
-        <div class="line-white my-3"></div>
-      </template>
-
-      <!-- 提示 Toast -->
-      <div class="center mt-3" v-if="notice.show && settingStore.showUsageTips">
-        <ToastComponent
-          :duration="0"
-          confirm
-          :anim="false"
-          :shadow="false"
-          :message="notice.text"
-          :showClose="store.sdict.statistics.length > 2"
-          @close="settingStore.showUsageTips = false"
-        />
-      </div>
-
-      <!-- 自测 UI -->
-      <WordIdentifyPanel
-        v-if="!showWordResult && !showFullWord && practiceType === WordPracticeType.Identify"
-        :key="word.word"
-        :word="word"
-        :question="question"
-        @know="onIdentifyKnow"
-        @unknown="onIdentifyUnknown"
-        @mastered="onIdentifyMastered"
-        @wrong="onAnswerWrong"
-        @correct="onAnswerCorrect"
-        @complete="emit('complete')"
-        @quickMark="emit('quickMark')"
-      />
-
-      <!-- WordMetaPanel: 翻译 + 例句 + 短语 + 词源 等展示 -->
-      <!--      不要加key，里面有个只显示一次的变量-->
-      <WordMetaPanel
-        ref="wordMetaPanelRef"
-        :word="word"
-        @complete="onSentencePracticeComplete"
-        :effective="effective"
-        @wrong="emit('wrong')"
-      />
+    <div class="pronunciation-row">
+      <span v-if="!effective.isWordMasked" class="phonetic">{{ settingStore.soundType === 'uk' ? word.phonetic0 : word.phonetic1 }}</span>
+      <VolumeIcon ref="volumeIconRef" :cb="onVolumeIconClick" title="播放发音" />
     </div>
-    <WordLookupPopover />
+    <div id="word-wrap" ref="word-wrap" class="word" :style="{ fontSize: Math.min(38, 440 / word.word.length) + 'px' }">
+      <WordTypingCore ref="typingCoreRef" :word="word" :active="isTypingWord && !editingNote && !detailsOpen"
+        :practiceType="practiceType" :isWordMasked="effective.isWordMasked" v-model:showWordResult="showWordResult"
+        :showFullWord="showFullWord" :wordFontSize="Math.min(38, 440 / word.word.length)"
+        @play="playWord" @complete="onTypingCoreComplete" @wrong="onTypingCoreWrong" />
+    </div>
+    <p class="word-translation" v-if="effective.isShowTranslate">{{ word.trans.map(t => t.cn).join('；') }}</p>
+    <p class="typing-hint" v-if="notice.show">{{ notice.text.replace('按空格键继续', '点继续或按空格键') }}</p>
+    <WordIdentifyPanel v-if="!showWordResult && !showFullWord && practiceType === WordPracticeType.Identify"
+      :key="word.word" :word="word" :question="question" @know="onIdentifyKnow" @unknown="onIdentifyUnknown"
+      @mastered="onIdentifyMastered" @wrong="onAnswerWrong" @correct="onAnswerCorrect" @complete="emit('complete')" @quickMark="emit('quickMark')" />
+    <button class="word-details-button" aria-label="单词详情" @click="detailsOpen = true">···</button>
+    <Sheet :open="detailsOpen" :title="effective.isWordMasked && !showWordResult ? '单词操作' : word.word" @close="detailsOpen = false; cancelNote()">
+      <template v-if="!effective.isWordMasked || showWordResult">
+        <p class="sheet-note">{{ word.trans.map(t => t.pos + ' ' + t.cn).join('；') }}</p>
+        <div class="word-examples"><div v-for="sentence in word.sentences" :key="sentence.c"><p>{{ sentence.c }}</p><p class="sheet-note">{{ sentence.cn }}</p></div></div>
+        <p class="sheet-note" v-if="store.noteData[word.word]">{{ store.noteData[word.word] }}</p>
+        <div class="word-detail-actions"><button @click="collect">{{ isCollect ? '取消收藏' : '收藏' }}</button><button @click="toggleWordSimple(word)">{{ isSimple ? '取消掌握' : '标为掌握' }}</button><button @click="editNote">笔记</button></div>
+        <div v-if="editingNote"><textarea v-model="noteInputValue" aria-label="单词笔记" /><button @click="saveNote">保存笔记</button></div>
+      </template>
+      <p v-else class="sheet-note">完成听写后再查看释义和例句。</p>
+    </Sheet>
   </div>
 </template>
-
-<style scoped lang="scss">
-.typing-word {
-  width: 100%;
-  flex: 1;
-  word-break: break-word;
-  position: relative;
-  color: var(--color-font-2);
-
-  .phonetic {
-    color: var(--color-font-1);
-    font-family: var(--word-font-family);
-    font-size: 1.2rem;
-  }
-
-  .word {
-    font-size: 3rem;
-    line-height: 1;
-    font-family: var(--en-article-family);
-    letter-spacing: 0.3rem;
-  }
-
-  .is-wrong {
-    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-  }
-
-  .input,
-  .right {
-    color: rgb(22, 163, 74);
-  }
-
-  .wrong {
-    color: rgba(red, 0.6);
-  }
-
-  .label {
-    width: 6rem;
-    flex-shrink: 0;
-  }
-
-  .note-content {
-    @apply whitespace-pre-wrap;
-  }
-}
-
-@media (max-width: 768px) {
-  .typing-word {
-    .label {
-      @apply w-unset mr-2;
-    }
-  }
-}
+<style scoped>
+.typing-word { width: 100%; max-width: 540px; margin: auto; text-align: center; padding: 60px 8px 40px; box-sizing: border-box; color: var(--ielts-text); }
+.pronunciation-row { min-height: 32px; display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--ielts-muted); margin-bottom: 28px; }
+.phonetic { font-size: 15px; }
+.word { display: flex; justify-content: center; line-height: 1.5; letter-spacing: .025em; font-family: var(--font-family); }
+.word-translation { font-size: 16px; color: #bec3c0; line-height: 1.8; margin: 24px 0 0; }
+.typing-hint { font-size: 12px; color: var(--ielts-muted); margin-top: 28px; line-height: 1.8; }
+.word-details-button { color: var(--ielts-muted); border: 0; background: none; padding: 14px; min-height: 44px; margin-top: 24px; font-size: 24px; letter-spacing: 3px; }
+.word-examples { display: grid; gap: 20px; text-align: left; margin: 28px 0; }
+.word-examples p { font-size: 15px; line-height: 1.6; margin: 0 0 8px; }
+.word-examples p.sheet-note { font-size: 12px; }
+.word-detail-actions { display: flex; gap: 20px; justify-content: space-between; margin-top: 24px; }
+.word-detail-actions button { color: var(--ielts-accent); background: none; border: 0; padding: 12px 0; font-size: 13px; }
+textarea { box-sizing: border-box; width: 100%; margin-top: 16px; background: #202328; color: var(--ielts-text); border: 0; padding: 14px; border-radius: 12px; }
+@media (min-width: 700px) { .typing-word { padding-top: 100px; } }
 </style>

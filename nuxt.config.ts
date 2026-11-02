@@ -17,7 +17,7 @@ try {
   latestCommitTime = 'unknown'
 }
 
-const siteOrigin = (process.env.ORIGIN || 'https://typewords.cc').replace(/\/$/, '')
+const siteOrigin = (process.env.ORIGIN || 'https://7u717.github.io').replace(/\/$/, '')
 
 function normalizeBaseURL(baseURL: string = '/') {
   if (!baseURL) return '/'
@@ -49,27 +49,39 @@ const appBaseURL = normalizeBaseURL(process.env.NUXT_APP_BASE_URL || '/')
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   app: {
     baseURL: appBaseURL,
     // keepalive: true,
     head: {
-      title: 'Type Words — 免费英语单词练习 | Free English Typing Practice', // default fallback title
+      title: 'IELTS · 每天一点', // default fallback title
       htmlAttrs: {
         lang: 'zh-CN',
       },
-      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
+        { name: 'theme-color', content: '#0c0d0f' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+        { name: 'apple-mobile-web-app-title', content: 'IELTS' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/png', href: withBaseURL('/icons/icon-192.png', appBaseURL) },
+        { rel: 'apple-touch-icon', href: withBaseURL('/icons/apple-touch-icon.png', appBaseURL) },
+        { rel: 'manifest', href: withBaseURL('/manifest.json', appBaseURL) },
+      ],
     },
   },
   // ssr: false,
   routeRules: {
     '/words': { ssr: false },
+    '/practice-words/**': { ssr: false },
     '/articles': { ssr: false },
     '/setting': { ssr: false },
-    '/book/nce1': { prerender: true },
-    '/book/nce2': { prerender: true },
-    '/book/nce3': { prerender: true },
-    '/book/nce4': { prerender: true },
+
+
+
+
   },
   vite: {
     plugins: [
@@ -85,6 +97,15 @@ export default defineNuxtConfig({
       }),
     ],
   },
+  hooks: {
+    'pages:extend'(pages) {
+      // Keep the existing word practice engine, remove unrelated public routes.
+      const allowed = ['/', '/words', '/setting', '/practice-words/:id()']
+      for (let i = pages.length - 1; i >= 0; i--) {
+        if (!allowed.includes(pages[i].path)) pages.splice(i, 1)
+      }
+    },
+  },
   // 模块
   modules: ['@pinia/nuxt', '@unocss/nuxt', 'unplugin-icons/nuxt', '@vue-macros/nuxt', '@nuxtjs/i18n', '@nuxt/image'],
   macros: {
@@ -92,28 +113,14 @@ export default defineNuxtConfig({
   },
   // i18n 配置
   i18n: {
-    locales: [
-      { code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
-      { code: 'zh', language: 'zh-CN', file: 'zh.json', name: '中文' },
-      { code: 'es', language: 'es-ES', file: 'es.json', name: 'Español' },
-      { code: 'fr', language: 'fr-FR', file: 'fr.json', name: 'Français' },
-      { code: 'pt', language: 'pt-BR', file: 'pt.json', name: 'Português' },
-      { code: 'de', language: 'de-DE', file: 'de.json', name: 'Deutsch' },
-      { code: 'ru', language: 'ru-RU', file: 'ru.json', name: 'Русский' },
-      { code: 'uk', language: 'uk-UA', file: 'uk.json', name: 'Українська' },
-      { code: 'ja', language: 'ja-JP', file: 'ja.json', name: '日本語' },
-      { code: 'ko', language: 'ko-KR', file: 'ko.json', name: '한국어' },
-      { code: 'th', language: 'th-TH', file: 'th.json', name: 'ไทย' },
-      { code: 'vi', language: 'vi-VN', file: 'vi.json', name: 'Tiếng Việt' },
-      { code: 'id', language: 'id-ID', file: 'id.json', name: 'Bahasa Indonesia' },
-      { code: 'tw', language: 'zh-TW', file: 'tw.json', name: '繁體中文' },
-    ],
+    locales: [{ code: 'zh', language: 'zh-CN', file: 'zh.json', name: '中文' }],
+    detectBrowserLanguage: false,
     defaultLocale: 'zh',
     // langDir:'app/i18n/',
     strategy: 'no_prefix',
   },
   // CSS
-  css: ['~/assets/css/main.scss'],
+  css: ['~/assets/css/main.scss', '~/assets/css/ielts.scss'],
   // 别名配置
   alias: {
     '@': resolve(__dirname, 'app'),
@@ -131,8 +138,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: process.env.API_BASE || 'http://localhost/',
-      origin: process.env.ORIGIN || 'https://typewords.cc',
-      host: process.env.HOST || 'typewords.cc',
+      origin: process.env.ORIGIN || 'https://7u717.github.io',
+      host: process.env.HOST || '7u717.github.io',
       passwordRsaPublicKey: process.env.VITE_PASSWORD_RSA_PUBLIC_KEY || '',
       latestCommitHash: latestCommitHash + (process.env.NODE_ENV === 'production' ? '' : ' (dev)'),
       latestCommitTime: latestCommitTime,
@@ -162,7 +169,8 @@ export default defineNuxtConfig({
   },
   nitro: {
     prerender: {
-      ignore: appBaseURL === '/' ? [] : [withBaseURL('/manifest.json', appBaseURL)],
+      routes: ['/', '/words', ...['environment', 'education', 'technology', 'society', 'health', 'economy'].map(t => '/practice-words/ielts-' + t)],
+      ignore: [withBaseURL('/manifest.json', appBaseURL)],
     },
     devProxy: {
       '/baidu': {

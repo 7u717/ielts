@@ -235,7 +235,7 @@ export function usePracticeWordTyping(options: PracticeWordTypingOptions) {
         if (isWholePracticeInputCorrect(input.value, target, settings.ignoreCase)) completeCurrentInput()
         else {
           options.playBeep()
-          options.onPlay(WordPlayTrigger.Typo)
+          typo()
         }
       } else {
         inputLock.value = false

@@ -8,7 +8,7 @@ import type { Dict, TaskWords, Word } from '@/core/types/types.ts'
 import { useStartKeyboardEventListener } from '@/core/hooks/event.ts'
 import useTheme from '@/core/hooks/theme.ts'
 import { _getDictDataByUrl, resourceWrap, shuffle, throttle } from '@/core/utils'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import Footer from '@/components/word/Footer.vue'
 import Panel from '@/components/Panel.vue'
 import { BaseIcon, Dialog, Toast, ToastComponent } from '@/base'
@@ -29,7 +29,7 @@ import {
   usePracticeWordPersistence,
 } from '@/core/composables/practice-words/practice-word-session.ts'
 import { useDataSyncPersistence } from '@/core/composables/useDataSyncPersistence.ts'
-import { ShortcutKey, WordPracticeMode } from '@/core/types/enum.ts'
+import { ShortcutKey, WordPracticeMode, SyncDataType } from '@/core/types/enum.ts'
 import WordMarkPickList, { type WordMarkPickResult } from '@/components/word/WordMarkPickList.vue'
 import {
   canAutoResumeVisibilityTimer,
@@ -235,6 +235,13 @@ onMounted(async () => {
   }
   document.removeEventListener('visibilitychange', onvisibilitychange)
   document.addEventListener('visibilitychange', onvisibilitychange)
+})
+
+onBeforeRouteLeave(async () => {
+  cancelScheduledPracticeSave()
+  await savePracticeDataIns()
+  await dataSync.saveDictState()
+  await dataSync.saveLocalAndSync(SyncDataType.setting, settingStore.$state)
 })
 
 onUnmounted(() => {

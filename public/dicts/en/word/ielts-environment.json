@@ -1,0 +1,586 @@
+[
+  {
+    "id": "ielts-environment-biodiversity",
+    "word": "biodiversity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "生物多样性"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-sustainability",
+    "word": "sustainability",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "可持续性"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-emission",
+    "word": "emission",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "排放"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-conservation",
+    "word": "conservation",
+    "phonetic0": "ˌkɒnsəˈveɪʃ(ə)n",
+    "phonetic1": "ˌkɑːnsərˈveɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "保护；保存"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "This proposal will incense conservation campaigners.",
+        "cn": "这项提议将激怒自然保护的倡导者。"
+      },
+      {
+        "c": "The benefits of conservation are both financial and aesthetic.",
+        "cn": "保护自然环境在经济上和美化环境上都有好处。"
+      },
+      {
+        "c": "Scientific research and conservation are intimately connected.",
+        "cn": "科学研究与环境保护联系密切。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "energy conservation",
+        "cn": "能量守恒；能源节约"
+      },
+      {
+        "c": "water conservation",
+        "cn": "节约用水，水源保护；水利"
+      },
+      {
+        "c": "soil conservation",
+        "cn": "土壤保持"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-renewable",
+    "word": "renewable",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "可再生的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-ecosystem",
+    "word": "ecosystem",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "生态系统"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-deforestation",
+    "word": "deforestation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "森林砍伐"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-pollution",
+    "word": "pollution",
+    "phonetic0": "pəˈluːʃ(ə)n",
+    "phonetic1": "pəˈluːʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "污染"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Pollution can aggravate asthma.",
+        "cn": "污染会使气喘加重。"
+      },
+      {
+        "c": "Pollution can harm marine life.",
+        "cn": "污染会危及海洋生物。"
+      },
+      {
+        "c": "We need more laws to stop pollution.",
+        "cn": "我们需要制定更多法律来防止污染。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "environmental pollution",
+        "cn": "n. 环境污染"
+      },
+      {
+        "c": "air pollution",
+        "cn": "大气污染，空气污染"
+      },
+      {
+        "c": "water pollution",
+        "cn": "水污染"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-habitat",
+    "word": "habitat",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "栖息地"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-recycle",
+    "word": "recycle",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "v.",
+        "cn": "回收利用"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-carbon",
+    "word": "carbon",
+    "phonetic0": "ˈkɑːbən",
+    "phonetic1": "ˈkɑːrbən",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "碳"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Carbon has a valency of 4.",
+        "cn": "碳的化合价是4价。"
+      },
+      {
+        "c": "CO is the formula for carbon monoxide.",
+        "cn": "CO是一氧化碳的分子式。"
+      },
+      {
+        "c": "Organic compounds contain carbon in their molecules.",
+        "cn": "有机化合物的分子里含碳。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-drought",
+    "word": "drought",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "干旱"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-flood",
+    "word": "flood",
+    "phonetic0": "flʌd",
+    "phonetic1": "flʌd",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "洪水"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The flood waters slowly retreated.",
+        "cn": "洪水慢慢地消退。"
+      },
+      {
+        "c": "The flood waters gradually subsided.",
+        "cn": "洪水缓缓回落。"
+      },
+      {
+        "c": "Flood waters surged into their homes.",
+        "cn": "洪水涌进了他们的房子。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-extinction",
+    "word": "extinction",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "灭绝"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-contaminate",
+    "word": "contaminate",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "v.",
+        "cn": "污染"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-biodegradable",
+    "word": "biodegradable",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "可生物降解的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-fossil",
+    "word": "fossil",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "化石"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-scarcity",
+    "word": "scarcity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "短缺"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-vegetation",
+    "word": "vegetation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "植被"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-mitigate",
+    "word": "mitigate",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "v.",
+        "cn": "减轻；缓解"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-climate",
+    "word": "climate",
+    "phonetic0": "ˈklaɪmət",
+    "phonetic1": "ˈklaɪmət",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "气候"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "What a damnable climate we have!",
+        "cn": "我们这的气候多讨厌啊！"
+      },
+      {
+        "c": "The economic climate remains uncertain.",
+        "cn": "经济气候依然是不确定。"
+      },
+      {
+        "c": "These plants flourish in a damp climate.",
+        "cn": "这些植物在潮湿的气候下长势茂盛。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "climate change",
+        "cn": "气候变化；气候变迁"
+      },
+      {
+        "c": "investment climate",
+        "cn": "投资环境；投资气候"
+      },
+      {
+        "c": "global climate",
+        "cn": "全球气候"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-degradation",
+    "word": "degradation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "退化；恶化"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-landfill",
+    "word": "landfill",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "垃圾填埋场"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-environment-sustainable",
+    "word": "sustainable",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "可持续的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  }
+]

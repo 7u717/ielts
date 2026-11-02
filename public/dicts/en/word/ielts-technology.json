@@ -1,0 +1,690 @@
+[
+  {
+    "id": "ielts-technology-automation",
+    "word": "automation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "自动化"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-algorithm",
+    "word": "algorithm",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "算法"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-artificial",
+    "word": "artificial",
+    "phonetic0": "ˌɑːtɪˈfɪʃ(ə)l",
+    "phonetic1": "ˌɑːrtɪˈfɪʃ(ə)l",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "人工的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "This food contains no artificial flavourings.",
+        "cn": "这种食品不含人工调味品。"
+      },
+      {
+        "c": "The juice contains no artificial preservatives.",
+        "cn": "这种果汁不含人工防腐剂。"
+      },
+      {
+        "c": "Most artificial joints are cemented into place.",
+        "cn": "绝大部分人造关节是被黏结复位的。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "artificial intelligence",
+        "cn": "人工智能"
+      },
+      {
+        "c": "artificial leather",
+        "cn": "人造革"
+      },
+      {
+        "c": "artificial insemination",
+        "cn": "人工受精"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-intelligence",
+    "word": "intelligence",
+    "phonetic0": "ɪnˈtelɪdʒəns",
+    "phonetic1": "ɪnˈtelɪdʒəns",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "智能；智力"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Why was military intelligence so lacking?",
+        "cn": "为什么军事情报如此缺乏？"
+      },
+      {
+        "c": "He deserted from army intelligence last month.",
+        "cn": "他上个月从军队情报部门开了小差。"
+      },
+      {
+        "c": "Many dyslexics have above-average intelligence.",
+        "cn": "很多诵读困难者的智力都在平均水平以上。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "artificial intelligence",
+        "cn": "人工智能"
+      },
+      {
+        "c": "competitive intelligence",
+        "cn": "竞争情报"
+      },
+      {
+        "c": "business intelligence",
+        "cn": "商业智能"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-privacy",
+    "word": "privacy",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "隐私"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-cybersecurity",
+    "word": "cybersecurity",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "网络安全"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-infrastructure",
+    "word": "infrastructure",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "基础设施"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-digital",
+    "word": "digital",
+    "phonetic0": "ˈdɪdʒɪt(ə)l",
+    "phonetic1": "ˈdɪdʒɪt(ə)l",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "数字的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "How long have you had digital?",
+        "cn": "你们有数字电视多长时间了？"
+      },
+      {
+        "c": "The signal will be converted into digital code.",
+        "cn": "信号将被转变成数字编码。"
+      },
+      {
+        "c": "The indies convert their digital movies to film.",
+        "cn": "独立制片公司把他们的数字电影转为胶片电影。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "digital library",
+        "cn": "数字图书馆"
+      },
+      {
+        "c": "digital image",
+        "cn": "数字图象"
+      },
+      {
+        "c": "digital signal",
+        "cn": "数字信号"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-virtual",
+    "word": "virtual",
+    "phonetic0": "ˈvɜːtʃuəl",
+    "phonetic1": "ˈvɜːrtʃuəl",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "虚拟的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The company has a virtual monopoly in this area of trade.",
+        "cn": "这家公司实质上已经垄断了这种贸易。"
+      },
+      {
+        "c": "One day virtual reality will revolutionize the entertainment industry.",
+        "cn": "有朝一日虚拟现实将给娱乐业带来一场革命。"
+      },
+      {
+        "c": "New technology has enabled development of an online 'virtual library'.",
+        "cn": "新技术已经使在线“虚拟图书馆”的发展成为可能。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-innovation",
+    "word": "innovation",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "创新"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-breakthrough",
+    "word": "breakthrough",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "突破"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-obsolete",
+    "word": "obsolete",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "过时的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-efficient",
+    "word": "efficient",
+    "phonetic0": "ɪˈfɪʃ(ə)nt",
+    "phonetic1": "ɪˈfɪʃ(ə)nt",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "高效的"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The service at the hotel is efficient and unobtrusive.",
+        "cn": "那旅馆的服务工作有效率而不夸张。"
+      },
+      {
+        "c": "The pill is the most efficient method of birth control.",
+        "cn": "避孕药是最有效的节育办法。"
+      },
+      {
+        "c": "Graphite is a highly efficient conductor of electricity.",
+        "cn": "石墨是一种高效的电导体。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "energy efficient",
+        "cn": "节能"
+      },
+      {
+        "c": "efficient production",
+        "cn": "有效生产"
+      },
+      {
+        "c": "efficient market",
+        "cn": "有效市场"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-accessible",
+    "word": "accessible",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "可获得的；易使用的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-patent",
+    "word": "patent",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "专利"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-surveillance",
+    "word": "surveillance",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "监控"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-transmission",
+    "word": "transmission",
+    "phonetic0": "trænzˈmɪʃ(ə)n",
+    "phonetic1": "trænzˈmɪʃ(ə)n",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "传输"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "Heterosexual contact is responsible for the bulk of HIV transmission.",
+        "cn": "异性间的性接触是造成大多数艾滋病病毒传播的原因。"
+      },
+      {
+        "c": "The transmission of the programme was brought forward due to its unexpected topicality.",
+        "cn": "该节目提前播送是因有出人意料的热门话题。"
+      },
+      {
+        "c": "The letter was delayed in transmission.",
+        "cn": "这封信在传递中被耽误了。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "data transmission",
+        "cn": "数据传输"
+      },
+      {
+        "c": "transmission system",
+        "cn": "[计]传输系统；输电系统；传递系统"
+      },
+      {
+        "c": "transmission line",
+        "cn": "n. [无][电]传输线；波导线"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-device",
+    "word": "device",
+    "phonetic0": "dɪˈvaɪs",
+    "phonetic1": "dɪˈvaɪs",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "设备"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "The device is fixed to a post.",
+        "cn": "该设备固定在一根柱子上。"
+      },
+      {
+        "c": "The device was protected by patent.",
+        "cn": "这一装置受专利保护。"
+      },
+      {
+        "c": "The device draws gas along the pipe.",
+        "cn": "这装置将气体顺着管子抽出来。"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "control device",
+        "cn": "控制装置，控制器"
+      },
+      {
+        "c": "medical device",
+        "cn": "医疗设备；医疗器材；人体医疗配件"
+      },
+      {
+        "c": "protection device",
+        "cn": "保护设备；防护设备"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-robotics",
+    "word": "robotics",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "机器人技术"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-biotechnology",
+    "word": "biotechnology",
+    "phonetic0": "ˌbaɪəʊtekˈnɒlədʒi",
+    "phonetic1": "ˌbaɪoʊtekˈnɑːlədʒi",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "生物技术"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "On balance, biotechnology should be good news for developing countries.",
+        "cn": "总的来说，生物技术对发展中国家来说应该是好消息。"
+      },
+      {
+        "c": "It's also not clear whether the organism, first engineered by a German institute for biotechnology, is still in use.",
+        "cn": "目前还不清楚这种最先由德国生物技术研究所设计的有机体是否仍在使用。"
+      },
+      {
+        "c": "The Biotechnology Industry Organisation (BIO), a trade group, assured members that this was just a \"preliminary step\" in a longer battle.",
+        "cn": "贸易组织生物技术产业组织向其成员保证，这只是一场长期斗争的“前奏”。"
+      }
+    ],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-reliability",
+    "word": "reliability",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "可靠性"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-database",
+    "word": "database",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "n.",
+        "cn": "数据库"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-ethical",
+    "word": "ethical",
+    "phonetic0": "",
+    "phonetic1": "",
+    "trans": [
+      {
+        "pos": "adj.",
+        "cn": "伦理的"
+      }
+    ],
+    "sentences": [],
+    "phrases": [],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  },
+  {
+    "id": "ielts-technology-transform",
+    "word": "transform",
+    "phonetic0": "trænsˈfɔːm",
+    "phonetic1": "trænsˈfɔːrm",
+    "trans": [
+      {
+        "pos": "v.",
+        "cn": "改变；转型"
+      }
+    ],
+    "sentences": [
+      {
+        "c": "It was an event that would transform my life.",
+        "cn": "那是能够彻底改变我一生的一件事。"
+      },
+      {
+        "c": "She actually wanted to reconstruct the state and transform society.",
+        "cn": "她其实想改造这个国家并完全改变社会。"
+      },
+      {
+        "c": "How do we transform one type of file to another?",
+        "cn": "我们如何将一种文件类型转换为另一种类型？"
+      }
+    ],
+    "phrases": [
+      {
+        "c": "fourier transform",
+        "cn": "傅里叶变换"
+      },
+      {
+        "c": "fast fourier transform",
+        "cn": "快速傅里叶变换"
+      },
+      {
+        "c": "transform into",
+        "cn": "转变成"
+      }
+    ],
+    "synos": [],
+    "relWords": {
+      "root": "",
+      "rels": []
+    },
+    "etymology": []
+  }
+]
