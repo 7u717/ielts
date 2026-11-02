@@ -22,7 +22,7 @@ function tap(e: MouseEvent) {
 </script>
 <template>
   <div class="ielts-app" data-design="iue-r3" @click.capture="tap">
-    <header class="app-header">
+    <header class="app-header" :class="{ 'practice-header': practicing }">
       <NuxtLink v-if="practicing" to="/" class="avatar-button" aria-label="保存并返回"><Icon name="back" /></NuxtLink>
       <button v-else class="avatar-button" aria-label="偏好设置" @click="preferencesOpen = true">
         <img :src="withAppBaseURL('/imgs/profile-avatar.jpg')" alt="" />

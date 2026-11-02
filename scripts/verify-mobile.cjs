@@ -297,7 +297,7 @@ async function legacyAndReview() {
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   assert.equal(
-    await page.locator('.practice-phase').innerText(),
+    await page.locator('.typing-word').getAttribute('data-practice-phase'),
     '回想',
     'review starts its own flow, not unfinished new words'
   )
@@ -342,7 +342,7 @@ async function completeCycle() {
       complete = true
       break
     }
-    const phase = await page.locator('.practice-phase').innerText()
+    const phase = await page.locator('.typing-word').getAttribute('data-practice-phase')
     phases.add(phase)
     if (phase === '回想') await page.getByRole('button', { name: '记得', exact: true }).click()
     else {

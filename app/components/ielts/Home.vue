@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onBeforeUnmount } from 'vue'
 import topics from '@/core/ielts/topics.json'
 import { useBaseStore } from '@/core/stores/base'
 import { useSettingStore } from '@/core/stores/setting'
@@ -35,6 +35,17 @@ const error = ref('')
 const hasSession = ref(false)
 const wordDetails = ref<Word | null>(null)
 const vocabularyOpen = ref(false)
+const progressPeek = ref('')
+let progressTimer: ReturnType<typeof setTimeout> | undefined
+function peekProgress(t: (typeof topics)[number]) {
+  clearTimeout(progressTimer)
+  progressPeek.value = t.id
+  progressTimer = setTimeout(() => {
+    progressPeek.value = ''
+  }, 1600)
+  void choose(t)
+}
+onBeforeUnmount(() => clearTimeout(progressTimer))
 const topic = computed(() => topics.find(t => t.id === store.sdict.id) || topics[0])
 const topicProgress = (id: string) => {
   const dict = store.word.bookList.find(d => d.id === id)
@@ -178,7 +189,7 @@ function grabDown(e: PointerEvent) {
   ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
 }
 function grabUp(e: PointerEvent) {
-  if (e.clientY < grabY - 20) topicsOpen.value = true
+  if (e.clientY < grabY - 20) vocabularyOpen.value = true
 }
 </script>
 <template>
@@ -223,16 +234,15 @@ function grabUp(e: PointerEvent) {
           </div>
           <button
             class="overview-grab"
-            aria-label="选择主题，上拉展开"
-            @click="topicsOpen = true"
+            :aria-label="topic.name + '词表，上拉展开'"
+            @click="vocabularyOpen = true"
             @pointerdown.stop="grabDown"
             @pointerup.stop="grabUp"
           >
-            <i /><Icon name="down" />
+            <i />
           </button>
         </div>
         <div class="topic-progress">
-          <h2>主题进度</h2>
           <div class="topic-strip" data-horizontal>
             <button
               v-for="t in topics"
@@ -241,15 +251,18 @@ function grabUp(e: PointerEvent) {
               :aria-label="`${t.name}，已学 ${Math.round(topicProgress(t.id) * 100)}%`"
               :aria-pressed="topic.id === t.id"
               :disabled="busy"
-              @click="choose(t)"
+              @click="peekProgress(t)"
             >
               <Ring :progress="topicProgress(t.id)" :size="80" small
-                ><span class="ring-percent">{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span></Ring
+                ><Transition name="meaning"
+                  ><span v-if="progressPeek === t.id" class="ring-peek"
+                    >{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span
+                  ></Transition
+                ></Ring
               ><span>{{ t.name }}</span>
             </button>
           </div>
         </div>
-        <button class="subtle-link" @click="vocabularyOpen = true">{{ topic.name }}词表 <Icon name="arrow" /></button>
         <button v-if="error" class="error-action" @click="choose(topic)">{{ error }}</button>
         <span v-if="busy" class="loading-note" role="status">正在载入</span>
       </section>

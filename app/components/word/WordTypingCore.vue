@@ -182,14 +182,14 @@ defineExpose({
 .typing-core {
   display: inline;
   font-family: var(--r-num);
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: -0.025em;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   line-height: 1.4;
 }
 .letter {
-  color: var(--muted);
+  color: #e5e5ea;
 }
 .input {
   color: #f5f5f7;

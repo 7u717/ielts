@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { useWindowSize } from '@vueuse/core'
 import type { Question, Word } from '@/core/types'
 import { WordPlayTrigger, WordPracticeType, ShortcutKey } from '@/core/types/enum'
 import { useBaseStore } from '@/core/stores/base'
@@ -51,7 +52,12 @@ const controller = usePracticeTypeWordController({
 const effective = useInjectedDisplayPolicy(
   computed(() => ({ showFullWord: controller.showFullWord.value, showWordResult: controller.showWordResult.value }))
 )
-const size = computed(() => Math.min(46, 455 / Math.max(1, props.word.word.length)))
+const { width } = useWindowSize({ initialWidth: 390 })
+const size = computed(() =>
+  Math.min(58, (Math.min(width.value, 600) - 44) / (Math.max(1, props.word.word.length) * 0.54))
+)
+const dragX = ref(0)
+const dragging = ref(false)
 const phaseName = computed(
   () =>
     ({
@@ -98,6 +104,9 @@ let hold: ReturnType<typeof setTimeout> | undefined
 let finishTimer: ReturnType<typeof setTimeout> | undefined
 let hintTimer: ReturnType<typeof setTimeout> | undefined
 function down(e: PointerEvent) {
+  if (!e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return
+  dragging.value = true
+  dragX.value = 0
   startX = e.clientX
   startY = e.clientY
   moved = false
@@ -109,6 +118,10 @@ function down(e: PointerEvent) {
   }, 420)
 }
 function move(e: PointerEvent) {
+  if (!dragging.value) return
+  const dx = e.clientX - startX,
+    dy = e.clientY - startY
+  if (Math.abs(dx) > Math.abs(dy) * 1.2) dragX.value = Math.max(-260, Math.min(36, dx < 0 ? dx : dx * 0.25))
   if (Math.hypot(e.clientX - startX, e.clientY - startY) > 9) {
     moved = true
     clearTimeout(hold)
@@ -116,6 +129,8 @@ function move(e: PointerEvent) {
 }
 function up(e: PointerEvent) {
   clearTimeout(hold)
+  dragging.value = false
+  dragX.value = 0
   if (suppressClick && !moved) {
     play()
     return
@@ -129,6 +144,8 @@ function up(e: PointerEvent) {
   }
 }
 function cancel() {
+  dragging.value = false
+  dragX.value = 0
   clearTimeout(hold)
   suppressClick = true
 }
@@ -137,6 +154,8 @@ watch(
   () => {
     clearTimeout(hold)
     clearTimeout(finishTimer)
+    dragX.value = 0
+    dragging.value = false
     cancelWordPracticeAudio()
     controller.reset()
     editing.value = false
@@ -191,60 +210,69 @@ function saveNote() {
 }
 </script>
 <template>
-  <div v-if="word.word" class="typing-word">
+  <div v-if="word.word" class="typing-word" :data-practice-phase="phaseName">
     <Transition name="word-change" mode="out-in">
       <div :key="word.word + phaseKey" class="word-stage">
-        <p class="practice-phase">{{ phaseName }}</p>
         <div
-          id="word-wrap"
-          class="practice-word-target"
-          role="button"
-          tabindex="0"
-          aria-label="单词，点按释义，长按发音，左滑跳过"
-          :style="{ fontSize: size + 'px' }"
-          @pointerdown="down"
-          @pointermove="move"
-          @pointerup="up"
-          @pointercancel="cancel"
-          @click="tapWord"
-          @keydown.enter.prevent="tapWord"
-          @keydown.space.prevent="play()"
-          @contextmenu.prevent
+          class="word-swipe-surface"
+          :class="{ dragging }"
+          :style="{ '--word-drag': dragX + 'px', opacity: 1 - Math.min(0.5, Math.abs(dragX) / 400) }"
         >
-          <WordTypingCore
-            ref="typing"
-            :word="word"
-            :active="!detailsOpen && !editing"
-            :practiceType="practiceType"
-            :isWordMasked="effective.isWordMasked"
-            :showFullWord="controller.showFullWord.value"
-            :showWordResult="controller.showWordResult.value"
-            @update:showWordResult="controller.showWordResult.value = $event"
-            :wordFontSize="size"
-            @play="play"
-            @complete="emit('complete')"
-            @wrong="onWrong"
-          />
-        </div>
-        <Transition name="meaning"
-          ><p v-if="meaning || controller.showWordResult.value" class="word-translation">
-            {{ word.trans.map(t => t.cn).join('；') }}
-          </p></Transition
-        >
-        <div
-          v-if="practiceType === WordPracticeType.Identify && !controller.showWordResult.value"
-          class="recall-actions"
-        >
-          <button class="icon-button" aria-label="还没记住" @click="unknown"><Icon name="review" /></button
-          ><button class="icon-button" aria-label="记得" @click="known"><Icon name="check" /></button>
-        </div>
-        <div class="word-tools">
-          <button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button
-          ><button class="icon-button" aria-label="单词详情" @click="detailsOpen = true"><Icon name="more" /></button>
+          <div
+            id="word-wrap"
+            class="practice-word-target"
+            role="button"
+            tabindex="0"
+            aria-label="单词，点按释义，长按发音，左滑跳过"
+            :style="{ fontSize: size + 'px' }"
+            @pointerdown="down"
+            @pointermove="move"
+            @pointerup="up"
+            @pointercancel="cancel"
+            @click="tapWord"
+            @keydown.enter.prevent="tapWord"
+            @keydown.space.prevent="play()"
+            @contextmenu.prevent
+          >
+            <WordTypingCore
+              ref="typing"
+              :word="word"
+              :active="!detailsOpen && !editing"
+              :practiceType="practiceType"
+              :isWordMasked="effective.isWordMasked"
+              :showFullWord="controller.showFullWord.value"
+              :showWordResult="controller.showWordResult.value"
+              @update:showWordResult="controller.showWordResult.value = $event"
+              :wordFontSize="size"
+              @play="play"
+              @complete="emit('complete')"
+              @wrong="onWrong"
+            />
+          </div>
+          <div class="word-meaning-slot">
+            <Transition name="meaning"
+              ><p v-if="meaning || controller.showWordResult.value" class="word-translation">
+                {{ word.trans.map(t => t.cn).join('；') }}
+              </p></Transition
+            >
+          </div>
+          <div
+            v-if="practiceType === WordPracticeType.Identify && !controller.showWordResult.value"
+            class="recall-actions"
+          >
+            <button class="icon-button" aria-label="还没记住" @click="unknown"><Icon name="review" /></button
+            ><button class="icon-button" aria-label="记得" @click="known"><Icon name="check" /></button>
+          </div>
+          <div class="word-tools">
+            <button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button
+            ><button class="icon-button" aria-label="单词详情" @click="detailsOpen = true"><Icon name="more" /></button>
+          </div>
         </div>
       </div>
     </Transition>
-    <Transition name="meaning"><p v-if="hint" class="gesture-hint">点按释义 · 长按发音 · 左滑跳过</p></Transition>
+    <Transition name="meaning"
+      ><p v-if="hint" class="gesture-hint" role="status">点词查看 · 按住发音 · 左滑换词</p></Transition
+    >
     <Sheet
       :open="detailsOpen"
       :title="effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"
