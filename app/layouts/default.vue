@@ -41,6 +41,6 @@ function tap(e: MouseEvent) {
       </div>
     </header>
     <slot />
-    <Sheet :open="preferencesOpen" title="偏好" @close="preferencesOpen = false"><Preferences /></Sheet>
+    <Sheet :open="preferencesOpen" title="偏好" minimal @close="preferencesOpen = false"><Preferences /></Sheet>
   </div>
 </template>

@@ -21,6 +21,11 @@ async function context() {
   await ctx.addInitScript(() => {
     window.testSpeech = []
     window.testHaptics = []
+    HTMLMediaElement.prototype.play = function () {
+      if (this.id === 'ielts-word-audio' && this.src.startsWith('https:'))
+        return Promise.reject(new Error('simulated dictionary failure'))
+      return Promise.resolve()
+    }
     navigator.vibrate = ms => {
       window.testHaptics.push(ms)
       return true
@@ -30,6 +35,7 @@ async function context() {
       setTimeout(() => u.onend?.(), 0)
     }
   })
+  await ctx.route('https://dict.youdao.com/**', route => route.abort())
   const page = await ctx.newPage()
   page.testErrors = []
   page.on('pageerror', error => page.testErrors.push(error.message))
@@ -212,17 +218,18 @@ async function uiAndLearning() {
   await page.screenshot({ path: `${shots}/practice.png`, fullPage: true })
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
-  const downloadPromise = page.waitForEvent('download')
   await page.getByRole('button', { name: '偏好设置' }).click()
-  await page.getByRole('button', { name: '导出备份' }).click()
-  const download = await downloadPromise
-  await download.saveAs(`${shots}/backup.zip`)
-  assert.ok(fs.statSync(`${shots}/backup.zip`).size > 100)
+  const preferences = page.getByRole('dialog', { name: '偏好', exact: true })
+  assert.equal(await preferences.getByRole('slider', { name: '每日新词' }).count(), 1)
+  assert.equal(await preferences.getByRole('switch', { name: '自动发音' }).count(), 1)
+  assert.equal(await preferences.getByRole('button', { name: '关闭', exact: true }).count(), 0)
+  assert.ok(!/导出备份|添加到主屏幕|关于|英式/.test(await preferences.innerText()))
+  await page.screenshot({ path: `${shots}/preferences.png`, fullPage: true })
   assert.deepEqual(page.testErrors, [])
   assert.ok((await page.evaluate(() => window.testHaptics)).every(n => n === 8))
   await ctx.close()
   console.log(
-    'PASS: monochrome layout, tabs/swipe, orb geometry/toggle, automatic typing/listening, long press, skip, note, mode-0 resume, backup'
+    'PASS: monochrome layout, tabs/swipe, orb geometry/toggle, automatic typing/listening, long press, skip, note, mode-0 resume, two-item preferences'
   )
 }
 async function legacyAndReview() {
@@ -312,9 +319,11 @@ async function legacyAndReview() {
 async function completeCycle() {
   const { ctx, page } = await context()
   await home(page)
-  await page.getByRole('button', { name: '偏好设置' }).click()
-  await page.getByLabel('每日新词').selectOption('5')
-  await page.getByRole('button', { name: '关闭', exact: true }).click()
+  const saved = JSON.parse(await record(page, 'typing-word-dict'))
+  saved.val.word.bookList.find(d => d.id === 'ielts-environment').perDayStudyNumber = 5
+  await record(page, 'typing-word-dict', JSON.stringify(saved))
+  await page.reload({ waitUntil: 'networkidle' })
+  await page.locator('.hero-ring-button:enabled').waitFor()
   await page.getByRole('button', { name: '开始学习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)

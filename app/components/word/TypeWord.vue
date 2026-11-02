@@ -72,6 +72,7 @@ function tapWord() {
     suppressClick = false
     return
   }
+  play()
   meaning.value = !meaning.value
   if (meaning.value) controller.checkMaskedRevealWrong(!!typing.value?.isWordRight())
   focusPracticeKeyboard()
@@ -104,7 +105,7 @@ function down(e: PointerEvent) {
   ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
   hold = setTimeout(() => {
     suppressClick = true
-    play()
+    haptic()
   }, 420)
 }
 function move(e: PointerEvent) {
@@ -115,6 +116,10 @@ function move(e: PointerEvent) {
 }
 function up(e: PointerEvent) {
   clearTimeout(hold)
+  if (suppressClick && !moved) {
+    play()
+    return
+  }
   if (moved) {
     suppressClick = true
     if (e.clientX - startX < -65 && Math.abs(e.clientY - startY) < 60) {
@@ -139,7 +144,18 @@ watch(
   },
   { immediate: true }
 )
+watch(
+  () => settings.wordSound,
+  enabled => {
+    if (enabled) play(WordPlayTrigger.NewWord)
+    else cancelWordPracticeAudio()
+  }
+)
+function resumeAudio() {
+  if (!document.hidden && settings.wordSound) play(WordPlayTrigger.NewWord)
+}
 onMounted(() => {
+  document.addEventListener('visibilitychange', resumeAudio)
   if (!localStorage.getItem('ielts-gesture-hint-v1')) {
     hint.value = true
     localStorage.setItem('ielts-gesture-hint-v1', '1')
@@ -149,6 +165,7 @@ onMounted(() => {
   }
 })
 onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', resumeAudio)
   clearTimeout(hold)
   clearTimeout(finishTimer)
   clearTimeout(hintTimer)

@@ -1,41 +1,65 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { useSettingStore } from '@/core/stores/setting'
 import { useBaseStore } from '@/core/stores/base'
-import { useExport } from '@/core/hooks/export'
-import Icon from './Icon.vue'
+import { haptic } from '@/core/ielts/ui'
 const settings = useSettingStore()
 const store = useBaseStore()
-const { exportData, loading } = useExport()
+// Keep a previously saved goal (including 5/15) selectable without migrating it.
+const legacyGoal = ref(store.sdict.perDayStudyNumber)
+watch(
+  () => store.sdict.id,
+  () => {
+    legacyGoal.value = store.sdict.perDayStudyNumber
+  }
+)
+const goals = computed(() => [...new Set([10, 20, 30, 40, legacyGoal.value])].filter(n => n > 0).sort((a, b) => a - b))
+const index = computed(() => Math.max(0, goals.value.indexOf(store.sdict.perDayStudyNumber)))
+function setGoal(event: Event) {
+  const goal = goals.value[Number((event.target as HTMLInputElement).value)]
+  if (goal && goal !== store.sdict.perDayStudyNumber) {
+    store.sdict.perDayStudyNumber = goal
+    haptic()
+  }
+}
+function toggleSound() {
+  settings.wordSound = !settings.wordSound
+}
 </script>
 <template>
-  <div class="preferences">
-    <label
-      >每日新词<select v-model.number="store.sdict.perDayStudyNumber">
-        <option v-for="n in [5, 10, 15, 20]" :key="n" :value="n">{{ n }}</option>
-      </select></label
-    >
-    <label
-      >发音<select v-model="settings.soundType">
-        <option value="uk">英式</option>
-        <option value="us">美式</option>
-      </select></label
-    >
-    <label>自动发音<input type="checkbox" v-model="settings.wordSound" /></label>
-    <button class="preference-action" :disabled="loading" @click="exportData()">
-      <span>导出备份</span><Icon name="export" />
-    </button>
-    <p class="sheet-note">学习记录保存在此设备，清理浏览器前请备份。</p>
-    <details>
-      <summary>添加到主屏幕</summary>
-      <p class="sheet-note">在 Safari 中点分享，再选「添加到主屏幕」。</p>
-    </details>
-    <details>
-      <summary>关于</summary>
-      <p class="sheet-note">
-        雅思话题精选词汇。基于
-        <a href="https://github.com/zyronon/TypeWords" target="_blank" rel="noopener">TypeWords</a>，遵循
-        GPL-3.0；不代表官方完整词表。
-      </p>
-    </details>
+  <div class="preferences focused-preferences">
+    <section class="daily-goal">
+      <span class="preference-label">每日新词</span>
+      <div class="goal-dial">
+        <div class="goal-ticks" aria-hidden="true">
+          <i v-for="(goal, i) in goals" :key="goal" :class="{ active: i === index }" />
+        </div>
+        <input
+          id="daily-goal-dial"
+          type="range"
+          min="0"
+          :max="goals.length - 1"
+          step="1"
+          :value="index"
+          aria-label="每日新词"
+          :aria-valuetext="store.sdict.perDayStudyNumber + ' 个'"
+          @input="setGoal"
+        />
+      </div>
+      <output for="daily-goal-dial" class="goal-value">{{ store.sdict.perDayStudyNumber }} <span>词 / 天</span></output>
+    </section>
+    <section class="automatic-sound">
+      <span class="preference-label">自动发音</span
+      ><button
+        type="button"
+        class="quiet-switch"
+        role="switch"
+        aria-label="自动发音"
+        :aria-checked="settings.wordSound"
+        @click="toggleSound"
+      >
+        <span /><i />
+      </button>
+    </section>
   </div>
 </template>

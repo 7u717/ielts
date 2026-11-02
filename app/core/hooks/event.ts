@@ -1,8 +1,8 @@
-import {onDeactivated, onMounted, onUnmounted, watch, type WatchSource} from 'vue'
-import {emitter, EventKey} from '../utils/eventBus'
-import {useSettingStore} from '../stores'
-import {isMobile} from '../utils'
-import {Toast} from '@/base'
+import { onDeactivated, onMounted, onUnmounted, watch, type WatchSource } from 'vue'
+import { emitter, EventKey } from '../utils/eventBus'
+import { useSettingStore } from '../stores'
+import { isMobile } from '../utils'
+import { Toast } from '@/base'
 
 const CODE_TO_CHAR: Record<string, string> = {
   ...Object.fromEntries('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => [`Key${c}`, c.toLowerCase()])),
@@ -222,7 +222,10 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
         if (!window.location.pathname.includes('/practice')) return
         const typingWord = target.closest('#PracticeArea')
         if (!typingWord) return
-        if (target.closest('.practice-word-target, button, a, dialog, input, textarea, select, [contenteditable="true"]')) return false
+        if (
+          target.closest('.practice-word-target, button, a, dialog, input, textarea, select, [contenteditable="true"]')
+        )
+          return false
         if (!getSelectedText()) {
           window.setTimeout(() => hiddenInput.focus(), 160)
         }
@@ -318,6 +321,8 @@ export function useStartKeyboardEventListener() {
   const settingStore = useSettingStore()
 
   useEventListener('keydown', (e: KeyboardEvent) => {
+    // Native sheets own focus and Escape; practice shortcuts must not intercept them.
+    if (document.querySelector('dialog[open]')) return
     // console.log('keydown', e)
     // debugger
     //解决无法复制、全选的问题
@@ -378,6 +383,7 @@ export function useStartKeyboardEventListener() {
     }
   })
   useEventListener('keyup', (e: KeyboardEvent) => {
+    if (document.querySelector('dialog[open]')) return
     if (!window?.disableEventListener) {
       emitter.emit(EventKey.keyup, e)
     }

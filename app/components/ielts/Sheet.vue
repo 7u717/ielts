@@ -2,10 +2,11 @@
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import Icon from './Icon.vue'
 import { haptic } from '@/core/ielts/ui'
-const props = defineProps<{ open: boolean; title: string }>()
+const props = defineProps<{ open: boolean; title: string; minimal?: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 const dialog = ref<HTMLDialogElement>()
 const closing = ref(false)
+const entered = ref(false)
 const drag = ref(0)
 let previous: HTMLElement | null = null
 let timer: ReturnType<typeof setTimeout> | undefined
@@ -23,7 +24,7 @@ function beginClose(notify = false) {
   if (closing.value || !dialog.value?.open) return
   closing.value = true
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  timer = setTimeout(() => finishClose(notify), reduced ? 0 : 180)
+  timer = setTimeout(() => finishClose(notify), reduced ? 0 : props.minimal ? 380 : 180)
 }
 function close() {
   beginClose(true)
@@ -35,6 +36,7 @@ watch(
     if (disposed) return
     if (open) {
       clearTimeout(timer)
+      entered.value = false
       closing.value = false
       drag.value = 0
       previous = document.activeElement as HTMLElement
@@ -45,7 +47,11 @@ watch(
   },
   { immediate: true }
 )
+function animationEnd(event: AnimationEvent) {
+  if (!event.pseudoElement && !closing.value) entered.value = true
+}
 function down(e: PointerEvent) {
+  entered.value = true
   startY = e.clientY
   tracking.value = true
   ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
@@ -74,9 +80,12 @@ onBeforeUnmount(() => {
     :class="{
       'sheet-closing': closing,
       'sheet-dragging': tracking,
+      'preference-sheet': minimal,
+      'sheet-entered': entered,
     }"
     :aria-label="title"
     :style="{ '--sheet-drag': drag + 'px' }"
+    @animationend.self="animationEnd"
     @cancel.prevent="close"
     @click="
       e => {
@@ -86,7 +95,7 @@ onBeforeUnmount(() => {
   >
     <div class="sheet-surface">
       <div class="sheet-grab" @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up"><i /></div>
-      <div class="sheet-head">
+      <div v-if="!minimal" class="sheet-head">
         <h2>{{ title }}</h2>
         <button class="icon-button" aria-label="关闭" @click="close">
           <Icon name="close" />

@@ -22,6 +22,7 @@ jobs:
         with:
           version: 11.25.0
       - run: pnpm install --frozen-lockfile
+      - run: node scripts/verify-pronunciation.mjs
       - run: pnpm run generate
         env:
           NUXT_APP_BASE_URL: /ielts/

@@ -2,8 +2,10 @@ import { onMounted, watchEffect } from 'vue'
 import { useSettingStore } from '../stores/setting'
 import { ref } from 'vue'
 
-import { ENV, PronunciationApi, SoundFileOptions } from '../config/env'
+import { ENV, SoundFileOptions } from '../config/env'
 import { Toast } from '@/base'
+import { withAppBaseURL } from '@/core/utils/base-url'
+import { playPronunciation, cancelPronunciation } from '@/core/ielts/pronunciation'
 
 /**
  * 获取当前浏览器的 OS+浏览器 组合 key，用于 ttsVoiceMap 的索引
@@ -58,7 +60,7 @@ export function useSound(audioSrcList?: string[], audioFileLength?: number) {
     if (audioFileLength2) audioLength.value = audioFileLength2
     audioList.value = []
     for (let i = 0; i < audioLength.value; i++) {
-      audioSrcList2.map(src => audioList.value.push(new Audio(ENV.RESOURCE_URL + src)))
+      audioSrcList2.map(src => audioList.value.push(new Audio(withAppBaseURL(ENV.RESOURCE_URL + src))))
     }
     index.value = 0
   }
@@ -149,41 +151,27 @@ export function resetActiveWordPlayCount(word: string) {
   activeWordPlayCountMap.delete(word.trim().toLowerCase())
 }
 
-let cachedWordAudio: HTMLAudioElement | null = null
-let wordPlaybackGeneration = 0
 let ttsPlaybackGeneration = 0
 
-function getCachedWordAudio(): HTMLAudioElement | null {
-  if (!cachedWordAudio && typeof Audio !== 'undefined') {
-    cachedWordAudio = new Audio()
-  }
-  return cachedWordAudio
-}
-
 export function cancelWordPracticeAudio() {
-  wordPlaybackGeneration++
   ttsPlaybackGeneration++
-  if (typeof speechSynthesis !== 'undefined') {
-    speechSynthesis.pause()
-    speechSynthesis.cancel()
-  }
-  const wordAudio = getCachedWordAudio()
-  if (wordAudio) {
-    wordAudio.onended = null
-    wordAudio.onerror = null
-    wordAudio.pause()
-    wordAudio.currentTime = 0
-  }
+  cancelPronunciation()
 }
 
 export function usePlayWordAudio() {
   const settings = useSettingStore()
-  const speak = useTTsPlayAudio()
   return (word: string, manual = true, onEnd?: () => void, onPlay?: () => void) => {
-    if (!word) return
-    cancelWordPracticeAudio()
-    onPlay?.()
-    speak(word, { lang: settings.soundType === 'uk' ? 'en-GB' : 'en-US', onEnd })
+    playPronunciation(word, {
+      manual,
+      onEnd,
+      onPlay,
+      // Keep old settings intact; hidden zero-volume values must not silently mute manual word taps.
+      volume: settings.wordSoundVolume > 0 ? Math.min(1, settings.wordSoundVolume / 100) : 1,
+      rate: Math.max(0.5, Math.min(2, settings.wordSoundSpeed || 1)),
+      onError: () => {
+        if (manual) Toast.info('未能播放，请再点一次')
+      },
+    })
   }
 }
 
@@ -229,7 +217,6 @@ export function useTTsPlayAudio() {
       speechSynthesis.resume()
       speechSynthesis.speak(msg)
     }
-
   }
 
   return play

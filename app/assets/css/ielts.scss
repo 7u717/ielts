@@ -1132,3 +1132,157 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
     scale: 1 !important;
   }
 }
+/* Two quiet preferences; native range keeps dragging and keyboard access. */
+.preference-sheet {
+  background: rgba(22, 22, 24, 0.9);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 28px 28px 0 0;
+}
+.preference-sheet .sheet-surface {
+  border-radius: 28px 28px 0 0;
+}
+.preference-sheet[open] {
+  animation-duration: 0.38s;
+}
+.preference-sheet.sheet-closing {
+  animation-duration: 0.38s;
+}
+.preference-sheet .sheet-grab {
+  min-height: 33px;
+}
+.preference-sheet .sheet-body {
+  padding: 25px 34px calc(42px + env(safe-area-inset-bottom, 0px));
+}
+.focused-preferences {
+  max-width: 250px;
+  margin: 0 auto;
+  gap: 47px;
+}
+.preference-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: #e5e5ea;
+}
+.daily-goal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.goal-dial {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  touch-action: pan-x;
+  transition: transform 0.16s var(--r-spring);
+}
+.goal-dial:active {
+  transform: scale(0.96);
+}
+.goal-ticks {
+  position: absolute;
+  inset: 0 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.goal-ticks::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 0.5px;
+  background: var(--hair);
+}
+.goal-ticks i {
+  position: relative;
+  display: block;
+  height: 7px;
+  width: 1px;
+  border-radius: 999px;
+  background: #55565c;
+  transition:
+    height 0.2s var(--r-ease),
+    background 0.2s;
+}
+.goal-ticks i.active {
+  height: 17px;
+  background: #f5f5f7;
+}
+.goal-dial input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  touch-action: pan-x;
+}
+.goal-dial:has(input:focus-visible) {
+  outline: 1px solid var(--dim);
+  outline-offset: 5px;
+  border-radius: 14px;
+}
+.goal-value {
+  font: 13px var(--r-num);
+  color: #c7c7cc;
+  font-variant-numeric: tabular-nums;
+}
+.goal-value span {
+  font: 10px var(--r-font);
+  color: var(--muted);
+  margin-left: 4px;
+}
+.automatic-sound {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+.quiet-switch {
+  width: 52px;
+  height: 40px;
+  position: relative;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+}
+.quiet-switch span {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 20px;
+  height: 1px;
+  background: #44454b;
+  transition: background 0.2s;
+}
+.quiet-switch i {
+  position: absolute;
+  left: 10px;
+  top: 17px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #70727a;
+  transition:
+    transform 0.2s var(--r-spring),
+    background 0.2s;
+}
+.quiet-switch[aria-checked='true'] span {
+  background: #82868d;
+}
+.quiet-switch[aria-checked='true'] i {
+  transform: translateX(26px);
+  background: #f5f5f7;
+}
+.ielts-sheet.sheet-entered:not(.sheet-closing) {
+  animation: none;
+}
+.preference-sheet[open] {
+  transition-duration: 0.38s;
+}

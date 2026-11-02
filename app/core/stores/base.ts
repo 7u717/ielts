@@ -214,9 +214,8 @@ export const useBaseStore = defineStore('base', {
         val.length = val.words.length
       }
       let rIndex = this.word.bookList.findIndex((v: Dict) => isSameDictResource(v, val))
-      if (val.perDayStudyNumber > val.length) {
-        val.perDayStudyNumber = val.length
-      }
+      // A daily target may exceed the remaining topic size; task slicing already
+      // limits actual new words. Preserve the user's saved target on reload.
       if (val.lastLearnIndex > val.length) {
         val.lastLearnIndex = val.length
         val.complete = true
