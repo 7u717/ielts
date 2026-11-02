@@ -101,6 +101,7 @@ onBeforeUnmount(() => {
           <Icon name="close" />
         </button>
       </div>
+      <slot name="heading" />
       <div class="sheet-body"><slot /></div>
     </div>
   </dialog>

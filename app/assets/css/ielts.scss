@@ -1132,32 +1132,33 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
     scale: 1 !important;
   }
 }
-/* Two quiet preferences; native range keeps dragging and keyboard access. */
+/* Shared glass and motion for the two quiet sheets. */
 .preference-sheet {
   background: rgba(22, 22, 24, 0.9);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  border-radius: 28px 28px 0 0;
+  border-radius: 20px 20px 0 0;
 }
 .preference-sheet .sheet-surface {
-  border-radius: 28px 28px 0 0;
+  border-radius: 20px 20px 0 0;
 }
-.preference-sheet[open] {
-  animation-duration: 0.38s;
-}
+.preference-sheet[open],
 .preference-sheet.sheet-closing {
   animation-duration: 0.38s;
+}
+.preference-sheet[open] {
+  transition-duration: 0.38s;
 }
 .preference-sheet .sheet-grab {
   min-height: 33px;
 }
 .preference-sheet .sheet-body {
-  padding: 25px 34px calc(42px + env(safe-area-inset-bottom, 0px));
+  padding: 19px 32px calc(26px + env(safe-area-inset-bottom, 0px));
 }
 .focused-preferences {
-  max-width: 250px;
+  max-width: 326px;
   margin: 0 auto;
-  gap: 47px;
+  gap: 25px;
 }
 .preference-label {
   font-size: 13px;
@@ -1165,52 +1166,97 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
   color: #e5e5ea;
 }
 .daily-goal {
+  display: grid;
+  gap: 9px;
+}
+.goal-heading {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 18px;
+  justify-content: space-between;
+  min-height: 28px;
+}
+.goal-heading label {
+  min-height: auto;
+  display: block;
+}
+.goal-value {
+  font: 16px var(--r-num);
+  color: #e5e5ea;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.15s var(--r-ease);
+}
+.goal-value span {
+  font: 10px var(--r-font);
+  color: var(--muted);
+  margin-left: 4px;
+}
+.goal-value.quiet {
+  opacity: 0.35;
 }
 .goal-dial {
   position: relative;
   width: 100%;
-  height: 40px;
+  height: 49px;
   touch-action: pan-x;
-  transition: transform 0.16s var(--r-spring);
 }
-.goal-dial:active {
-  transform: scale(0.96);
+.goal-track {
+  position: absolute;
+  inset: 0 10px;
+  pointer-events: none;
 }
 .goal-ticks {
   position: absolute;
-  inset: 0 11px;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  pointer-events: none;
 }
 .goal-ticks::before {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
+  inset: 50% 0 auto;
   height: 0.5px;
-  background: var(--hair);
+  background: rgba(255, 255, 255, 0.14);
 }
 .goal-ticks i {
   position: relative;
-  display: block;
-  height: 7px;
   width: 1px;
+  height: 7px;
   border-radius: 999px;
   background: #55565c;
-  transition:
-    height 0.2s var(--r-ease),
-    background 0.2s;
 }
-.goal-ticks i.active {
-  height: 17px;
+.goal-cursor {
+  position: absolute;
+  left: var(--goal-position);
+  top: 50%;
+  width: 2px;
+  height: 18px;
+  border-radius: 999px;
   background: #f5f5f7;
+  transform: translate(-50%, -50%);
+  transition:
+    left 0.2s var(--r-spring),
+    height 0.16s var(--r-ease);
+}
+.goal-floating-value {
+  position: absolute;
+  bottom: 27px;
+  left: 50%;
+  transform: translate(-50%, 4px);
+  opacity: 0;
+  font: 14px var(--r-num);
+  font-variant-numeric: tabular-nums;
+  transition:
+    opacity 0.15s var(--r-ease),
+    transform 0.2s var(--r-ease);
+}
+.goal-dial.dragging .goal-cursor {
+  transition: height 0.16s var(--r-ease);
+  height: 22px;
+}
+.goal-dial.dragging .goal-floating-value {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 .goal-dial input {
   position: absolute;
@@ -1221,68 +1267,207 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
   opacity: 0;
   cursor: ew-resize;
   touch-action: pan-x;
+  appearance: none;
+  -webkit-appearance: none;
 }
-.goal-dial:has(input:focus-visible) {
-  outline: 1px solid var(--dim);
-  outline-offset: 5px;
-  border-radius: 14px;
+.goal-dial input::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 40px;
 }
-.goal-value {
-  font: 13px var(--r-num);
-  color: #c7c7cc;
-  font-variant-numeric: tabular-nums;
+.goal-dial input::-moz-range-thumb {
+  width: 20px;
+  height: 40px;
+  border: 0;
 }
-.goal-value span {
-  font: 10px var(--r-font);
-  color: var(--muted);
-  margin-left: 4px;
+.goal-dial:has(input:focus-visible) .goal-cursor {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
 }
 .automatic-sound {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 8px;
-}
-.quiet-switch {
-  width: 52px;
-  height: 40px;
-  position: relative;
+  width: 100%;
+  min-height: 48px;
+  padding: 0;
   background: none;
   border: 0;
-  border-radius: 999px;
-  padding: 0;
+  color: inherit;
+  text-align: left;
+  border-radius: 14px;
 }
-.quiet-switch span {
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  top: 20px;
-  height: 1px;
-  background: #44454b;
-  transition: background 0.2s;
+.quiet-switch {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 40px;
+  height: 23px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+  transition: background 0.2s var(--r-ease);
 }
 .quiet-switch i {
   position: absolute;
-  left: 10px;
-  top: 17px;
-  width: 6px;
-  height: 6px;
+  left: 3px;
+  top: 3px;
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
-  background: #70727a;
+  background: #8a8f98;
   transition:
     transform 0.2s var(--r-spring),
     background 0.2s;
 }
-.quiet-switch[aria-checked='true'] span {
-  background: #82868d;
+.automatic-sound[aria-checked='true'] .quiet-switch {
+  background: #e5e5ea;
+  box-shadow: none;
 }
-.quiet-switch[aria-checked='true'] i {
-  transform: translateX(26px);
-  background: #f5f5f7;
+.automatic-sound[aria-checked='true'] .quiet-switch i {
+  transform: translateX(17px);
+  background: #161618;
 }
 .ielts-sheet.sheet-entered:not(.sheet-closing) {
   animation: none;
 }
-.preference-sheet[open] {
-  transition-duration: 0.38s;
+/* Words breathe; the list stays underneath its compact detail overlay. */
+.vocabulary-sheet .sheet-surface {
+  max-height: min(78dvh, 720px);
+}
+.vocabulary-sheet .sheet-body {
+  min-height: 0;
+  padding-top: 0;
+  scrollbar-width: none;
+}
+.vocabulary-sheet .sheet-body::-webkit-scrollbar {
+  display: none;
+}
+.vocabulary-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 12px 32px 18px;
+}
+.vocabulary-heading h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #c7c7cc;
+}
+.vocabulary-heading > span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.vocabulary-word {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  padding: 18px 0;
+  border: 0;
+  background: none;
+  color: #e5e5ea;
+  text-align: left;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.vocabulary-english {
+  font-family: var(--r-num);
+  font-size: 21px;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+.vocabulary-meaning {
+  font-size: 11px;
+  line-height: 1.65;
+  color: #777b84;
+}
+.vocabulary-visible .vocabulary-entry {
+  animation: vocabulary-arrive 0.3s var(--r-ease) var(--entry-delay) both;
+}
+@keyframes vocabulary-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.vocabulary-detail {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: calc(100% - 64px);
+  max-width: 326px;
+  max-height: 58dvh;
+  padding: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(28, 28, 30, 0.94);
+  color: #e5e5ea;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.25);
+}
+.vocabulary-detail::-webkit-scrollbar {
+  display: none;
+}
+.vocabulary-detail[open] {
+  animation: vocabulary-arrive 0.2s var(--r-ease) both;
+}
+.vocabulary-detail::backdrop {
+  background: rgba(0, 0, 0, 0.3);
+  animation: mask-in 0.2s var(--r-ease) both;
+}
+.vocabulary-detail-content {
+  padding: 28px;
+}
+.vocabulary-detail-word {
+  display: block;
+  padding: 0;
+  max-width: 100%;
+  text-align: left;
+  overflow-wrap: anywhere;
+  border: 0;
+  background: none;
+  font: 300 25px var(--r-num);
+  letter-spacing: -0.035em;
+  color: #f5f5f7;
+}
+.vocabulary-detail-word:focus-visible {
+  outline-offset: 7px;
+}
+.vocabulary-detail-meaning {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--muted);
+  margin: 13px 0 0;
+}
+.vocabulary-example {
+  margin-top: 26px;
+}
+.vocabulary-example p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.9;
+  color: #c7c7cc;
+}
+.vocabulary-example p + p {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.vocabulary-detail-meaning small {
+  font-size: 10px;
+  margin-right: 8px;
+  color: #656972;
 }

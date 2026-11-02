@@ -20,6 +20,7 @@ import Ring from './Ring.vue'
 import Tabs from './Tabs.vue'
 import WordRow from './WordRow.vue'
 import TopicMenu from './TopicMenu.vue'
+import Vocabulary from './Vocabulary.vue'
 const store = useBaseStore()
 const settings = useSettingStore()
 const persistence = usePracticeWordPersistence()
@@ -143,10 +144,6 @@ async function start() {
   } finally {
     busy.value = false
   }
-}
-function showVocabularyWord(word: Word) {
-  wordDetails.value = word
-  vocabularyOpen.value = false
 }
 function removeDetailedWord() {
   if (wordDetails.value) void removeWord(wordDetails.value)
@@ -304,10 +301,15 @@ function grabUp(e: PointerEvent) {
           @close="topicsOpen = false"
           @select="chooseFromMenu" /></Teleport
     ></ClientOnly>
-    <Sheet :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
-      ><div class="word-list">
-        <WordRow v-for="word in store.sdict.words" :key="word.word" :word="word" @open="showVocabularyWord" /></div
-    ></Sheet>
+    <Sheet :open="vocabularyOpen" :title="topic.name" minimal class="vocabulary-sheet" @close="vocabularyOpen = false">
+      <template #heading
+        ><div class="vocabulary-heading">
+          <h2>{{ topic.name }}</h2>
+          <span>{{ store.sdict.words.length }} 词</span>
+        </div></template
+      >
+      <Vocabulary :words="store.sdict.words" :open="vocabularyOpen" />
+    </Sheet>
     <Sheet :open="!!wordDetails" :title="wordDetails?.word || ''" @close="wordDetails = null"
       ><template v-if="wordDetails"
         ><p class="detail-meaning">{{ wordDetails.trans.map(t => t.cn).join('；') }}</p>

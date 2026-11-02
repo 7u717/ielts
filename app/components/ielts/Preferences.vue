@@ -5,7 +5,7 @@ import { useBaseStore } from '@/core/stores/base'
 import { haptic } from '@/core/ielts/ui'
 const settings = useSettingStore()
 const store = useBaseStore()
-// Keep a previously saved goal (including 5/15) selectable without migrating it.
+// Existing targets remain selectable without migrating or rounding saved data.
 const legacyGoal = ref(store.sdict.perDayStudyNumber)
 watch(
   () => store.sdict.id,
@@ -15,51 +15,105 @@ watch(
 )
 const goals = computed(() => [...new Set([10, 20, 30, 40, legacyGoal.value])].filter(n => n > 0).sort((a, b) => a - b))
 const index = computed(() => Math.max(0, goals.value.indexOf(store.sdict.perDayStudyNumber)))
-function setGoal(event: Event) {
-  const goal = goals.value[Number((event.target as HTMLInputElement).value)]
-  if (goal && goal !== store.sdict.perDayStudyNumber) {
-    store.sdict.perDayStudyNumber = goal
+const position = ref(index.value)
+const dragging = ref(false)
+watch(index, value => {
+  if (!dragging.value) position.value = value
+})
+const progress = computed(() => (position.value / Math.max(1, goals.value.length - 1)) * 100)
+const preview = computed(() => {
+  const lower = Math.floor(position.value)
+  const a = goals.value[lower] ?? goals.value[0]
+  const b = goals.value[Math.min(lower + 1, goals.value.length - 1)]
+  return Math.round(a + (b - a) * (position.value - lower))
+})
+let lastStop = index.value
+function start() {
+  dragging.value = true
+  lastStop = index.value
+}
+function input(event: Event) {
+  position.value = Number((event.target as HTMLInputElement).value)
+  const stop = Math.round(position.value)
+  if (stop !== lastStop) {
+    haptic()
+    lastStop = stop
+  }
+}
+function commit() {
+  const stop = Math.max(0, Math.min(goals.value.length - 1, Math.round(position.value)))
+  position.value = stop
+  dragging.value = false
+  if (store.sdict.perDayStudyNumber !== goals.value[stop]) {
+    store.sdict.perDayStudyNumber = goals.value[stop]
     haptic()
   }
 }
-function toggleSound() {
-  settings.wordSound = !settings.wordSound
+function cancel() {
+  dragging.value = false
+  position.value = index.value
+}
+function key(event: KeyboardEvent) {
+  const direction = ['ArrowRight', 'ArrowUp'].includes(event.key)
+    ? 1
+    : ['ArrowLeft', 'ArrowDown'].includes(event.key)
+      ? -1
+      : 0
+  if (!direction && !['Home', 'End'].includes(event.key)) return
+  event.preventDefault()
+  position.value =
+    event.key === 'Home'
+      ? 0
+      : event.key === 'End'
+        ? goals.value.length - 1
+        : Math.max(0, Math.min(goals.value.length - 1, Math.round(position.value) + direction))
+  commit()
 }
 </script>
 <template>
   <div class="preferences focused-preferences">
     <section class="daily-goal">
-      <span class="preference-label">每日新词</span>
-      <div class="goal-dial">
-        <div class="goal-ticks" aria-hidden="true">
-          <i v-for="(goal, i) in goals" :key="goal" :class="{ active: i === index }" />
+      <div class="goal-heading">
+        <label for="daily-goal-dial" class="preference-label">每日新词</label>
+        <output for="daily-goal-dial" class="goal-value" :class="{ quiet: dragging }"
+          >{{ store.sdict.perDayStudyNumber }} <span>词 / 天</span></output
+        >
+      </div>
+      <div class="goal-dial" :class="{ dragging }" :style="{ '--goal-position': progress + '%' }">
+        <div class="goal-track" aria-hidden="true">
+          <div class="goal-ticks"><i v-for="goal in goals" :key="goal" /></div>
+          <span class="goal-cursor"
+            ><span class="goal-floating-value">{{ preview }}</span></span
+          >
         </div>
         <input
           id="daily-goal-dial"
           type="range"
           min="0"
           :max="goals.length - 1"
-          step="1"
-          :value="index"
+          step="0.01"
+          :value="position"
           aria-label="每日新词"
-          :aria-valuetext="store.sdict.perDayStudyNumber + ' 个'"
-          @input="setGoal"
+          :aria-valuetext="preview + ' 个'"
+          @pointerdown="start"
+          @input="input"
+          @change="commit"
+          @pointerup="commit"
+          @pointercancel="cancel"
+          @keydown="key"
         />
       </div>
-      <output for="daily-goal-dial" class="goal-value">{{ store.sdict.perDayStudyNumber }} <span>词 / 天</span></output>
     </section>
-    <section class="automatic-sound">
-      <span class="preference-label">自动发音</span
-      ><button
-        type="button"
-        class="quiet-switch"
-        role="switch"
-        aria-label="自动发音"
-        :aria-checked="settings.wordSound"
-        @click="toggleSound"
-      >
-        <span /><i />
-      </button>
-    </section>
+    <button
+      type="button"
+      class="automatic-sound"
+      role="switch"
+      aria-label="自动发音"
+      :aria-checked="settings.wordSound"
+      @click="settings.wordSound = !settings.wordSound"
+    >
+      <span class="preference-label">自动发音</span>
+      <span class="quiet-switch" aria-hidden="true"><i /></span>
+    </button>
   </div>
 </template>
