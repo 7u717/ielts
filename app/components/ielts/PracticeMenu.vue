@@ -72,7 +72,7 @@ onBeforeUnmount(() => {
           class="lk-o"
           role="menuitem"
           :aria-label="action.label"
-          :style="{ '--x': '0px', '--y': 52 + index * 46 + 'px', '--delay': index * 0.05 + 's' }"
+          :style="{ '--x': '0px', '--y': 52 + index * 46 + 'px', '--delay': index * 0.03 + 's' }"
           @click="choose(action.id)"
         >
           <Icon :name="action.icon" />

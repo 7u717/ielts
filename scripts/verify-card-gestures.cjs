@@ -142,6 +142,34 @@ async function drag(p, dx, release = true) {
       const studyTrigger = p.getByRole('button', { name: '学习工具', exact: true })
       assert.equal(await studyTrigger.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)')
       assert.equal(await studyTrigger.evaluate(e => getComputedStyle(e).boxShadow), 'none')
+      await studyTrigger.click()
+      const tools = p.getByRole('menu', { name: '学习工具', exact: true })
+      await tools.waitFor()
+      await p.waitForTimeout(750)
+      const toolItems = tools.getByRole('menuitem')
+      assert.equal(await toolItems.count(), 2)
+      for (let i = 0; i < 2; i++) {
+        const material = await toolItems.nth(i).evaluate(e => {
+          const s = getComputedStyle(e)
+          return {
+            background: s.backgroundColor,
+            shadow: s.boxShadow,
+            blur: s.backdropFilter,
+            delay: s.transitionDelay,
+            ease: s.transitionTimingFunction,
+          }
+        })
+        assert.equal(material.background, 'rgba(0, 0, 0, 0)')
+        assert.equal(material.shadow, 'none')
+        assert.equal(material.blur, 'none')
+        assert.ok(Math.abs(parseFloat(material.delay) - i * 0.03) < 0.001)
+        assert.ok(material.ease.includes('1.56'))
+      }
+      await p.screenshot({ path: `${out}/study-tools-${scheme}-390.png`, fullPage: true })
+      await p.mouse.click(8, 300)
+      await tools.waitFor({ state: 'hidden' })
+      assert.equal(await studyTrigger.getAttribute('aria-expanded'), 'false')
+      await p.waitForTimeout(450)
       const line = p.locator('.practice-mini-progress')
       assert.equal(await line.getAttribute('aria-label'), '今日学习进度')
       assert.equal(await line.evaluate(e => getComputedStyle(e).height), '2px')
@@ -232,7 +260,7 @@ async function drag(p, dx, release = true) {
           const e = document.querySelector('.word-stage.word-change-enter-from')
           if (e) {
             const s = getComputedStyle(e)
-            window.wordArrivals.push({ blur: s.filter, y: new DOMMatrix(s.transform).f })
+            window.wordArrivals.push({ blur: s.filter, y: new DOMMatrix(s.transform).f, opacity: Number(s.opacity) })
           }
         }).observe(document.querySelector('.typing-word'), {
           subtree: true,
@@ -301,8 +329,10 @@ async function drag(p, dx, release = true) {
       await p.mouse.up()
       await changed(p, third)
       assert.ok(
-        await p.evaluate(() => window.wordArrivals.some(a => a.blur === 'blur(6px)' && Math.abs(a.y - 8) < 0.1)),
-        'new words enter blurred and rise from 8px below'
+        await p.evaluate(() =>
+          window.wordArrivals.some(a => a.blur === 'none' && Math.abs(a.y) < 0.1 && a.opacity < 0.05)
+        ),
+        'new words softly fade without blur or displacement'
       )
       const fourth = await word(p)
       await p.getByRole('button', { name: '再看', exact: true }).click()
@@ -333,6 +363,15 @@ async function drag(p, dx, release = true) {
       const v = p.getByRole('dialog', { name: '环境', exact: true })
       await v.waitFor()
       assert.equal(await v.locator('h2').count(), 0, 'word list has no heading text')
+      assert.equal(await v.evaluate(e => getComputedStyle(e).backdropFilter), 'blur(32px) saturate(1.6)')
+      assert.equal(
+        await v.evaluate(e => getComputedStyle(e).backgroundColor),
+        scheme === 'dark' ? 'rgba(20, 20, 24, 0.18)' : 'rgba(255, 255, 255, 0.36)'
+      )
+      assert.equal(
+        await v.locator(':scope > .sheet-surface').evaluate(e => getComputedStyle(e).backgroundColor),
+        'rgba(0, 0, 0, 0)'
+      )
       assert.equal(await v.locator('.mastery-dot').count(), 24)
       for (const [word, opacity] of [
         ['biodiversity', '1'],
@@ -428,7 +467,7 @@ async function drag(p, dx, release = true) {
       await p.waitForTimeout(180)
       assert.equal(await row.evaluate(e => e.classList.contains('is-pressed')), true)
       const rowScale = await row.evaluate(e => getComputedStyle(e).transform)
-      assert.ok(rowScale.startsWith('matrix(0.98'))
+      assert.ok(rowScale.startsWith('matrix(0.97'))
       assert.equal(await p.evaluate(() => window.haptics.length), hapticsBefore + 1)
       await p.screenshot({ path: `${out}/vocabulary-press-${scheme}-390.png`, fullPage: true })
       await p.mouse.up()

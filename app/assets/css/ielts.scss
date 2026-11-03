@@ -4286,3 +4286,74 @@ html.light .practice-mini-progress {
   align-items: center;
   justify-content: center;
 }
+
+/* Study tools inherit the theme menu's spring cadence without circular bases. */
+html .ielts-app .study-menu .lk-o {
+  width: 44px;
+  height: 44px;
+  left: -22px;
+  top: -22px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition:
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.25s ease;
+}
+html .ielts-app .study-menu.open .lk-o {
+  transition-delay: var(--delay);
+}
+html .ielts-app .study-menu.open .lk-o:active {
+  transition-delay: 0s;
+  transform: translate(var(--x), var(--y)) scale(0.9);
+}
+.study-menu .lk-o .iue-icon {
+  width: 20px;
+  height: 20px;
+}
+/* Actual translucent glass, with the home ring softly present behind it. */
+html .ielts-sheet.vocabulary-sheet {
+  background: rgba(20, 20, 24, 0.18);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  backdrop-filter: blur(32px) saturate(160%);
+  box-shadow: inset 0 0.5px 0 var(--floating-edge);
+}
+html.light .ielts-sheet.vocabulary-sheet {
+  background: rgba(255, 255, 255, 0.36);
+}
+.vocabulary-sheet .sheet-surface,
+.vocabulary-sheet .sheet-body {
+  background: transparent;
+}
+body:has(.vocabulary-sheet[open]) .hero-ring-button {
+  opacity: 0.7;
+}
+.ielts-app .vocabulary-word:active,
+.ielts-app .vocabulary-word.is-pressed {
+  transform: scale(0.97);
+}
+/* A stationary cross-word fade; the swipe surface still follows the hand. */
+.word-change-enter-active {
+  transition: opacity 0.28s var(--r-ease);
+}
+.word-change-enter-from {
+  opacity: 0;
+  transform: none;
+  filter: none;
+}
+.word-change-enter-to {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.word-change-leave-active {
+  transition: opacity 0.18s var(--r-ease);
+}
+.word-change-leave-to {
+  opacity: 0;
+  transform: none;
+  filter: none;
+}

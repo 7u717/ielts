@@ -10,7 +10,7 @@
 
 话题切换只在右上角六个圆形图标菜单：叶子、书、芯片、人群、心跳、折线，当前话题为反色实心圆；仅当前话题或长按／键盘聚焦时显示标签，长按不误切换，点图标或空白收回，保留错落弹簧动画。左上头像偏好只显示每日新词与自动发音，每日新词使用细轨和圆形拇指、拖动浮动数值与吸附触感，兼容旧档位；悬浮面板左右底部留 12px，支持阻尼下拉关闭。
 
-学习单词按实际字体宽度保持单行与至少 32px 左右留白，整组位于扣除标题／键盘后的可视区域垂直中心；例句 15px 居中、最多两行，点按看全文。例句优先原词条，缺少时使用只读原创示例，不写入词库或学习记录，也不在打字／听写遮词阶段显示。移除底部滑动图形提示。鼠标通过 click、触摸通过松手打开始终相同的详情，兼容 click 去重，并将单词指针捕获留在单词本身，避免卡片容器吞掉 click；释义点按打开可下滑／点外关闭的详情，点词同时发音；长按松手发音，卡片左右跟手位移与轻旋转，过阈值轻震；右滑认识、左滑记为再看，松手飞出并让下一词缩放淡入，短拖弹簧回弹。底部拇指区两个 64px 图形按钮提供同等操作，按下缩放 0.92 并轻震，移除后方模糊轮廓，下一词从 0.96 缩放淡入，不渲染第二组文字、底色方块或底边线，沿用既有认识／错词判定，不更改存储格式。右上学习工具仅轻微压暗背景，不模糊单词。详情书签／笔图标分别操作收藏和笔记。
+学习单词按实际字体宽度保持单行与至少 32px 左右留白，整组位于扣除标题／键盘后的可视区域垂直中心；例句 15px 居中、最多两行，点按看全文。例句优先原词条，缺少时使用只读原创示例，不写入词库或学习记录，也不在打字／听写遮词阶段显示。移除底部滑动图形提示。鼠标通过 click、触摸通过松手打开始终相同的详情，兼容 click 去重，并将单词指针捕获留在单词本身，避免卡片容器吞掉 click；释义点按打开可下滑／点外关闭的详情，点词同时发音；长按松手发音，卡片左右跟手位移与轻旋转，过阈值轻震；右滑认识、左滑记为再看，松手飞出并让下一词缩放淡入，短拖弹簧回弹。底部拇指区两个 64px 图形按钮提供同等操作，按下缩放 0.92 并轻震，移除后方模糊轮廓，下一词保持位置柔和淡入，不渲染第二组文字、底色方块或底边线，沿用既有认识／错词判定，不更改存储格式。右上学习工具仅轻微压暗背景，不模糊单词。详情书签／笔图标分别操作收藏和笔记。
 
 词表使用与偏好一致的悬浮玻璃，左右底部各留 12px；释义紧随英文下方，统一留白、无分割线，顶部渐隐。词表后隐约保留主环轮廓，仅淡出背景主题文字以免形成光团。词表行按压 0.98 倍并轻微高亮，进入错落间隔 20ms，已有已认识／简单词以极小圆点表示。点词发音并打开含例句与发音图形的轻浮层，点外关闭；把手下拉关闭词表。错词列表支持左滑移出；空态上移到屏幕约 42%，细线对勾进入时描画，不显示“全部错词”标签和无效播放按钮。本组 0.5px 进度线固定于标题下，再收窄两侧各 32px；不绘制底轨，仅画已学亮段并弹簧推进。打字／听写保持无框下划线与光标、错字轻抖和触感、正确自动换词及完成光晕。
 
@@ -86,3 +86,5 @@ Round 22: bottom 再看／认识 use bare 28px icons inside unchanged 64px targe
 Round 23: bare home/study header triggers press to 0.9 with haptics; existing circular menus remain. The 2px header line reads today’s saved new words plus distinct completed new words in the current session, avoids counting repeated phases twice, and writes no progress. Word-list typography is 17px/13px with 6px mastery dots. The daily ring has a faint 1px track at zero as well as its real progress arc.
 
 Round 24: mastery markers are solid 6px dots at 20% / 55% / 100% opacity for new / learning / known. The daily line has a faint 2px track even at zero. Active topic circles keep their solid fill with no adjacent visible label; accessible names and other menu interactions remain. Detail audio, bookmark and note buttons have 44px targets. Storage and study records are unchanged.
+
+Round 25: study keyboard/settings tools use bare 20px icons in 44px targets, staggered by 30ms with the theme menu’s spring, retaining outside-tap dismissal. The word-list sheet uses translucent 32px frosted glass; rows press to 0.97 with the existing vibrate(8). Word changes use a stationary soft fade while swipe gestures remain. No storage or learning-record changes.
