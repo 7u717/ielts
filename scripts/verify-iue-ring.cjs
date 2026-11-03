@@ -31,7 +31,9 @@ fs.mkdirSync(output, { recursive: true })
     assert.equal(await page.locator('.hero-ring-button .ring-track').getAttribute('r'), '96')
     assert.equal(await page.locator('.hero-ring-button .iue-ring').evaluate(e => e.getBoundingClientRect().width), 220)
     assert.equal(await page.locator('.ring-dot').count(), 0)
-    assert.equal(await page.locator('.hero-count').innerText(), '20')
+    assert.equal(await page.locator('.hero-count').count(), 0)
+    assert.equal(await page.locator('.hero-topic').innerText(), '环境')
+    assert.equal(await page.locator('.hero-meta').innerText(), '今日 0/20 · 已学 0/24')
     assert.equal(
       await page.locator('.hero-ring-button .ring-track').evaluate(e => getComputedStyle(e).strokeWidth),
       '1px'
@@ -85,13 +87,11 @@ fs.mkdirSync(output, { recursive: true })
     await page.reload({ waitUntil: 'networkidle' })
     await page.locator('.hero-ring-button:enabled').waitFor()
     await page.waitForTimeout(1800)
-    assert.equal(await page.locator('.hero-count').innerText(), '15')
-    const arc = await page
-      .locator('.hero-ring-button .ring-arc')
-      .evaluate(e => ({
-        offset: parseFloat(getComputedStyle(e).strokeDashoffset),
-        full: parseFloat(e.getAttribute('stroke-dasharray')),
-      }))
+    assert.equal(await page.locator('.hero-meta').innerText(), '今日 5/20 · 已学 0/24')
+    const arc = await page.locator('.hero-ring-button .ring-arc').evaluate(e => ({
+      offset: parseFloat(getComputedStyle(e).strokeDashoffset),
+      full: parseFloat(e.getAttribute('stroke-dasharray')),
+    }))
     assert.ok(Math.abs(arc.offset / arc.full - 0.75) < 0.01)
     await page.screenshot({ path: output + '/home-progress-390.png', fullPage: true })
     await page.locator('.hero-ring-button').click()
@@ -137,14 +137,14 @@ fs.mkdirSync(output, { recursive: true })
     const quiet = await reduced.newPage()
     await quiet.goto('http://127.0.0.1:4173/ielts/', { waitUntil: 'networkidle' })
     await quiet.locator('.hero-ring-button:enabled').waitFor()
-    assert.equal(await quiet.locator('.hero-count').innerText(), '20')
+    assert.equal(await quiet.locator('.hero-meta').innerText(), '今日 0/20 · 已学 0/24')
     assert.equal(
       await quiet.locator('.hero-ring-button .ring-arc').evaluate(e => getComputedStyle(e).transitionDuration),
       '0s'
     )
     await reduced.close()
     console.log(
-      'PASS: 390px iue geometry/drawing/count-up, real daily progress, native knob/switch, unchanged menu, ring zoom, white word/count, drag tilt/return/fly, haptics, reduced motion'
+      'PASS: 390px iue geometry/drawing/original ring content, real daily progress, native knob/switch, unchanged menu, ring zoom, white word/count, drag tilt/return/fly, haptics, reduced motion'
     )
   } finally {
     await browser.close()

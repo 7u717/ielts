@@ -1311,18 +1311,6 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
 .ielts-app .hero-ring-button:active {
   transform: scale(0.97);
 }
-.hero-topic {
-  font-size: 15px;
-  letter-spacing: 0.1em;
-}
-.hero-count {
-  font: 300 52px/1.1 var(--r-num);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.04em;
-}
-.hero-meta {
-  font-size: 11px;
-}
 .ring-zooming .hero-ring-button {
   transform: scale(5);
   opacity: 0;
