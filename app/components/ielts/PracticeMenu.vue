@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
       aria-controls="study-orb-menu"
       @click="open = !open"
     >
-      <Icon name="more" />
+      <Icon name="topics" />
     </button>
     <div id="study-orb-menu" class="lk-menu" role="menu" aria-label="学习工具" :aria-hidden="!open" :inert="!open">
       <div class="lk-orbs">

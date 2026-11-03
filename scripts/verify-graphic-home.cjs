@@ -1,5 +1,5 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright')
-const { startStudy } = require('./mobile-actions.cjs')
+const { startStudy, chooseStudyMode } = require('./mobile-actions.cjs')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const base = process.env.IELTS_TEST_URL || 'http://127.0.0.1:4173/ielts/'
@@ -89,7 +89,7 @@ async function skip(page) {
       await page.locator('.hero-ring-button:enabled').waitFor()
       assert.equal(await page.locator('.topic-progress,.mode-controls,.mode-switch').count(), 0)
       assert.equal(await page.locator('.iue-tabs').count(), 1)
-      assert.equal(await page.locator('.unified-dock button').count(), 6)
+      assert.equal(await page.locator('.unified-dock button').count(), 4)
       const ring = await page.locator('.hero-ring-button').boundingBox()
       assert.equal(ring.width, 274)
       assert.ok(Math.abs(ring.x + ring.width / 2 - 195) < 1)
@@ -288,9 +288,9 @@ async function skip(page) {
       await page.locator('.hero-ring-button:enabled').waitFor()
       assert.equal((await data(page)).val.noteData.graphicSentinel, 'keep')
       for (const name of ['打字', '听写', '学习']) {
-        await page.getByRole('button', { name, exact: true }).click()
+        await chooseStudyMode(page, name)
         await page.locator('.hero-ring-button:enabled').waitFor()
-        assert.equal(await page.getByRole('button', { name, exact: true }).getAttribute('aria-pressed'), 'true')
+        assert.equal(await page.getByRole('button', { name: '学习', exact: true }).getAttribute('aria-pressed'), 'true')
       }
       await page.getByRole('button', { name: '错词', exact: true }).click()
       await page.getByText('还没有错词', { exact: true }).waitFor()

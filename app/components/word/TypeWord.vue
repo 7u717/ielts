@@ -117,21 +117,30 @@ function onWrong() {
   haptic()
   emit('wrong', props.practiceType === WordPracticeType.Identify ? 'identifyTyping' : undefined)
 }
-function known() {
-  emit('know')
-  finishTimer = setTimeout(() => emit('complete'), 200)
-}
-function unknown() {
-  onWrong()
-  controller.showWordResult.value = true
-  focusPracticeKeyboard()
-}
+const flying = ref(false)
+const threshold = 86
+let thresholdPassed = false
+let pressedWord = false
 let skipWordClick = false
-function wordClick() {
-  if (skipWordClick || suppressClick) {
+let flightTimer: ReturnType<typeof setTimeout> | undefined
+function decide(direction: number) {
+  if (flying.value) return
+  haptic()
+  flying.value = true
+  dragging.value = false
+  dragX.value = direction * Math.max(width.value * 1.15, 430)
+  flightTimer = setTimeout(() => {
+    if (direction > 0) emit('know')
+    else onWrong()
+    emit('complete')
+  }, 220)
+}
+function wordClick(event: MouseEvent) {
+  if (suppressClick || (skipWordClick && event.isTrusted)) {
     skipWordClick = suppressClick = false
     return
   }
+  skipWordClick = false
   tapWord()
 }
 let startX = 0,
@@ -141,7 +150,10 @@ let startX = 0,
 let hold: ReturnType<typeof setTimeout> | undefined
 let finishTimer: ReturnType<typeof setTimeout> | undefined
 function down(e: PointerEvent) {
-  if (!e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return
+  if (flying.value || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return
+  if ((e.target as HTMLElement).closest('button, input, textarea, a')) return
+  pressedWord = !!(e.target as HTMLElement).closest('#word-wrap')
+  thresholdPassed = false
   dragging.value = true
   skipWordClick = false
   dragX.value = 0
@@ -149,43 +161,48 @@ function down(e: PointerEvent) {
   startY = e.clientY
   moved = false
   suppressClick = false
-  ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
-  hold = setTimeout(() => {
-    suppressClick = true
-    haptic()
-  }, 420)
+  ;((e.target as HTMLElement).closest('#word-wrap') || (e.currentTarget as HTMLElement)).setPointerCapture(e.pointerId)
+  if (pressedWord)
+    hold = setTimeout(() => {
+      suppressClick = true
+      haptic()
+    }, 420)
 }
 function move(e: PointerEvent) {
   if (!dragging.value) return
   const dx = e.clientX - startX,
     dy = e.clientY - startY
-  if (Math.abs(dx) > Math.abs(dy) * 1.2) dragX.value = Math.max(-260, Math.min(36, dx < 0 ? dx : dx * 0.25))
+  if (Math.abs(dx) > Math.abs(dy) * 1.2) dragX.value = Math.max(-300, Math.min(300, dx))
+  if (Math.abs(dragX.value) > threshold && !thresholdPassed) {
+    haptic()
+    thresholdPassed = true
+  }
+  if (Math.abs(dragX.value) < threshold) thresholdPassed = false
   if (Math.hypot(e.clientX - startX, e.clientY - startY) > 9) {
     moved = true
     clearTimeout(hold)
   }
 }
 function up(e: PointerEvent) {
+  if (!dragging.value) return
   clearTimeout(hold)
   dragging.value = false
+  if (moved && Math.abs(dragX.value) > threshold) {
+    suppressClick = true
+    skipWordClick = true
+    decide(dragX.value > 0 ? 1 : -1)
+    return
+  }
   dragX.value = 0
   if (suppressClick && !moved) {
     skipWordClick = true
     play()
     return
   }
-  if (!moved) {
+  if (!moved && pressedWord && e.pointerType !== 'mouse') {
     tapWord()
     skipWordClick = true
-    return
-  }
-  if (moved) {
-    suppressClick = true
-    if (e.clientX - startX < -65 && Math.abs(e.clientY - startY) < 60) {
-      haptic()
-      emit('skip')
-    }
-  }
+  } else if (moved) suppressClick = true
 }
 function cancel() {
   dragging.value = false
@@ -198,6 +215,8 @@ watch(
   () => {
     clearTimeout(hold)
     clearTimeout(finishTimer)
+    clearTimeout(flightTimer)
+    flying.value = false
     dragX.value = 0
     dragging.value = false
     cancelWordPracticeAudio()
@@ -228,6 +247,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', resumeAudio)
   clearTimeout(hold)
   clearTimeout(finishTimer)
+  clearTimeout(flightTimer)
   cancelWordPracticeAudio()
 })
 useEvents([
@@ -256,8 +276,16 @@ function saveNote() {
       <div :key="word.word + phaseKey" class="word-stage">
         <div
           class="word-swipe-surface"
-          :class="{ dragging }"
-          :style="{ '--word-drag': dragX + 'px', opacity: 1 - Math.min(0.5, Math.abs(dragX) / 400) }"
+          :class="{ dragging, flying }"
+          @pointerdown="down"
+          @pointermove="move"
+          @pointerup="up"
+          @pointercancel="cancel"
+          :style="{
+            '--word-drag': dragX + 'px',
+            '--word-turn': Math.max(-12, Math.min(12, dragX / 30)) + 'deg',
+            opacity: flying ? 0 : 1 - Math.min(0.3, Math.abs(dragX) / 700),
+          }"
         >
           <div
             id="word-wrap"
@@ -266,10 +294,6 @@ function saveNote() {
             tabindex="0"
             aria-label="单词，点按详情，长按发音，左滑跳过"
             :style="{ fontSize: size + 'px' }"
-            @pointerdown="down"
-            @pointermove="move"
-            @pointerup="up"
-            @pointercancel="cancel"
             @click="wordClick"
             @keydown.enter.prevent="tapWord"
             @keydown.space.prevent="play()"
@@ -303,13 +327,6 @@ function saveNote() {
               </button></Transition
             >
           </div>
-          <div
-            v-if="practiceType === WordPracticeType.Identify && !controller.showWordResult.value"
-            class="recall-actions"
-          >
-            <button class="icon-button" aria-label="还没记住" @click="unknown"><Icon name="review" /></button
-            ><button class="icon-button" aria-label="记得" @click="known"><Icon name="check" /></button>
-          </div>
           <button
             v-if="examplePreview"
             class="sentence-preview"
@@ -329,6 +346,12 @@ function saveNote() {
       </div>
     </Transition>
     <Footer />
+    <div class="card-actions">
+      <button class="icon-button" aria-label="再看" :disabled="flying" @click="decide(-1)">
+        <Icon name="review" />
+      </button>
+      <button class="icon-button" aria-label="认识" :disabled="flying" @click="decide(1)"><Icon name="check" /></button>
+    </div>
     <Sheet
       :open="detailsOpen"
       :title="!detailRevealed && effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"

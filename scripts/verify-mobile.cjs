@@ -1,4 +1,4 @@
-const { headerAction, startStudy, closeWordDetails } = require('./mobile-actions.cjs')
+const { headerAction, startStudy, closeWordDetails, chooseStudyMode } = require('./mobile-actions.cjs')
 /* Run against `pnpm dev` or the generated /ielts/ site.
  * npm install --prefix /tmp/ielts-browser playwright
  * PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright node scripts/verify-mobile.cjs
@@ -85,7 +85,7 @@ async function swipe(page, locator, dx, dy = 0) {
   }
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
   await client.detach()
-  await page.waitForTimeout(320)
+  await page.waitForTimeout(650)
 }
 async function record(page, key, value) {
   return page.evaluate(
@@ -124,7 +124,7 @@ async function uiAndLearning() {
   assert.equal(style.width, 390)
   assert.equal(style.header, 57)
   assert.ok(!style.font.includes('Inter'))
-  assert.equal(await page.locator('.unified-dock button').count(), 6)
+  assert.equal(await page.locator('.unified-dock button').count(), 4)
   await page.screenshot({ path: `${shots}/home.png`, fullPage: true })
   await page.getByRole('button', { name: '错词', exact: true }).click()
   await page.getByText('还没有错词', { exact: true }).waitFor()
@@ -203,7 +203,7 @@ async function uiAndLearning() {
   assert.equal(await menu.getByRole('menuitemradio').count(), 6)
   await page.getByRole('button', { name: '选择主题', exact: true }).click()
   await menu.waitFor({ state: 'hidden' })
-  await page.getByRole('button', { name: '听写', exact: true }).click()
+  await chooseStudyMode(page, '听写')
   await page.locator('.hero-ring-button:enabled').waitFor()
   await startStudy(page)
   await page.waitForURL('**/practice-words/**')
@@ -219,7 +219,7 @@ async function uiAndLearning() {
   )
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await page.getByRole('button', { name: '学习', exact: true }).click()
+  await chooseStudyMode(page, '学习')
   await startStudy(page)
   await page.waitForURL('**/practice-words/**')
   await stable(page)
@@ -348,7 +348,7 @@ async function completeCycle() {
     }
     const phase = await page.locator('.typing-word').getAttribute('data-practice-phase')
     phases.add(phase)
-    if (phase === '回想') await page.getByRole('button', { name: '记得', exact: true }).click()
+    if (phase === '回想') await page.getByRole('button', { name: '认识', exact: true }).click()
     else {
       await page.getByRole('button', { name: '播放发音', exact: true }).click()
       const current = await page.evaluate(() => window.testSpeech.at(-1).text)

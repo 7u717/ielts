@@ -3618,3 +3618,137 @@ body:has(.vocabulary-sheet[open]) .hero-ring-button .ring-track {
 html.light .ielts-sheet.ring-disc {
   background: var(--floating-fill);
 }
+/* Only the completed segment is painted. */
+.practice-mini-progress,
+html.light .practice-mini-progress {
+  background: transparent;
+}
+.study-menu .header-link-button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--fill-1);
+}
+.study-menu .header-link-button .iue-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.3;
+}
+.word-swipe-surface {
+  touch-action: pan-y;
+  transform: translateX(var(--word-drag, 0px)) rotate(var(--word-turn, 0deg));
+  transform-origin: 50% 75%;
+  transition:
+    transform 0.32s var(--r-spring),
+    opacity 0.22s var(--r-ease);
+}
+.word-swipe-surface.dragging {
+  transition: none;
+}
+.word-swipe-surface.flying {
+  transition:
+    transform 0.22s var(--r-ease),
+    opacity 0.22s var(--r-ease);
+}
+.word-change-enter-active {
+  transition:
+    transform 0.34s var(--r-spring),
+    opacity 0.22s var(--r-ease);
+}
+.word-change-enter-from {
+  transform: scale(0.94);
+  opacity: 0;
+}
+.word-change-leave-active {
+  transition: opacity 0.08s var(--r-ease);
+}
+.word-change-leave-to {
+  opacity: 0;
+  transform: none;
+}
+.card-actions {
+  position: fixed;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 44px;
+}
+.card-actions .icon-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--fill-1);
+  color: var(--muted);
+}
+.word-tools .icon-button {
+  min-width: 44px;
+  min-height: 44px;
+}
+html[data-keyboard-open='true'] .card-actions {
+  bottom: calc(var(--keyboard-inset, 0px) + 12px);
+}
+.unified-dock {
+  width: 250px;
+}
+.unified-dock button,
+.unified-dock .tab-indicator {
+  width: 60px;
+  flex-basis: 60px;
+}
+.unified-dock .tab-indicator {
+  background: var(--fill-2);
+  box-shadow: inset 0 0.5px 0 var(--floating-edge);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+.unified-dock button[aria-pressed='true'] {
+  color: var(--text);
+}
+.avatar-mode-picker {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 0 0 24px;
+}
+.avatar-mode-picker button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+}
+.avatar-mode-picker button[aria-pressed='true'] {
+  background: var(--fill-2);
+  color: var(--text);
+}
+.avatar-mode-picker .iue-icon {
+  width: 18px;
+  height: 18px;
+}
+.vocabulary-word {
+  position: relative;
+  border-radius: 14px;
+  transition:
+    transform 0.16s var(--r-spring),
+    background 0.16s var(--r-ease);
+}
+.ielts-app .vocabulary-word:active {
+  transform: scale(0.98);
+  background: var(--fill-1);
+}
+.mastered-dot {
+  position: absolute;
+  right: 2px;
+  top: calc(50% - 1.5px);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text);
+  opacity: 0.35;
+}
+
+.word-swipe-surface.flying {
+  pointer-events: none;
+}

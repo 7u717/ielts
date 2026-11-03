@@ -3,10 +3,14 @@ import { ref, computed, nextTick, watch, onBeforeUnmount } from 'vue'
 import { practiceExamples } from '@/core/ielts/examples'
 import type { Word } from '@/core/types'
 import { usePlayWordAudio } from '@/core/hooks/sound'
+import { useBaseStore } from '@/core/stores/base'
 import { haptic } from '@/core/ielts/ui'
 import Icon from './Icon.vue'
 const props = defineProps<{ words: Word[]; open: boolean }>()
 const speak = usePlayWordAudio()
+const store = useBaseStore()
+const mastered = (word: Word) =>
+  store.knownWordsSet.has(word.word.toLowerCase()) || store.simpleWords.includes(word.word.toLowerCase())
 const detail = ref<Word | null>(null)
 const popup = ref<HTMLDialogElement>()
 const examples = computed(() => (detail.value ? practiceExamples(detail.value).slice(0, 2) : []))
@@ -95,7 +99,7 @@ onBeforeUnmount(() => {
       v-for="(word, index) in words"
       :key="word.word"
       class="vocabulary-entry"
-      :style="{ '--entry-delay': Math.min(index, 8) * 25 + 'ms' }"
+      :style="{ '--entry-delay': Math.min(index, 8) * 20 + 'ms' }"
     >
       <button
         type="button"
@@ -112,7 +116,11 @@ onBeforeUnmount(() => {
         @click="tap(word)"
       >
         <span class="vocabulary-english">{{ word.word }}</span>
-        <span class="vocabulary-gloss" aria-hidden="true">{{ word.trans.map(t => t.cn).join('；') }}</span>
+        <i v-if="mastered(word)" class="mastered-dot" aria-label="已掌握" /><span
+          class="vocabulary-gloss"
+          aria-hidden="true"
+          >{{ word.trans.map(t => t.cn).join('；') }}</span
+        >
       </button>
     </div>
     <dialog

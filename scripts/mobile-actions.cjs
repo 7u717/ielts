@@ -21,4 +21,13 @@ async function closeWordDetails(page) {
     await page.waitForTimeout(230)
   }
 }
-module.exports = { headerAction, startStudy, closeWordDetails }
+async function chooseStudyMode(page, label) {
+  await page.getByRole('button', { name: '偏好设置', exact: true }).click()
+  const sheet = page.getByRole('dialog', { name: '偏好', exact: true })
+  await sheet.waitFor()
+  await sheet.getByRole('button', { name: label + '模式', exact: true }).click()
+  await page.locator('.hero-ring-button:enabled').waitFor()
+  await page.mouse.click(8, 100)
+  await sheet.waitFor({ state: 'hidden' })
+}
+module.exports = { headerAction, startStudy, closeWordDetails, chooseStudyMode }

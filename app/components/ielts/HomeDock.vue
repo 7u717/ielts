@@ -7,16 +7,11 @@ const props = defineProps<{ tab: IeltsTab; mode: WordPracticeMode; disabled: boo
 const emit = defineEmits<{ tab: [IeltsTab]; mode: [WordPracticeMode]; vocabulary: [] }>()
 const items = [
   { label: '学习', icon: 'learn' },
-  { label: '打字', icon: 'keyboard' },
-  { label: '听写', icon: 'headphones' },
   { label: '', icon: 'list' },
   { label: '错词', icon: 'wrong' },
   { label: '复习', icon: 'review' },
 ]
-const modes = [WordPracticeMode.System, WordPracticeMode.Free, WordPracticeMode.ListenOnly]
-const active = computed(() =>
-  props.tab === 'wrong' ? 4 : props.tab === 'review' ? 5 : Math.max(0, modes.indexOf(props.mode))
-)
+const active = computed(() => (props.tab === 'wrong' ? 2 : props.tab === 'review' ? 3 : 0))
 const bar = ref<HTMLElement>()
 const offset = ref<number | null>(null)
 let start = 0,
@@ -24,12 +19,8 @@ let start = 0,
 function select(index: number) {
   if (props.disabled) return
   haptic()
-  if (index === 3) emit('vocabulary')
-  else if (index > 3) emit('tab', index === 4 ? 'wrong' : 'review')
-  else {
-    emit('tab', 'learn')
-    emit('mode', modes[index])
-  }
+  if (index === 1) emit('vocabulary')
+  else emit('tab', index === 2 ? 'wrong' : index === 3 ? 'review' : 'learn')
 }
 function down(e: PointerEvent) {
   if (!e.isPrimary || props.disabled) return
@@ -39,11 +30,11 @@ function down(e: PointerEvent) {
 }
 function move(e: PointerEvent) {
   if (tracking && Math.abs(e.clientX - start) > 5)
-    offset.value = Math.max(0, Math.min(5, (e.clientX - bar.value!.getBoundingClientRect().left - 5) / 54 - 0.5))
+    offset.value = Math.max(0, Math.min(3, (e.clientX - bar.value!.getBoundingClientRect().left - 5) / 60 - 0.5))
 }
 function up(e: PointerEvent) {
   if (!tracking) return
-  select(Math.max(0, Math.min(5, Math.floor((e.clientX - bar.value!.getBoundingClientRect().left - 5) / 54))))
+  select(Math.max(0, Math.min(3, Math.floor((e.clientX - bar.value!.getBoundingClientRect().left - 5) / 60))))
   cancel()
 }
 function cancel() {
@@ -61,22 +52,22 @@ function cancel() {
     @pointermove="move"
     @pointerup.stop="up"
     @pointercancel="cancel"
-    @keydown.right.prevent="select((active + 1) % 6)"
-    @keydown.left.prevent="select((active + 5) % 6)"
+    @keydown.right.prevent="select((active + 1) % 4)"
+    @keydown.left.prevent="select((active + 3) % 4)"
   >
     <i
       class="tab-indicator"
       :class="{ dragging: offset !== null }"
-      :style="{ transform: `translateX(${(offset ?? active) * 54}px)` }"
+      :style="{ transform: `translateX(${(offset ?? active) * 60}px)` }"
     />
     <button
       v-for="(item, index) in items"
       :key="index"
-      :id="index === 4 ? 'tab-wrong' : index === 5 ? 'tab-review' : index === 0 ? 'tab-learn' : undefined"
+      :id="index === 2 ? 'tab-wrong' : index === 3 ? 'tab-review' : index === 0 ? 'tab-learn' : undefined"
       :aria-label="item.label || vocabularyLabel"
       :aria-pressed="active === index"
       :disabled="disabled"
-      :aria-haspopup="index === 3 ? 'dialog' : undefined"
+      :aria-haspopup="index === 1 ? 'dialog' : undefined"
       @click="select(index)"
     >
       <Icon :name="item.icon" />
