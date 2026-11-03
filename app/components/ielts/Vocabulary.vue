@@ -52,7 +52,10 @@ function down(word: Word, event: PointerEvent) {
   held = moved = suppressClick = false
   hold = setTimeout(() => {
     held = true
+    pressed.value = ''
+    suppressClick = true
     haptic()
+    show(word)
   }, 440)
 }
 function move(event: PointerEvent) {

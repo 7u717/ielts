@@ -61,6 +61,19 @@ async function drag(p, dx, release = true) {
       await p.goto(base, { waitUntil: 'networkidle' })
       await p.locator('.hero-ring-button:enabled').waitFor()
       assert.equal(await p.locator('.unified-dock button').count(), 4)
+      const dock = p.locator('.unified-dock')
+      assert.equal(await dock.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)')
+      assert.equal(await dock.evaluate(e => getComputedStyle(e).backdropFilter), 'none')
+      assert.equal(await dock.evaluate(e => getComputedStyle(e).boxShadow), 'none')
+      const dot = dock.locator('.tab-indicator')
+      assert.equal(await dot.evaluate(e => getComputedStyle(e).width), '5px')
+      assert.ok((await dot.evaluate(e => getComputedStyle(e).transitionTimingFunction)).includes('1.3'))
+      await p.getByRole('button', { name: '错词', exact: true }).click()
+      await p.waitForTimeout(450)
+      assert.ok(Math.abs((await dot.evaluate(e => new DOMMatrix(getComputedStyle(e).transform).e)) - 120) < 0.1)
+      await p.screenshot({ path: `${out}/dock-wrong-${scheme}-390.png`, fullPage: true })
+      await p.getByRole('button', { name: '学习', exact: true }).click()
+      await p.waitForTimeout(450)
       assert.equal(await p.locator('.hero-ring-button .ring-track').count(), 1)
       await p.screenshot({ path: `${out}/home-${scheme}-390.png`, fullPage: true })
       await p.locator('.hero-ring-button').click()
@@ -69,6 +82,8 @@ async function drag(p, dx, release = true) {
       await p.waitForTimeout(450)
       assert.equal(await disc.locator('.ring-track').count(), 1)
       assert.equal(await disc.locator('.ring-review-track').count(), 0)
+      assert.equal(await disc.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)')
+      if (scheme === 'light') assert.equal(await disc.evaluate(e => getComputedStyle(e).backdropFilter), 'none')
       await p.screenshot({ path: `${out}/disc-${scheme}-390.png`, fullPage: true })
       await p.mouse.click(8, 100)
       await disc.waitFor({ state: 'hidden' })
@@ -124,8 +139,17 @@ async function drag(p, dx, release = true) {
       assert.ok((await p.evaluate(() => window.haptics)).includes(8))
       for (const b of await p.locator('.word-tools button').all()) {
         const box = await b.boundingBox()
-        assert.ok(box.width >= 52 && box.height >= 52)
+        assert.ok(box.width >= 60 && box.height >= 60)
       }
+      const tool = p.getByRole('button', { name: '单词详情', exact: true })
+      const toolBox = await tool.boundingBox()
+      await p.mouse.move(toolBox.x + toolBox.width / 2, toolBox.y + toolBox.height / 2)
+      await p.mouse.down()
+      await p.waitForTimeout(180)
+      assert.ok((await tool.evaluate(e => getComputedStyle(e).transform)).startsWith('matrix(0.94'))
+      await p.mouse.up()
+      await p.locator('.word-detail-sheet').waitFor()
+      await closeWordDetails(p)
       await p.locator('#word-wrap').click()
       await p.locator('.word-detail-sheet').waitFor()
       await p.waitForTimeout(350)
@@ -269,6 +293,20 @@ async function drag(p, dx, release = true) {
       await v.waitFor()
       assert.equal(await v.locator('h2').count(), 0, 'word list has no heading text')
       assert.equal(await v.locator('.mastery-dot').count(), 24)
+      assert.equal(
+        await v
+          .locator('.mastery-dot')
+          .first()
+          .evaluate(e => getComputedStyle(e).width),
+        '8px'
+      )
+      assert.equal(
+        await v
+          .locator('.vocabulary-word')
+          .first()
+          .evaluate(e => getComputedStyle(e).height),
+        '92px'
+      )
       await p.waitForTimeout(500)
       assert.equal(
         await v
@@ -320,11 +358,32 @@ async function drag(p, dx, release = true) {
       await p.screenshot({ path: `${out}/vocabulary-details-${scheme}-390.png`, fullPage: true })
       await p.mouse.click(8, 100)
       await p.locator('.vocabulary-word-sheet').waitFor({ state: 'hidden' })
+      const holdBox = await row.boundingBox()
+      const hapticsAtHold = await p.evaluate(() => window.haptics.length)
+      await p.mouse.move(holdBox.x + 40, holdBox.y + holdBox.height / 2)
+      await p.mouse.down()
+      await p.waitForTimeout(600)
+      assert.equal(await p.locator('.vocabulary-word-sheet').isVisible(), true, 'hold opens details before release')
+      assert.ok(await p.evaluate(n => window.haptics.length > n, hapticsAtHold))
+      await p.mouse.up()
+      await p.waitForTimeout(260)
+      assert.equal(
+        await p.locator('.vocabulary-word-sheet').isVisible(),
+        true,
+        'release must not immediately dismiss the held detail'
+      )
+      await p.mouse.click(8, 100)
+      await p.locator('.vocabulary-word-sheet').waitFor({ state: 'hidden' })
+      assert.equal(
+        await row.evaluate(e => e.classList.contains('is-pressed')),
+        false,
+        'held row highlight clears after opening details'
+      )
       await p.screenshot({ path: `${out}/vocabulary-${scheme}-390.png`, fullPage: true })
       assert.deepEqual(errors, [])
       assert.ok((await p.evaluate(() => window.haptics)).every(n => n === 8))
       console.log(
-        `PASS ${scheme}: four core dock entries plus contextual dock modes; mouse/touch/meaning details; transparent progress track; 52px tools; 64px thumb actions; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; no drag echo; centered moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
+        `PASS ${scheme}: four core dock entries plus contextual dock modes; mouse/touch/meaning details; transparent progress track; 60px tools; 64px thumb actions; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; no drag echo; centered moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
       )
       await c.close()
     }

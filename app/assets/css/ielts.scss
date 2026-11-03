@@ -4075,3 +4075,73 @@ html.light .ring-today-arc {
   filter: blur(0);
   opacity: 1;
 }
+
+/* Four bare navigation icons; only a moving dot carries selection. */
+html .iue-tabs.unified-dock {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.unified-dock .tab-indicator {
+  width: 5px;
+  height: 5px;
+  top: 46px;
+  left: 32.5px;
+  border-radius: 50%;
+  background: var(--text);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition: transform 0.32s var(--r-spring);
+}
+.unified-dock .tab-indicator.dragging {
+  transition: none;
+}
+/* Local backdrop filtering must not paint a grey disc in the light theme. */
+html.light .ielts-sheet.ring-disc {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+html.light .ring-disc .sheet-surface,
+html.light .ring-disc .sheet-body {
+  background: transparent;
+}
+.vocabulary-word {
+  height: 92px;
+  min-height: 92px;
+  padding-left: 24px;
+  gap: 8px;
+}
+.mastery-dot {
+  width: 8px;
+  height: 8px;
+  top: calc(50% - 4px);
+  border-width: 1px;
+  opacity: 0.7;
+}
+.mastery-learning {
+  opacity: 0.85;
+}
+.mastery-mastered {
+  opacity: 0.95;
+}
+.word-tools .icon-button {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  min-height: 60px;
+  transition:
+    transform 0.16s var(--r-spring),
+    color 0.16s var(--r-ease);
+}
+.word-tools .iue-icon {
+  width: 24px;
+  height: 24px;
+}
+.ielts-app .word-tools .icon-button:active {
+  transform: scale(0.94);
+}
