@@ -87,6 +87,7 @@ onBeforeUnmount(() => {
       aria-haspopup="menu"
       :aria-expanded="open"
       aria-controls="topic-orb-menu"
+      @pointerdown="haptic()"
       @click="emit('toggle')"
     >
       <Icon name="topics" />

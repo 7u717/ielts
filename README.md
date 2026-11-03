@@ -82,3 +82,5 @@ PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright \
 第 21 轮：dock 去掉胶囊材质，仅保留四个图标及下方 5px 弹簧滑动圆点；浅色展开圆环取消局部 backdrop 模糊以去除灰盘。词表行高 92px、掌握点 8px，按住 440ms 即轻震并打开同款详情，发音仍留在用户点击／松手手势内。学习页发音／详情点击区 60px，按压 0.94，单词本身继续兼容鼠标与触摸打开详情。
 
 Round 22: bottom 再看／认识 use bare 28px icons inside unchanged 64px targets, press to 0.9 with haptics. Daily arc renders at 2px while its dash lengths scale with the circle with higher theme contrast. Study and vocabulary details record the source word position and spring-scale from it; other sheets retain their existing transitions. Word-list translations use the foreground color at 60% opacity. No persistence schema or progress changes.
+
+Round 23: bare home/study header triggers press to 0.9 with haptics; existing circular menus remain. The 2px header line reads today’s saved new words plus distinct completed new words in the current session, avoids counting repeated phases twice, and writes no progress. Word-list typography is 17px/13px with 6px mastery dots. The daily ring has a faint 1px track at zero as well as its real progress arc.

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Icon from './Icon.vue'
+import { haptic } from '@/core/ielts/ui'
 const emit = defineEmits<{ keyboard: []; preferences: [] }>()
 const open = ref(false)
 const wrap = ref<HTMLElement>()
@@ -58,6 +59,7 @@ onBeforeUnmount(() => {
       aria-haspopup="menu"
       :aria-expanded="open"
       aria-controls="study-orb-menu"
+      @pointerdown="haptic()"
       @click="open = !open"
     >
       <Icon name="topics" />

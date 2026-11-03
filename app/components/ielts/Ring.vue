@@ -60,6 +60,7 @@ const learnedRatio = computed(() => (props.single ? Math.max(0, ratio.value - re
           :stroke-dashoffset="innerCircumference * (1 - review)"
         />
       </template>
+      <circle v-if="todayProgress !== undefined" class="ring-today-track" cx="120" cy="120" r="103" />
       <circle
         v-if="today > 0"
         class="ring-today-arc"

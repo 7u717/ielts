@@ -75,6 +75,18 @@ async function drag(p, dx, release = true) {
       await p.getByRole('button', { name: '学习', exact: true }).click()
       await p.waitForTimeout(450)
       assert.equal(await p.locator('.hero-ring-button .ring-track').count(), 1)
+      const themeTrigger = p.getByRole('button', { name: '选择主题', exact: true })
+      assert.equal(await themeTrigger.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)')
+      assert.equal(await themeTrigger.evaluate(e => getComputedStyle(e).boxShadow), 'none')
+      const triggerBox = await themeTrigger.boundingBox()
+      await p.mouse.move(triggerBox.x + triggerBox.width / 2, triggerBox.y + triggerBox.height / 2)
+      await p.mouse.down()
+      await p.waitForTimeout(180)
+      assert.ok((await themeTrigger.evaluate(e => getComputedStyle(e).transform)).startsWith('matrix(0.9,'))
+      await p.mouse.up()
+      await p.waitForTimeout(750)
+      await themeTrigger.click()
+      await p.waitForTimeout(300)
       await p.screenshot({ path: `${out}/home-${scheme}-390.png`, fullPage: true })
       await p.locator('.hero-ring-button').click()
       const disc = p.getByRole('dialog', { name: '学习概览', exact: true })
@@ -127,6 +139,13 @@ async function drag(p, dx, release = true) {
         await p.locator('.practice-mini-progress').evaluate(e => getComputedStyle(e).backgroundColor),
         'rgba(0, 0, 0, 0)'
       )
+      const studyTrigger = p.getByRole('button', { name: '学习工具', exact: true })
+      assert.equal(await studyTrigger.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)')
+      assert.equal(await studyTrigger.evaluate(e => getComputedStyle(e).boxShadow), 'none')
+      const line = p.locator('.practice-mini-progress')
+      assert.equal(await line.getAttribute('aria-label'), '今日学习进度')
+      assert.equal(await line.evaluate(e => getComputedStyle(e).height), '2px')
+      assert.ok((await line.locator('i').evaluate(e => getComputedStyle(e).transitionTimingFunction)).includes('1.3'))
       assert.equal(await p.locator('.card-actions button').count(), 2)
       const actionBox = await p.locator('.card-actions').boundingBox()
       assert.ok(actionBox.y > 700 && actionBox.y + actionBox.height <= 820)
@@ -254,6 +273,8 @@ async function drag(p, dx, release = true) {
       await p.screenshot({ path: `${out}/drag-${scheme}-390.png`, fullPage: true })
       await p.mouse.up()
       await changed(p, first)
+      assert.equal(await line.getAttribute('aria-valuenow'), '1', 'one word advances the daily line')
+      await p.screenshot({ path: `${out}/today-line-${scheme}-390.png`, fullPage: true })
       const second = await word(p)
       await drag(p, -130)
       await changed(p, second)
@@ -310,6 +331,20 @@ async function drag(p, dx, release = true) {
       assert.equal(await v.locator('.mastery-dot').count(), 24)
       assert.equal(
         await v
+          .locator('.vocabulary-english')
+          .first()
+          .evaluate(e => getComputedStyle(e).fontSize),
+        '17px'
+      )
+      assert.equal(
+        await v
+          .locator('.vocabulary-gloss')
+          .first()
+          .evaluate(e => getComputedStyle(e).fontSize),
+        '13px'
+      )
+      assert.equal(
+        await v
           .locator('.vocabulary-gloss')
           .first()
           .evaluate(e => getComputedStyle(e).opacity),
@@ -320,7 +355,7 @@ async function drag(p, dx, release = true) {
           .locator('.mastery-dot')
           .first()
           .evaluate(e => getComputedStyle(e).width),
-        '8px'
+        '6px'
       )
       assert.equal(
         await v

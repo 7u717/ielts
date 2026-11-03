@@ -340,12 +340,17 @@ async function completeCycle() {
   await stable(page)
   const phases = new Set()
   let complete = false
+  let lastDailyProgress = 0
   for (let i = 0; i < 80; i++) {
     const done = page.getByRole('dialog', { name: '这一组，记住了。', exact: true })
     if (await done.isVisible()) {
       complete = true
       break
     }
+    const dailyProgress = Number(await page.locator('.practice-mini-progress').getAttribute('aria-valuenow'))
+    assert.ok(dailyProgress >= lastDailyProgress, 'repeated phases must not reset daily progress')
+    assert.ok(dailyProgress <= 5, 'repeated phases must not double-count new words')
+    lastDailyProgress = dailyProgress
     const phase = await page.locator('.typing-word').getAttribute('data-practice-phase')
     phases.add(phase)
     if (phase === '回想') await page.getByRole('button', { name: '认识', exact: true }).click()
@@ -357,6 +362,7 @@ async function completeCycle() {
     await page.waitForTimeout(650)
   }
   assert.ok(complete, 'full learning cycle completes without a Next button')
+  assert.equal(lastDailyProgress, 5)
   await page.getByRole('button', { name: '再学一组 →', exact: true }).click()
   await stable(page)
   assert.equal(await word(page), 'ecosystem', 'completed progress advances exactly once')

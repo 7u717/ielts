@@ -4193,3 +4193,62 @@ html.light .hero-ring-button .ring-today-arc {
     transform: translate(calc(var(--source-x) * 0.2), calc(var(--source-y) * 0.2)) scale(0.94);
   }
 }
+
+/* Bare header triggers share the same touch treatment on home and study. */
+html .ielts-app .header-actions .header-link-button {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition:
+    transform 0.16s var(--r-spring),
+    color 0.16s var(--r-ease);
+}
+html .ielts-app .header-actions .header-link-button:active {
+  transform: scale(0.9);
+}
+html .ielts-app .header-actions .header-link-wrap.open .header-link-button:active {
+  transform: rotate(-45deg) scale(0.9);
+}
+.practice-mini-progress,
+html.light .practice-mini-progress {
+  top: var(--header-h);
+  bottom: auto;
+  left: 32px;
+  width: calc(100% - 64px);
+  height: 2px;
+  background: transparent;
+}
+.practice-mini-progress i {
+  height: 2px;
+  box-shadow: none;
+  transition: transform 0.38s var(--r-spring);
+}
+.vocabulary-english {
+  font-size: 17px;
+}
+.vocabulary-gloss {
+  font-size: 13px;
+}
+.mastery-dot {
+  width: 6px;
+  height: 6px;
+  top: calc(50% - 3px);
+  opacity: 0.8;
+}
+.mastery-learning {
+  opacity: 0.9;
+}
+.mastery-mastered {
+  opacity: 1;
+}
+.hero-ring-button .ring-today-track {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: calc(1px * var(--ring-stroke-unit));
+  opacity: 0.1;
+}
+html.light .hero-ring-button .ring-today-track {
+  opacity: 0.14;
+}
