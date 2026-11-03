@@ -97,6 +97,18 @@ async function drag(p, dx, release = true) {
       await p.locator('.word-detail-sheet').waitFor()
       await p.waitForTimeout(350)
       assert.ok(await p.locator('.detail-phonetic').innerText())
+      assert.equal(await p.locator('.card-actions').evaluate(e => getComputedStyle(e).visibility), 'hidden')
+      assert.equal(
+        await p.locator('.word-detail-sheet').evaluate(e => getComputedStyle(e).backdropFilter),
+        'blur(40px) saturate(1.8)'
+      )
+      assert.equal(
+        await p.locator('.word-detail-sheet').evaluate(e => getComputedStyle(e, '::backdrop').backdropFilter),
+        'blur(4px)'
+      )
+      for (const example of await p.locator('.word-detail-sheet .word-examples p').all()) {
+        assert.equal(await example.evaluate(e => getComputedStyle(e).textAlign), 'center')
+      }
       await p.screenshot({ path: `${out}/mouse-details-${scheme}-390.png`, fullPage: true })
       await closeWordDetails(p)
       await p.locator('#word-wrap').tap()
@@ -105,6 +117,14 @@ async function drag(p, dx, release = true) {
       await p.getByRole('button', { name: '查看释义详情', exact: true }).click()
       await p.locator('.word-detail-sheet').waitFor()
       await closeWordDetails(p)
+      assert.equal(await p.locator('.card-actions').evaluate(e => getComputedStyle(e).visibility), 'visible')
+      for (const el of await p.locator('.word-stage, .word-stage *').all()) {
+        assert.equal(await el.evaluate(e => getComputedStyle(e).userSelect), 'none')
+        if (await p.evaluate(() => CSS.supports('-webkit-touch-callout', 'none'))) {
+          assert.equal(await el.evaluate(e => getComputedStyle(e).getPropertyValue('-webkit-touch-callout')), 'none')
+        }
+      }
+      assert.match(await p.locator('.typing-word').evaluate(e => getComputedStyle(e).maskImage), /linear-gradient/)
       const echo = await p.locator('.next-card-echo').evaluate(e => {
         const s = getComputedStyle(e)
         return {
@@ -143,6 +163,14 @@ async function drag(p, dx, release = true) {
       const count = await p.evaluate(() => window.haptics.length)
       await drag(p, 130, false)
       assert.ok(await p.evaluate(n => window.haptics.length > n, count))
+      assert.equal(
+        await p.evaluate(() => window.getSelection().toString()),
+        '',
+        'drag must not select word or example text'
+      )
+      for (const el of await p.locator('.word-stage, .word-swipe-surface, #word-wrap').all()) {
+        assert.equal(await el.evaluate(e => getComputedStyle(e).overflow), 'visible')
+      }
       await p.screenshot({ path: `${out}/drag-${scheme}-390.png`, fullPage: true })
       await p.mouse.up()
       await changed(p, first)
@@ -228,7 +256,7 @@ async function drag(p, dx, release = true) {
       assert.deepEqual(errors, [])
       assert.ok((await p.evaluate(() => window.haptics)).every(n => n === 8))
       console.log(
-        `PASS ${scheme}: four core dock entries plus avatar modes; mouse/touch/meaning details; transparent progress track; 44px tools; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; blurred text-free echo; moving current text; press-time row scale/haptic`
+        `PASS ${scheme}: four core dock entries plus avatar modes; mouse/touch/meaning details; transparent progress track; 44px tools; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; blurred text-free echo; moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
       )
       await c.close()
     }

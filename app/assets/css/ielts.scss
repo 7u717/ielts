@@ -3872,3 +3872,44 @@ html[data-keyboard-open='true'] .card-actions {
   justify-content: center;
   margin-top: 24px;
 }
+
+/* A dragged word remains a gesture surface, never a text selection. */
+.word-stage,
+.word-stage * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+/* Fade at the viewport edge instead of chopping a moving letter in half. */
+.typing-word {
+  overflow: visible;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+}
+.word-stage,
+.word-swipe-surface,
+.practice-word-target {
+  overflow: visible;
+}
+/* Keep the detail glass readable without a bright action row beneath it. */
+html .ielts-sheet.word-detail-sheet {
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+}
+html .ielts-sheet.word-detail-sheet::backdrop {
+  background: rgba(0, 0, 0, 0.2);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+html.light .ielts-sheet.word-detail-sheet::backdrop {
+  background: rgba(25, 30, 40, 0.12);
+}
+body:has(.word-detail-sheet[open]) .card-actions {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.word-detail-sheet .word-examples,
+.word-detail-sheet .word-examples p {
+  text-align: center;
+}

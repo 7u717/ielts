@@ -89,7 +89,8 @@ fs.mkdirSync(out, { recursive: true })
       const detail = p.locator('.word-detail-sheet')
       await detail.waitFor()
       await p.waitForTimeout(400)
-      assert.equal(await mask(detail), expectedMask)
+      assert.equal(await mask(detail), scheme === 'dark' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(25, 30, 40, 0.12)')
+      assert.equal(await p.locator('.card-actions').evaluate(e => getComputedStyle(e).visibility), 'hidden')
       await shot('details')
       await closeWordDetails(p)
       await p.getByRole('button', { name: '学习工具', exact: true }).click()
@@ -149,7 +150,7 @@ fs.mkdirSync(out, { recursive: true })
       )
       assert.deepEqual(errors, [])
       console.log(
-        `PASS ${scheme}: 12s zero aura with opacity span <=3%; true spring zero-to-progress drawing; transparent disc and soft aura; all modal/menu masks identical; 24px card-action spacing and subtle next-card echo`
+        `PASS ${scheme}: 12s zero aura with opacity span <=3%; true spring zero-to-progress drawing; transparent disc and soft aura; unified masks with stronger word-detail isolation; 24px card-action spacing and subtle next-card echo`
       )
       await c.close()
     }
