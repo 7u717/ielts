@@ -3952,10 +3952,10 @@ body:has(.word-detail-sheet[open]) .card-actions {
 
 /* Keep the word cluster centered independently of the thumb actions. */
 .word-stage {
-  top: calc((100svh - var(--header-h) - 88px - env(safe-area-inset-bottom, 0px)) / 2);
+  top: calc((100svh - var(--header-h) - env(safe-area-inset-bottom, 0px)) / 2);
 }
 html[data-keyboard-open='true'] .word-stage {
-  top: max(120px, calc((100svh - var(--keyboard-inset, 0px) - var(--header-h) - 88px) / 2));
+  top: max(120px, calc((100svh - var(--keyboard-inset, 0px) - var(--header-h)) / 2));
 }
 .card-actions,
 html[data-keyboard-open='true'] .card-actions {

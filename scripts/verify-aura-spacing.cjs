@@ -81,7 +81,7 @@ fs.mkdirSync(out, { recursive: true })
       const face = await p.locator('.word-swipe-surface').boundingBox(),
         actions = await p.locator('.card-actions').boundingBox()
       assert.ok(actions.y >= 700 && actions.y + actions.height <= 820, 'actions sit in the bottom thumb zone')
-      assert.ok(Math.abs(face.y + face.height / 2 - 406.5) < 3, 'content cluster is centered independently of controls')
+      assert.ok(Math.abs(face.y + face.height / 2 - 450.5) < 3, 'content cluster is centered independently of controls')
       assert.equal(await p.locator('.next-card-echo').count(), 0)
       await shot('learning')
       await p.locator('#word-wrap').click()
