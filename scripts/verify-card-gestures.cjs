@@ -133,6 +133,8 @@ async function drag(p, dx, release = true) {
       for (const button of await p.locator('.card-actions button').all()) {
         const box = await button.boundingBox()
         assert.ok(box.width >= 64 && box.height >= 64)
+        assert.equal(await button.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)')
+        assert.equal(await button.locator('.iue-icon').evaluate(e => getComputedStyle(e).width), '28px')
       }
       const press = p.getByRole('button', { name: '认识', exact: true })
       await press.dispatchEvent('pointerdown', { isPrimary: true, pointerType: 'touch', pointerId: 42 })
@@ -150,9 +152,22 @@ async function drag(p, dx, release = true) {
       await p.mouse.up()
       await p.locator('.word-detail-sheet').waitFor()
       await closeWordDetails(p)
+      const originBox = await p.locator('#word-wrap .typing-core').boundingBox()
       await p.locator('#word-wrap').click()
       await p.locator('.word-detail-sheet').waitFor()
-      await p.waitForTimeout(350)
+      const source = await p.locator('.word-detail-sheet').evaluate(e => {
+        const style = getComputedStyle(e)
+        const a = e.getAnimations().find(a => a.animationName === 'word-source-in')
+        return {
+          x: e.offsetLeft + e.offsetWidth / 2 + parseFloat(style.getPropertyValue('--source-x')),
+          y: e.offsetTop + e.offsetHeight / 2 + parseFloat(style.getPropertyValue('--source-y')),
+          frames: a?.effect.getKeyframes().map(f => f.transform),
+        }
+      })
+      assert.ok(Math.abs(source.x - originBox.x - originBox.width / 2) < 1)
+      assert.ok(Math.abs(source.y - originBox.y - originBox.height / 2) < 1)
+      assert.ok(source.frames?.[0].includes('0.7'), 'popup scales from its recorded word origin')
+      await p.waitForTimeout(400)
       assert.ok(await p.locator('.detail-phonetic').innerText())
       assert.equal(await p.locator('.card-actions').evaluate(e => getComputedStyle(e).visibility), 'hidden')
       assert.equal(
@@ -256,7 +271,7 @@ async function drag(p, dx, release = true) {
       await p.mouse.down()
       await p.waitForTimeout(200)
       const pressTransform = await knownButton.evaluate(e => getComputedStyle(e).transform)
-      assert.ok(pressTransform.startsWith('matrix(0.92'), 'thumb button uses scale .92')
+      assert.ok(pressTransform.startsWith('matrix(0.9,'), 'thumb button uses scale .9')
       await p.screenshot({ path: `${out}/thumb-press-${scheme}-390.png`, fullPage: true })
       await p.mouse.up()
       await changed(p, third)
@@ -293,6 +308,13 @@ async function drag(p, dx, release = true) {
       await v.waitFor()
       assert.equal(await v.locator('h2').count(), 0, 'word list has no heading text')
       assert.equal(await v.locator('.mastery-dot').count(), 24)
+      assert.equal(
+        await v
+          .locator('.vocabulary-gloss')
+          .first()
+          .evaluate(e => getComputedStyle(e).opacity),
+        '0.6'
+      )
       assert.equal(
         await v
           .locator('.mastery-dot')
@@ -351,6 +373,14 @@ async function drag(p, dx, release = true) {
       await p.locator('.vocabulary-word-sheet').waitFor()
       await p.waitForTimeout(350)
       assert.ok(await p.locator('.vocabulary-word-sheet .detail-phonetic').innerText())
+      assert.equal(await p.locator('.vocabulary-word-sheet.source-sheet').count(), 1)
+      assert.ok(
+        Math.abs(
+          await p
+            .locator('.vocabulary-word-sheet')
+            .evaluate(e => parseFloat(getComputedStyle(e).getPropertyValue('--source-x')))
+        ) > 10
+      )
       assert.equal(
         await p.locator('.vocabulary-word-sheet').evaluate(e => getComputedStyle(e).backdropFilter),
         'blur(40px) saturate(1.8)'

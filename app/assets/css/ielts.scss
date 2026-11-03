@@ -4145,3 +4145,51 @@ html.light .ring-disc .sheet-body {
 .ielts-app .word-tools .icon-button:active {
   transform: scale(0.94);
 }
+
+/* Bare thumb controls retain generous targets without circular plates. */
+.card-actions .icon-button {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.card-actions .icon-button .iue-icon {
+  width: 28px;
+  height: 28px;
+}
+.card-actions .icon-button:active {
+  transform: scale(0.9);
+}
+.hero-ring-button .ring-today-arc {
+  stroke-width: calc(2px * var(--ring-stroke-unit));
+  vector-effect: none;
+  opacity: 0.9;
+}
+html.light .hero-ring-button .ring-today-arc {
+  opacity: 0.85;
+}
+.vocabulary-gloss {
+  color: var(--text);
+  opacity: 0.6;
+}
+.floating-sheet.source-sheet[open]:not(.sheet-entered):not(.sheet-dragging):not(.sheet-closing) {
+  animation: word-source-in 0.36s var(--r-spring) both;
+}
+.floating-sheet.source-sheet.sheet-closing {
+  animation: word-source-out 0.2s var(--r-spring) both;
+}
+@keyframes word-source-in {
+  from {
+    opacity: 0;
+    transform: translate(var(--source-x), var(--source-y)) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+@keyframes word-source-out {
+  to {
+    opacity: 0;
+    transform: translate(calc(var(--source-x) * 0.2), calc(var(--source-y) * 0.2)) scale(0.94);
+  }
+}

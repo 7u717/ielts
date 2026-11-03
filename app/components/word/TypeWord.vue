@@ -38,6 +38,7 @@ const minimalInput = computed(() =>
   [WordPracticeMode.Free, WordPracticeMode.ListenOnly].includes(settings.wordPracticeMode)
 )
 const detailsOpen = ref(false)
+const detailOrigin = ref<{ x: number; y: number }>()
 const detailRevealed = ref(false)
 const meaning = ref(false)
 const note = ref('')
@@ -103,6 +104,9 @@ function play(trigger = WordPlayTrigger.Manual) {
   controller.playWord(trigger)
 }
 function openDetails() {
+  const target = document.querySelector('#word-wrap .typing-core') || document.querySelector('#word-wrap')
+  const box = target?.getBoundingClientRect()
+  if (box) detailOrigin.value = { x: box.x + box.width / 2, y: box.y + box.height / 2 }
   haptic()
   if (!detailRevealed.value) controller.checkMaskedRevealWrong(!!typing.value?.isWordRight())
   detailRevealed.value = true
@@ -359,6 +363,7 @@ function saveNote() {
     <Footer />
     <Sheet
       :open="detailsOpen"
+      :origin="detailOrigin"
       :title="!detailRevealed && effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"
       minimal
       floating

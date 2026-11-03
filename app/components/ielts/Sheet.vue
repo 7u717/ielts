@@ -8,12 +8,14 @@ const props = defineProps<{
   minimal?: boolean
   floating?: boolean
   draggable?: boolean
+  origin?: { x: number; y: number }
 }>()
 const emit = defineEmits<{ close: [] }>()
 const dialog = ref<HTMLDialogElement>()
 const closing = ref(false)
 const entered = ref(false)
 const drag = ref(0)
+const sourceOffset = ref({ x: 0, y: 0 })
 let previous: HTMLElement | null = null
 let timer: ReturnType<typeof setTimeout> | undefined
 let startY = 0
@@ -49,6 +51,13 @@ watch(
       if (!dialog.value?.open) {
         haptic()
         dialog.value?.showModal()
+      }
+      if (props.origin && dialog.value) {
+        const element = dialog.value
+        sourceOffset.value = {
+          x: props.origin.x - element.offsetLeft - element.offsetWidth / 2,
+          y: props.origin.y - element.offsetTop - element.offsetHeight / 2,
+        }
       }
     } else {
       beginClose()
@@ -100,9 +109,10 @@ onBeforeUnmount(() => {
       'preference-sheet': minimal,
       'floating-sheet': floating,
       'sheet-entered': entered,
+      'source-sheet': !!origin,
     }"
     :aria-label="title"
-    :style="{ '--sheet-drag': drag + 'px' }"
+    :style="{ '--sheet-drag': drag + 'px', '--source-x': sourceOffset.x + 'px', '--source-y': sourceOffset.y + 'px' }"
     @animationend.self="animationEnd"
     @cancel.prevent="close"
     @click="

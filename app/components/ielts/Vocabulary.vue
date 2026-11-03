@@ -14,6 +14,11 @@ const store = useBaseStore()
 const mastered = (word: Word) =>
   store.knownWordsSet.has(word.word.toLowerCase()) || store.simpleWords.includes(word.word.toLowerCase())
 const detail = ref<Word | null>(null)
+const detailOrigin = ref<{ x: number; y: number }>()
+function setOrigin(target: EventTarget | null) {
+  const box = (target as HTMLElement | null)?.querySelector('.vocabulary-english')?.getBoundingClientRect()
+  if (box) detailOrigin.value = { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+}
 function mastery(word: Word) {
   if (mastered(word)) return 'mastered'
   const card = store.fsrsData[word.word]
@@ -35,6 +40,7 @@ function show(word: Word) {
   detail.value = word
 }
 function tap(word: Word, event: MouseEvent) {
+  setOrigin(event.currentTarget)
   if (suppressClick) {
     suppressClick = false
     return
@@ -45,6 +51,7 @@ function tap(word: Word, event: MouseEvent) {
 }
 function down(word: Word, event: PointerEvent) {
   if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
+  setOrigin(event.currentTarget)
   pressed.value = word.word
   haptic()
   startX = event.clientX
@@ -125,6 +132,7 @@ onBeforeUnmount(() => {
     </div>
     <Sheet
       :open="!!detail && open"
+      :origin="detailOrigin"
       :title="detail?.word || '单词详情'"
       minimal
       floating

@@ -80,3 +80,5 @@ PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright \
 今日进度为零时仍有极淡起点，完成一组后读取已有当日统计描弧；所有进度状态都用 12 秒慢呼吸光晕。词表去掉标题，每行左侧用空心／半实心／实心小点读取现有学习与 FSRS 掌握程度，点击仍发音并复用学习页 Sheet 的玻璃详情、音标、例句和下滑关闭。切词用 blur(6px) 到清晰、上移 8px 的弹簧入场，主题菜单六圆依次间隔 30ms。
 
 第 21 轮：dock 去掉胶囊材质，仅保留四个图标及下方 5px 弹簧滑动圆点；浅色展开圆环取消局部 backdrop 模糊以去除灰盘。词表行高 92px、掌握点 8px，按住 440ms 即轻震并打开同款详情，发音仍留在用户点击／松手手势内。学习页发音／详情点击区 60px，按压 0.94，单词本身继续兼容鼠标与触摸打开详情。
+
+Round 22: bottom 再看／认识 use bare 28px icons inside unchanged 64px targets, press to 0.9 with haptics. Daily arc renders at 2px while its dash lengths scale with the circle with higher theme contrast. Study and vocabulary details record the source word position and spring-scale from it; other sheets retain their existing transitions. Word-list translations use the foreground color at 60% opacity. No persistence schema or progress changes.

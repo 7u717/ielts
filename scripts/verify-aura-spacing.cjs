@@ -146,6 +146,19 @@ fs.mkdirSync(out, { recursive: true })
       assert.ok(draw.ease.includes('1.3'))
       const today = p.locator('.hero-ring-button .ring-today-arc')
       await today.waitFor()
+      assert.ok(
+        Math.abs(
+          (await today.evaluate(
+            e => (parseFloat(getComputedStyle(e).strokeWidth) * e.ownerSVGElement.getBoundingClientRect().width) / 240
+          )) - 2
+        ) < 0.01
+      )
+      assert.ok(Number(await today.evaluate(e => getComputedStyle(e).opacity)) >= 0.85)
+      assert.equal(
+        await today.evaluate(e => getComputedStyle(e).vectorEffect),
+        'none',
+        'dash lengths must scale with the actual progress circumference'
+      )
       const rotation = await today.evaluate(e => new DOMMatrix(getComputedStyle(e).transform).b)
       assert.ok(Math.abs(rotation + 1) < 0.001, 'today arc also starts from 12 oclock')
       assert.ok(

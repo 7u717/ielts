@@ -32,7 +32,7 @@ const learnedRatio = computed(() => (props.single ? Math.max(0, ratio.value - re
       'ring-animate': animate,
       'ring-empty': ratio === 0 && review === 0,
     }"
-    :style="{ width: size + 'px', height: size + 'px' }"
+    :style="{ width: size + 'px', height: size + 'px', '--ring-stroke-unit': 240 / size }"
   >
     <svg viewBox="0 0 240 240" aria-hidden="true">
       <circle class="ring-track" cx="120" cy="120" r="110" />
