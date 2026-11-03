@@ -113,9 +113,18 @@ async function drag(p, dx, release = true) {
         'rgba(0, 0, 0, 0)'
       )
       assert.equal(await p.locator('.card-actions button').count(), 2)
+      const actionBox = await p.locator('.card-actions').boundingBox()
+      assert.ok(actionBox.y > 700 && actionBox.y + actionBox.height <= 820)
+      for (const button of await p.locator('.card-actions button').all()) {
+        const box = await button.boundingBox()
+        assert.ok(box.width >= 64 && box.height >= 64)
+      }
+      const press = p.getByRole('button', { name: '认识', exact: true })
+      await press.dispatchEvent('pointerdown', { isPrimary: true, pointerType: 'touch', pointerId: 42 })
+      assert.ok((await p.evaluate(() => window.haptics)).includes(8))
       for (const b of await p.locator('.word-tools button').all()) {
         const box = await b.boundingBox()
-        assert.ok(box.width >= 44 && box.height >= 44)
+        assert.ok(box.width >= 52 && box.height >= 52)
       }
       await p.locator('#word-wrap').click()
       await p.locator('.word-detail-sheet').waitFor()
@@ -162,7 +171,7 @@ async function drag(p, dx, release = true) {
         .evaluate(e => getComputedStyle(e).getPropertyValue('--word-turn'))
       assert.ok(parseFloat(turn) > 0)
       const wordDuring = await p.locator('#word-wrap').boundingBox()
-      assert.ok(wordDuring.x > wordBefore.x + 20, 'word travels with current card')
+      assert.ok(wordDuring.x > wordBefore.x + 1, 'word travels with current card')
       assert.equal(await p.locator('#word-wrap').count(), 1)
       await p.mouse.up()
       await p.waitForTimeout(400)
@@ -182,6 +191,12 @@ async function drag(p, dx, release = true) {
       for (const el of await p.locator('.word-stage, .word-swipe-surface, #word-wrap').all()) {
         assert.equal(await el.evaluate(e => getComputedStyle(e).overflow), 'visible')
       }
+      const currentText = await p.locator('.typing-core').boundingBox()
+      assert.ok(
+        currentText.x >= 0 && currentText.x + currentText.width <= 390,
+        'long word remains inside viewport during drag'
+      )
+      assert.ok(Number(await p.locator('.word-swipe-surface').evaluate(e => getComputedStyle(e).opacity)) < 0.5)
       await p.screenshot({ path: `${out}/drag-${scheme}-390.png`, fullPage: true })
       await p.mouse.up()
       await changed(p, first)
@@ -196,7 +211,15 @@ async function drag(p, dx, release = true) {
         'left swipe records review instead of excluding the word'
       )
       const third = await word(p)
-      await p.getByRole('button', { name: '认识', exact: true }).click()
+      const knownButton = p.getByRole('button', { name: '认识', exact: true })
+      const knownBox = await knownButton.boundingBox()
+      await p.mouse.move(knownBox.x + knownBox.width / 2, knownBox.y + knownBox.height / 2)
+      await p.mouse.down()
+      await p.waitForTimeout(200)
+      const pressTransform = await knownButton.evaluate(e => getComputedStyle(e).transform)
+      assert.ok(pressTransform.startsWith('matrix(0.92'), 'thumb button uses scale .92')
+      await p.screenshot({ path: `${out}/thumb-press-${scheme}-390.png`, fullPage: true })
+      await p.mouse.up()
       await changed(p, third)
       const fourth = await word(p)
       await p.getByRole('button', { name: '再看', exact: true }).click()
@@ -267,7 +290,7 @@ async function drag(p, dx, release = true) {
       assert.deepEqual(errors, [])
       assert.ok((await p.evaluate(() => window.haptics)).every(n => n === 8))
       console.log(
-        `PASS ${scheme}: four core dock entries plus contextual dock modes; mouse/touch/meaning details; transparent progress track; 44px tools; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; no drag echo; moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
+        `PASS ${scheme}: four core dock entries plus contextual dock modes; mouse/touch/meaning details; transparent progress track; 52px tools; 64px thumb actions; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; no drag echo; centered moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
       )
       await c.close()
     }

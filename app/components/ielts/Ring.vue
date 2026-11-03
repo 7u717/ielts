@@ -4,6 +4,7 @@ const props = withDefaults(
   defineProps<{
     progress: number
     reviewProgress?: number
+    todayProgress?: number
     size?: number
     small?: boolean
     animate?: boolean
@@ -13,6 +14,8 @@ const props = withDefaults(
 )
 const ratio = computed(() => Math.max(0, Math.min(1, props.progress || 0)))
 const review = computed(() => Math.max(0, Math.min(1, props.reviewProgress || 0)))
+const today = computed(() => Math.max(0, Math.min(1, props.todayProgress || 0)))
+const todayCircumference = 2 * Math.PI * 103
 const circumference = 2 * Math.PI * 110
 const innerRadius = computed(() => (props.single ? 110 : 101))
 const innerCircumference = computed(() => 2 * Math.PI * innerRadius.value)
@@ -57,6 +60,16 @@ const learnedRatio = computed(() => (props.single ? Math.max(0, ratio.value - re
           :stroke-dashoffset="innerCircumference * (1 - review)"
         />
       </template>
+      <circle
+        v-if="today > 0"
+        class="ring-today-arc"
+        cx="120"
+        cy="120"
+        r="103"
+        :style="{ '--arc-length': todayCircumference + 'px' }"
+        :stroke-dasharray="todayCircumference"
+        :stroke-dashoffset="todayCircumference * (1 - today)"
+      />
     </svg>
     <div class="ring-content"><slot /></div>
   </div>

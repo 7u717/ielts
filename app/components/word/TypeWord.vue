@@ -282,9 +282,10 @@ function saveNote() {
           @pointerup="up"
           @pointercancel="cancel"
           :style="{
-            '--word-drag': dragX + 'px',
-            '--word-turn': Math.max(-12, Math.min(12, dragX / 30)) + 'deg',
-            opacity: flying ? 0 : 1 - Math.min(0.3, Math.abs(dragX) / 700),
+            '--word-drag': (flying ? dragX : Math.max(-24, Math.min(24, dragX * 0.18))) + 'px',
+            '--word-turn': Math.max(-4, Math.min(4, dragX / 75)) + 'deg',
+            '--word-scale': flying ? 0.94 : 1 - Math.min(0.08, (Math.abs(dragX) / 130) * 0.08),
+            opacity: flying ? 0 : 1 - Math.min(0.8, (Math.abs(dragX) / 160) * 0.8),
           }"
         >
           <div
@@ -343,16 +344,18 @@ function saveNote() {
             </button>
           </div>
         </div>
-        <div class="card-actions">
-          <button class="icon-button" aria-label="再看" :disabled="flying" @click="decide(-1)">
-            <Icon name="review" />
-          </button>
-          <button class="icon-button" aria-label="认识" :disabled="flying" @click="decide(1)">
-            <Icon name="check" />
-          </button>
-        </div>
       </div>
     </Transition>
+    <Teleport to="body">
+      <div class="card-actions">
+        <button class="icon-button" aria-label="再看" :disabled="flying" @pointerdown="haptic()" @click="decide(-1)">
+          <Icon name="review" />
+        </button>
+        <button class="icon-button" aria-label="认识" :disabled="flying" @pointerdown="haptic()" @click="decide(1)">
+          <Icon name="check" />
+        </button>
+      </div>
+    </Teleport>
     <Footer />
     <Sheet
       :open="detailsOpen"

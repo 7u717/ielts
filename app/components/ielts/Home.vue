@@ -48,6 +48,13 @@ const topicProgress = (id: string) => {
   const dict = store.word.bookList.find(d => d.id === id)
   return dict?.complete ? 1 : Math.min(1, (dict?.lastLearnIndex || 0) / (dict?.length || 24))
 }
+const todayLearned = computed(() => {
+  const date = new Date().toDateString()
+  return (store.sdict.statistics || [])
+    .filter(record => new Date(record.startDate).toDateString() === date)
+    .reduce((sum, record) => sum + (record.new || 0), 0)
+})
+const todayProgress = computed(() => Math.min(1, todayLearned.value / Math.max(1, store.sdict.perDayStudyNumber)))
 const menuProgress = computed(() => Object.fromEntries(topics.map(t => [t.id, topicProgress(t.id)])))
 const review = computed(() => (store.load && !busy.value ? createStudyTask().taskWords.review : []))
 const dueReviewCount = computed(() => (store.load && !busy.value ? createStudyTask().dueReviewCount : 0))
@@ -202,6 +209,7 @@ function up(e: PointerEvent) {
                 :key="topic.id"
                 :progress="topicProgress(topic.id)"
                 :review-progress="dueReviewCount / topic.length"
+                :today-progress="todayProgress"
                 :size="274"
                 single
                 ><span class="hero-topic">{{ topic.name }}</span></Ring

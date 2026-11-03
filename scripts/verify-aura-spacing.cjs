@@ -80,7 +80,8 @@ fs.mkdirSync(out, { recursive: true })
       await p.waitForTimeout(450)
       const face = await p.locator('.word-swipe-surface').boundingBox(),
         actions = await p.locator('.card-actions').boundingBox()
-      assert.ok(Math.abs(actions.y - face.y - face.height - 24) < 1, 'action row follows card at 24px')
+      assert.ok(actions.y >= 700 && actions.y + actions.height <= 820, 'actions sit in the bottom thumb zone')
+      assert.ok(Math.abs(face.y + face.height / 2 - 406.5) < 3, 'content cluster is centered independently of controls')
       assert.equal(await p.locator('.next-card-echo').count(), 0)
       await shot('learning')
       await p.locator('#word-wrap').click()
@@ -110,7 +111,9 @@ fs.mkdirSync(out, { recursive: true })
           const r = db.transaction('keyval').objectStore('keyval').get('typing-word-dict')
           r.onsuccess = () => resolve(JSON.parse(r.result))
         })
-        raw.val.word.bookList.find(d => d.id === 'ielts-environment').lastLearnIndex = 6
+        const dictionary = raw.val.word.bookList.find(d => d.id === 'ielts-environment')
+        dictionary.lastLearnIndex = 6
+        dictionary.statistics.push({ startDate: Date.now(), spend: 1, total: 5, new: 5, review: 0, wrong: 0 })
         await new Promise(resolve => {
           const tx = db.transaction('keyval', 'readwrite')
           tx.objectStore('keyval').put(JSON.stringify(raw), 'typing-word-dict')
@@ -139,6 +142,15 @@ fs.mkdirSync(out, { recursive: true })
       assert.ok(draw.start > draw.end + 150)
       assert.ok(Math.abs(draw.end - draw.target) < 0.1)
       assert.ok(draw.ease.includes('1.3'))
+      const today = p.locator('.hero-ring-button .ring-today-arc')
+      await today.waitFor()
+      const rotation = await today.evaluate(e => new DOMMatrix(getComputedStyle(e).transform).b)
+      assert.ok(Math.abs(rotation + 1) < 0.001, 'today arc also starts from 12 oclock')
+      assert.ok(
+        Math.abs(Number(await today.getAttribute('stroke-dashoffset')) / (2 * Math.PI * 103) - 0.75) < 0.001,
+        'today arc reads existing same-day statistics'
+      )
+      await p.waitForTimeout(1000)
       await shot('home-progress')
       await p.getByRole('button', { name: '选择主题', exact: true }).click()
       await p.waitForTimeout(650)
@@ -148,7 +160,7 @@ fs.mkdirSync(out, { recursive: true })
       )
       assert.deepEqual(errors, [])
       console.log(
-        `PASS ${scheme}: 12s zero aura with opacity span <=3%; true spring zero-to-progress drawing; transparent disc and soft aura; unified masks with stronger word-detail isolation; 24px card-action spacing and no next-card ghost`
+        `PASS ${scheme}: 12s zero aura with opacity span <=3%; true spring zero-to-progress drawing; transparent disc and soft aura; unified masks with stronger word-detail isolation; centered cluster and bottom thumb actions and no next-card ghost`
       )
       await c.close()
     }

@@ -3949,3 +3949,65 @@ body:has(.word-detail-sheet[open]) .card-actions {
   opacity: 0;
   transform: translate(-50%, 8px) scale(0.96);
 }
+
+/* Keep the word cluster centered independently of the thumb actions. */
+.word-stage {
+  top: calc((100svh - var(--header-h) - 88px - env(safe-area-inset-bottom, 0px)) / 2);
+}
+html[data-keyboard-open='true'] .word-stage {
+  top: max(120px, calc((100svh - var(--keyboard-inset, 0px) - var(--header-h) - 88px) / 2));
+}
+.card-actions,
+html[data-keyboard-open='true'] .card-actions {
+  position: fixed;
+  z-index: 12;
+  left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  margin: 0;
+  gap: 48px;
+}
+html[data-keyboard-open='true'] .card-actions {
+  bottom: calc(var(--keyboard-inset, 0px) + 12px);
+}
+.card-actions .icon-button {
+  width: 64px;
+  height: 64px;
+  transition:
+    transform 0.16s var(--r-spring),
+    background 0.16s var(--r-ease);
+}
+.card-actions .icon-button .iue-icon {
+  width: 26px;
+  height: 26px;
+}
+.card-actions .icon-button:active {
+  transform: scale(0.92);
+}
+.word-tools .icon-button {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  min-height: 52px;
+}
+.word-tools .iue-icon {
+  width: 22px;
+  height: 22px;
+}
+.word-swipe-surface {
+  transform: translateX(var(--word-drag, 0px)) rotate(var(--word-turn, 0deg)) scale(var(--word-scale, 1));
+}
+.ring-today-arc {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 0.65;
+  stroke-linecap: round;
+  opacity: 0.45;
+  animation: arc-draw 0.9s var(--r-spring) both;
+  transition: stroke-dashoffset 0.9s var(--r-spring);
+}
+html.light .ring-today-arc {
+  opacity: 0.5;
+}
