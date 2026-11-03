@@ -2226,7 +2226,6 @@ html.light .typing-core .wrong {
 }
 html.light
   :is(
-    .word-translation,
     .detail-meaning,
     .sheet-note,
     .vocabulary-inline-detail p,
@@ -4356,4 +4355,67 @@ body:has(.vocabulary-sheet[open]) .hero-ring-button {
   opacity: 0;
   transform: none;
   filter: none;
+}
+
+/* The only line beneath study navigation is the daily progress track. */
+.practice-header {
+  border: 0;
+  box-shadow: none;
+  outline: 0;
+}
+.practice-header::before,
+.practice-header::after {
+  content: none;
+}
+.practice-mini-progress,
+html.light .practice-mini-progress,
+html[data-keyboard-open='true'] .practice-mini-progress {
+  top: calc(var(--header-h) + 6px);
+  height: 2px;
+}
+.practice-mini-progress i {
+  height: 2px;
+}
+.mastery-dot {
+  opacity: 0.5;
+}
+.mastery-dot.mastery-learning {
+  opacity: 0.75;
+}
+.mastery-dot.mastery-mastered {
+  opacity: 1;
+}
+html .ielts-app .word-translation {
+  color: var(--text);
+  opacity: 0.76;
+  font-size: 15px;
+  line-height: 1.8;
+  margin-top: 24px;
+}
+.word-meaning-slot {
+  height: 76px;
+}
+.sentence-preview {
+  color: var(--text);
+  opacity: 0.7;
+  margin-top: 20px;
+  line-height: 1.75;
+}
+.word-tools {
+  margin-top: 24px;
+  gap: 28px;
+}
+.word-tools .icon-button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+/* Light mode shares one geometric ring for all progress. */
+html.light .hero-ring-button .ring-today-track,
+html.light .hero-ring-button .ring-today-start {
+  display: none;
+}
+html.light .hero-ring-button .ring-today-arc {
+  r: 110px;
 }

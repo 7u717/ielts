@@ -173,6 +173,19 @@ async function drag(p, dx, release = true) {
       const line = p.locator('.practice-mini-progress')
       assert.equal(await line.getAttribute('aria-label'), '今日学习进度')
       assert.equal(await line.evaluate(e => getComputedStyle(e).height), '2px')
+      const header = p.locator('.practice-header')
+      assert.equal(await header.evaluate(e => getComputedStyle(e).borderBottomWidth), '0px')
+      assert.equal(await header.evaluate(e => getComputedStyle(e).boxShadow), 'none')
+      assert.equal(await p.locator('.practice-mini-progress').count(), 1)
+      const headerBox = await header.boundingBox(),
+        lineBox = await line.boundingBox()
+      assert.ok(Math.abs(lineBox.y - headerBox.y - headerBox.height - 6) < 1)
+      const foreground = await line.locator('i').evaluate(e => getComputedStyle(e).backgroundColor)
+      for (const el of await p.locator('.word-translation, .sentence-preview').all()) {
+        assert.equal(await el.evaluate(e => getComputedStyle(e).color), foreground)
+        assert.ok(Number(await el.evaluate(e => getComputedStyle(e).opacity)) >= 0.7)
+      }
+      assert.equal(await p.locator('.word-meaning-slot').evaluate(e => getComputedStyle(e).height), '76px')
       assert.ok((await line.locator('i').evaluate(e => getComputedStyle(e).transitionTimingFunction)).includes('1.3'))
       assert.equal(await p.locator('.card-actions button').count(), 2)
       const actionBox = await p.locator('.card-actions').boundingBox()
@@ -188,13 +201,16 @@ async function drag(p, dx, release = true) {
       assert.ok((await p.evaluate(() => window.haptics)).includes(8))
       for (const b of await p.locator('.word-tools button').all()) {
         const box = await b.boundingBox()
-        assert.ok(box.width >= 60 && box.height >= 60)
+        assert.ok(Math.abs(box.width - 44) < 0.1 && Math.abs(box.height - 44) < 0.1)
       }
       const tool = p.getByRole('button', { name: '单词详情', exact: true })
       const toolBox = await tool.boundingBox()
       await p.mouse.move(toolBox.x + toolBox.width / 2, toolBox.y + toolBox.height / 2)
+      await p.waitForTimeout(90)
+      const toolHaptics = await p.evaluate(() => window.haptics.length)
       await p.mouse.down()
       await p.waitForTimeout(180)
+      assert.ok(await p.evaluate(n => window.haptics.length > n, toolHaptics))
       assert.ok((await tool.evaluate(e => getComputedStyle(e).transform)).startsWith('matrix(0.94'))
       await p.mouse.up()
       await p.locator('.word-detail-sheet').waitFor()
@@ -375,8 +391,8 @@ async function drag(p, dx, release = true) {
       assert.equal(await v.locator('.mastery-dot').count(), 24)
       for (const [word, opacity] of [
         ['biodiversity', '1'],
-        ['sustainability', '0.55'],
-        ['emission', '0.2'],
+        ['sustainability', '0.75'],
+        ['emission', '0.5'],
       ]) {
         const dot = v.getByRole('button', { name: word, exact: true }).locator('.mastery-dot')
         const state = await dot.evaluate(e => {
@@ -516,7 +532,7 @@ async function drag(p, dx, release = true) {
       assert.deepEqual(errors, [])
       assert.ok((await p.evaluate(() => window.haptics)).every(n => n === 8))
       console.log(
-        `PASS ${scheme}: four core dock entries plus contextual dock modes; mouse/touch/meaning details; transparent progress track; 60px tools; 64px thumb actions; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; no drag echo; centered moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
+        `PASS ${scheme}: four core dock entries plus contextual dock modes; mouse/touch/meaning details; transparent progress track; 44px tools; 64px thumb actions; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; no drag echo; centered moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
       )
       await c.close()
     }

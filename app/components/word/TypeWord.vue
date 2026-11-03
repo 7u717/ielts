@@ -342,8 +342,9 @@ function saveNote() {
             {{ examplePreview }}
           </button>
           <div class="word-tools">
-            <button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button
-            ><button class="icon-button" aria-label="单词详情" @click="openDetails">
+            <button class="icon-button" aria-label="播放发音" @pointerdown="haptic()" @click="play()">
+              <Icon name="sound" /></button
+            ><button class="icon-button" aria-label="单词详情" @pointerdown="haptic()" @click="openDetails">
               <Icon name="detail" />
             </button>
           </div>

@@ -64,6 +64,7 @@ const learnedRatio = computed(() => (props.single ? Math.max(0, ratio.value - re
       <circle
         v-if="today > 0"
         class="ring-today-arc"
+        :pathLength="todayCircumference"
         cx="120"
         cy="120"
         r="103"

@@ -47,6 +47,8 @@ fs.mkdirSync(out, { recursive: true })
       assert.equal(await p.locator('.ring-today-arc').count(), 0)
       assert.equal(await p.locator('.ring-today-track').count(), 1)
       assert.ok(Number(await p.locator('.ring-today-track').evaluate(e => getComputedStyle(e).opacity)) >= 0.1)
+      assert.equal(await p.locator('.ring-today-track').isVisible(), scheme === 'dark')
+      if (scheme === 'light') assert.equal(await p.locator('.ring-today-start').isVisible(), false)
       await shot('home-zero')
       await p.locator('.hero-ring-button').click()
       const disc = p.getByRole('dialog', { name: '学习概览', exact: true })
@@ -148,6 +150,19 @@ fs.mkdirSync(out, { recursive: true })
       assert.ok(draw.ease.includes('1.3'))
       const today = p.locator('.hero-ring-button .ring-today-arc')
       await today.waitFor()
+      assert.equal(await today.evaluate(e => getComputedStyle(e).r), scheme === 'light' ? '110px' : '103px')
+      assert.ok(Math.abs(Number(await today.getAttribute('pathLength')) - 2 * Math.PI * 103) < 0.001)
+      if (scheme === 'light') {
+        const radii = await p
+          .locator('.hero-ring-button circle')
+          .evaluateAll(elements =>
+            elements.filter(e => getComputedStyle(e).display !== 'none').map(e => parseFloat(getComputedStyle(e).r))
+          )
+        assert.ok(
+          radii.every(r => r === 110),
+          'light mode renders all progress on a single radius'
+        )
+      }
       assert.ok(
         Math.abs(
           (await today.evaluate(
