@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
           @click="select(topic.id)"
         >
           <Icon :name="icons[index]" />
-          <span>{{ topic.name }}</span>
+          <span v-if="selected !== topic.id">{{ topic.name }}</span>
         </button>
       </div>
     </div>

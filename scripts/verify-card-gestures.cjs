@@ -137,7 +137,7 @@ async function drag(p, dx, release = true) {
       await p.waitForTimeout(450)
       assert.equal(
         await p.locator('.practice-mini-progress').evaluate(e => getComputedStyle(e).backgroundColor),
-        'rgba(0, 0, 0, 0)'
+        scheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(25, 30, 40, 0.12)'
       )
       const studyTrigger = p.getByRole('button', { name: '学习工具', exact: true })
       assert.equal(await studyTrigger.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)')
@@ -188,6 +188,10 @@ async function drag(p, dx, release = true) {
       assert.ok(source.frames?.[0].includes('0.7'), 'popup scales from its recorded word origin')
       await p.waitForTimeout(400)
       assert.ok(await p.locator('.detail-phonetic').innerText())
+      for (const button of await p.locator('.word-detail-sheet .icon-button').all()) {
+        const box = await button.boundingBox()
+        assert.ok(Math.abs(box.width - 44) < 0.1 && Math.abs(box.height - 44) < 0.1, 'detail icons have 44px targets')
+      }
       assert.equal(await p.locator('.card-actions').evaluate(e => getComputedStyle(e).visibility), 'hidden')
       assert.equal(
         await p.locator('.word-detail-sheet').evaluate(e => getComputedStyle(e).backdropFilter),
@@ -316,6 +320,7 @@ async function drag(p, dx, release = true) {
           r.onsuccess = () => resolve(JSON.parse(r.result))
         })
         raw.val.simpleWords.push('biodiversity')
+        raw.val.word.bookList.find(d => d.id === 'ielts-environment').lastLearnIndex = 2
         await new Promise(resolve => {
           const tx = db.transaction('keyval', 'readwrite')
           tx.objectStore('keyval').put(JSON.stringify(raw), 'typing-word-dict')
@@ -329,6 +334,28 @@ async function drag(p, dx, release = true) {
       await v.waitFor()
       assert.equal(await v.locator('h2').count(), 0, 'word list has no heading text')
       assert.equal(await v.locator('.mastery-dot').count(), 24)
+      for (const [word, opacity] of [
+        ['biodiversity', '1'],
+        ['sustainability', '0.55'],
+        ['emission', '0.2'],
+      ]) {
+        const dot = v.getByRole('button', { name: word, exact: true }).locator('.mastery-dot')
+        const state = await dot.evaluate(e => {
+          const s = getComputedStyle(e)
+          return {
+            opacity: s.opacity,
+            background: s.backgroundColor,
+            image: s.backgroundImage,
+            border: s.borderTopWidth,
+            width: s.width,
+          }
+        })
+        assert.equal(state.opacity, opacity)
+        assert.equal(state.width, '6px')
+        assert.equal(state.border, '0px')
+        assert.equal(state.image, 'none')
+        assert.notEqual(state.background, 'rgba(0, 0, 0, 0)')
+      }
       assert.equal(
         await v
           .locator('.vocabulary-english')
@@ -408,6 +435,8 @@ async function drag(p, dx, release = true) {
       await p.locator('.vocabulary-word-sheet').waitFor()
       await p.waitForTimeout(350)
       assert.ok(await p.locator('.vocabulary-word-sheet .detail-phonetic').innerText())
+      const audioTarget = await p.locator('.vocabulary-word-sheet .icon-button').boundingBox()
+      assert.ok(Math.abs(audioTarget.width - 44) < 0.1 && Math.abs(audioTarget.height - 44) < 0.1)
       assert.equal(await p.locator('.vocabulary-word-sheet.source-sheet').count(), 1)
       assert.ok(
         Math.abs(

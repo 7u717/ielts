@@ -181,6 +181,8 @@ fs.mkdirSync(out, { recursive: true })
           Math.abs(parseFloat(await orbs.nth(i).evaluate(e => getComputedStyle(e).transitionDelay)) - i * 0.03) < 0.001
         )
       }
+      assert.equal(await p.locator('.topic-menu .lk-o[aria-checked="true"] > span').count(), 0)
+      assert.equal(await p.locator('.topic-menu .lk-o[aria-checked="true"]').getAttribute('aria-label'), '环境')
       await shot('topics')
       assert.deepEqual(errors, [])
       console.log(

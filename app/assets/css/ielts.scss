@@ -4252,3 +4252,37 @@ html.light .practice-mini-progress {
 html.light .hero-ring-button .ring-today-track {
   opacity: 0.14;
 }
+
+/* Filled mastery dots communicate state through opacity alone. */
+.mastery-dot {
+  width: 6px;
+  height: 6px;
+  border: 0;
+  background: var(--text);
+  opacity: 0.2;
+}
+.mastery-dot.mastery-learning {
+  background: var(--text);
+  opacity: 0.55;
+}
+.mastery-dot.mastery-mastered {
+  background: var(--text);
+  opacity: 1;
+}
+.practice-mini-progress {
+  background: rgba(255, 255, 255, 0.1);
+}
+html.light .practice-mini-progress {
+  background: rgba(25, 30, 40, 0.12);
+}
+.word-detail-sheet .icon-button,
+.ielts-sheet .detail-sound {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
