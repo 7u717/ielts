@@ -62,6 +62,15 @@ async function drag(p, dx, release = true) {
       await p.locator('.hero-ring-button:enabled').waitFor()
       assert.equal(await p.locator('.unified-dock button').count(), 4)
       await p.screenshot({ path: `${out}/home-${scheme}-390.png`, fullPage: true })
+      await p.locator('.hero-ring-button').click()
+      const disc = p.getByRole('dialog', { name: '学习概览', exact: true })
+      await disc.waitFor()
+      await p.waitForTimeout(450)
+      assert.equal(await disc.locator('.ring-track').count(), 1)
+      assert.equal(await disc.locator('.ring-review-track').count(), 0)
+      await p.screenshot({ path: `${out}/disc-${scheme}-390.png`, fullPage: true })
+      await p.mouse.click(8, 100)
+      await disc.waitFor({ state: 'hidden' })
       await chooseStudyMode(p, '打字')
       await chooseStudyMode(p, '听写')
       await chooseStudyMode(p, '学习')
@@ -96,12 +105,34 @@ async function drag(p, dx, release = true) {
       await p.getByRole('button', { name: '查看释义详情', exact: true }).click()
       await p.locator('.word-detail-sheet').waitFor()
       await closeWordDetails(p)
+      const echo = await p.locator('.next-card-echo').evaluate(e => {
+        const s = getComputedStyle(e)
+        return {
+          text: e.textContent.trim(),
+          background: s.backgroundColor,
+          shadow: s.boxShadow,
+          filter: s.filter,
+          opacity: Number(s.opacity),
+          transform: s.transform,
+        }
+      })
+      assert.equal(echo.text, '', 'echo contains no duplicate or next-word answer')
+      assert.equal(echo.background, 'rgba(0, 0, 0, 0)')
+      assert.equal(echo.shadow, 'none', 'no plate edge below tools')
+      assert.equal(echo.filter, 'blur(7px)')
+      assert.ok(echo.opacity <= 0.05)
+      assert.ok(parseFloat(echo.transform.slice(7)) < 0.9)
+      await p.screenshot({ path: `${out}/learning-rest-${scheme}-390.png`, fullPage: true })
+      const wordBefore = await p.locator('#word-wrap').boundingBox()
       const first = await word(p)
       await drag(p, 38, false)
       const turn = await p
         .locator('.word-swipe-surface')
         .evaluate(e => getComputedStyle(e).getPropertyValue('--word-turn'))
       assert.ok(parseFloat(turn) > 0)
+      const wordDuring = await p.locator('#word-wrap').boundingBox()
+      assert.ok(wordDuring.x > wordBefore.x + 20, 'word travels with current card')
+      assert.equal(await p.locator('#word-wrap').count(), 1)
       await p.mouse.up()
       await p.waitForTimeout(400)
       assert.equal(await word(p), first)
@@ -178,7 +209,18 @@ async function drag(p, dx, release = true) {
         await v.getByRole('button', { name: 'sustainability', exact: true }).locator('.mastered-dot').count(),
         0
       )
-      await v.getByRole('button', { name: 'biodiversity', exact: true }).click()
+      const row = v.getByRole('button', { name: 'biodiversity', exact: true })
+      const rowBox = await row.boundingBox()
+      const hapticsBefore = await p.evaluate(() => window.haptics.length)
+      await p.mouse.move(rowBox.x + 30, rowBox.y + rowBox.height / 2)
+      await p.mouse.down()
+      await p.waitForTimeout(180)
+      assert.equal(await row.evaluate(e => e.classList.contains('is-pressed')), true)
+      const rowScale = await row.evaluate(e => getComputedStyle(e).transform)
+      assert.ok(rowScale.startsWith('matrix(0.98'))
+      assert.equal(await p.evaluate(() => window.haptics.length), hapticsBefore + 1)
+      await p.screenshot({ path: `${out}/vocabulary-press-${scheme}-390.png`, fullPage: true })
+      await p.mouse.up()
       await p.locator('.vocabulary-detail').waitFor()
       await p.mouse.click(8, 100)
       await p.locator('.vocabulary-detail').waitFor({ state: 'hidden' })
@@ -186,7 +228,7 @@ async function drag(p, dx, release = true) {
       assert.deepEqual(errors, [])
       assert.ok((await p.evaluate(() => window.haptics)).every(n => n === 8))
       console.log(
-        `PASS ${scheme}: four core dock entries plus avatar modes; mouse/touch/meaning details; transparent progress track; 44px tools; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger`
+        `PASS ${scheme}: four core dock entries plus avatar modes; mouse/touch/meaning details; transparent progress track; 44px tools; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; blurred text-free echo; moving current text; press-time row scale/haptic`
       )
       await c.close()
     }

@@ -82,7 +82,7 @@ fs.mkdirSync(out, { recursive: true })
         actions = await p.locator('.card-actions').boundingBox(),
         echo = await p.locator('.next-card-echo').boundingBox()
       assert.ok(Math.abs(actions.y - face.y - face.height - 24) < 1, 'action row follows card at 24px')
-      assert.ok(echo.y + echo.height > face.y + face.height + 2, 'next-card edge peeks below current card')
+      assert.ok(echo.width < face.width, 'next-card echo is smaller than the current card')
       assert.ok(+(await p.locator('.next-card-echo').evaluate(e => getComputedStyle(e).opacity)) <= 0.4)
       await shot('learning')
       await p.locator('#word-wrap').click()

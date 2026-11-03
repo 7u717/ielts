@@ -15,6 +15,7 @@ const detail = ref<Word | null>(null)
 const popup = ref<HTMLDialogElement>()
 const examples = computed(() => (detail.value ? practiceExamples(detail.value).slice(0, 2) : []))
 const closing = ref(false)
+const pressed = ref('')
 let closeTimer: ReturnType<typeof setTimeout> | undefined
 let hold: ReturnType<typeof setTimeout> | undefined
 let held = false,
@@ -23,24 +24,25 @@ let held = false,
   startY = 0,
   suppressClick = false
 async function show(word: Word) {
-  haptic()
   clearTimeout(closeTimer)
   closing.value = false
   detail.value = word
   await nextTick()
   if (props.open && !popup.value?.open) popup.value?.showModal()
 }
-function tap(word: Word) {
+function tap(word: Word, event: MouseEvent) {
   if (suppressClick) {
     suppressClick = false
     return
   }
-  haptic()
+  if (event.detail === 0) haptic()
   speak(word.word)
   void show(word)
 }
-function down(event: PointerEvent) {
+function down(word: Word, event: PointerEvent) {
   if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
+  pressed.value = word.word
+  haptic()
   startX = event.clientX
   startY = event.clientY
   held = moved = suppressClick = false
@@ -51,11 +53,13 @@ function down(event: PointerEvent) {
 }
 function move(event: PointerEvent) {
   if (Math.hypot(event.clientX - startX, event.clientY - startY) > 9) {
+    pressed.value = ''
     moved = true
     clearTimeout(hold)
   }
 }
 function up(word: Word) {
+  pressed.value = ''
   clearTimeout(hold)
   if (held && !moved) {
     suppressClick = true
@@ -64,6 +68,7 @@ function up(word: Word) {
   } else if (moved) suppressClick = true
 }
 function cancel() {
+  pressed.value = ''
   clearTimeout(hold)
   held = false
   suppressClick = true
@@ -104,16 +109,17 @@ onBeforeUnmount(() => {
       <button
         type="button"
         class="vocabulary-word"
+        :class="{ 'is-pressed': pressed === word.word }"
         :aria-label="word.word"
         :aria-expanded="detail?.word === word.word && !closing"
         aria-haspopup="dialog"
         aria-controls="vocabulary-word-detail"
-        @pointerdown="down"
+        @pointerdown="down(word, $event)"
         @pointermove="move"
         @pointerup="up(word)"
         @pointercancel="cancel"
         @contextmenu.prevent
-        @click="tap(word)"
+        @click="tap(word, $event)"
       >
         <span class="vocabulary-english">{{ word.word }}</span>
         <i v-if="mastered(word)" class="mastered-dot" aria-label="已掌握" /><span

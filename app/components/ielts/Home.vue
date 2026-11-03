@@ -307,6 +307,7 @@ function up(e: PointerEvent) {
           :progress="topicProgress(topic.id)"
           :review-progress="dueReviewCount / topic.length"
           :size="278"
+          single
           :animate="false"
         />
         <span

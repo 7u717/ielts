@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 const props = withDefaults(
-  defineProps<{ progress: number; reviewProgress?: number; size?: number; small?: boolean; animate?: boolean }>(),
+  defineProps<{
+    progress: number
+    reviewProgress?: number
+    size?: number
+    small?: boolean
+    animate?: boolean
+    single?: boolean
+  }>(),
   { size: 230, animate: true }
 )
 const ratio = computed(() => Math.max(0, Math.min(1, props.progress || 0)))
 const review = computed(() => Math.max(0, Math.min(1, props.reviewProgress || 0)))
 const circumference = 2 * Math.PI * 110
-const innerCircumference = 2 * Math.PI * 101
+const innerRadius = computed(() => (props.single ? 110 : 101))
+const innerCircumference = computed(() => 2 * Math.PI * innerRadius.value)
+// Due words are a subset of learned words; share one track without losing the due segment.
+const learnedRatio = computed(() => (props.single ? Math.max(0, ratio.value - review.value) : ratio.value))
 </script>
 <template>
   <div
@@ -24,23 +34,24 @@ const innerCircumference = 2 * Math.PI * 101
     <svg viewBox="0 0 240 240" aria-hidden="true">
       <circle class="ring-track" cx="120" cy="120" r="110" />
       <circle
-        v-if="ratio > 0"
+        v-if="learnedRatio > 0"
         class="ring-arc"
         cx="120"
         cy="120"
         r="110"
         :style="{ '--arc-length': circumference + 'px' }"
         :stroke-dasharray="circumference"
-        :stroke-dashoffset="circumference * (1 - ratio)"
+        :stroke-dashoffset="circumference * (1 - learnedRatio)"
       />
       <template v-if="reviewProgress !== undefined">
-        <circle class="ring-track ring-review-track" cx="120" cy="120" r="101" />
+        <circle v-if="!single" class="ring-track ring-review-track" cx="120" cy="120" r="101" />
         <circle
           v-if="review > 0"
           class="ring-arc ring-review-arc"
           cx="120"
           cy="120"
-          r="101"
+          :r="innerRadius"
+          :transform="single ? `rotate(${learnedRatio * 360} 120 120)` : undefined"
           :style="{ '--arc-length': innerCircumference + 'px' }"
           :stroke-dasharray="innerCircumference"
           :stroke-dashoffset="innerCircumference * (1 - review)"

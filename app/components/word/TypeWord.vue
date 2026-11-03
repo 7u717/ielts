@@ -274,7 +274,9 @@ function saveNote() {
   <div v-if="word.word" class="typing-word" :class="{ 'minimal-input': minimalInput }" :data-practice-phase="phaseName">
     <Transition name="word-change" mode="out-in">
       <div :key="word.word + phaseKey" class="word-stage">
-        <i class="next-card-echo" aria-hidden="true" />
+        <div class="next-card-echo" aria-hidden="true">
+          <span class="echo-word" /><span class="echo-meaning" /><span class="echo-sentence" />
+        </div>
         <div
           class="word-swipe-surface"
           :class="{ dragging, flying }"
