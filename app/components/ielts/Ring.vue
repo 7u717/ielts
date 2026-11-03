@@ -12,7 +12,13 @@ const innerCircumference = 2 * Math.PI * 101
 <template>
   <div
     class="iue-ring"
-    :class="{ small, 'dual-ring': reviewProgress !== undefined, 'ring-continuous': !animate }"
+    :class="{
+      small,
+      'dual-ring': reviewProgress !== undefined,
+      'ring-continuous': !animate,
+      'ring-animate': animate,
+      'ring-empty': ratio === 0 && review === 0,
+    }"
     :style="{ width: size + 'px', height: size + 'px' }"
   >
     <svg viewBox="0 0 240 240" aria-hidden="true">

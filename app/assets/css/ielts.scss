@@ -3752,3 +3752,92 @@ html[data-keyboard-open='true'] .card-actions {
 .word-swipe-surface.flying {
   pointer-events: none;
 }
+
+/* A barely perceptible zero-state aura; opacity spans only 2.5 percentage points. */
+.hero-ring-button .ring-empty::after {
+  content: '';
+  position: absolute;
+  inset: 13px;
+  border-radius: 50%;
+  box-shadow: 0 0 16px 2px rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  animation: empty-ring-aura 12s var(--r-ease) infinite;
+}
+html.light .hero-ring-button .ring-empty::after {
+  box-shadow: 0 0 16px 2px rgba(25, 30, 40, 0.055);
+}
+@keyframes empty-ring-aura {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.125;
+  }
+}
+.hero-ring-button .ring-animate .ring-arc {
+  animation:
+    arc-draw 0.9s var(--r-spring) both,
+    arc-breathe 6s var(--r-ease) infinite;
+}
+:root {
+  --modal-mask: rgba(0, 0, 0, 0.08);
+  --disc-aura: rgba(255, 255, 255, 0.055);
+}
+html.light {
+  --modal-mask: rgba(25, 30, 40, 0.06);
+  --disc-aura: rgba(25, 30, 40, 0.025);
+}
+html .ielts-sheet::backdrop,
+html.light .ielts-sheet::backdrop,
+html .vocabulary-detail::backdrop,
+html.light .vocabulary-detail::backdrop,
+body:has(.topic-menu.open) .topic-orb-backdrop,
+body:has(.study-menu.open) .topic-orb-backdrop {
+  background: var(--modal-mask);
+}
+/* An aura around the arcs, without a filled circular plate. */
+html .ielts-sheet.ring-disc,
+html.light .ielts-sheet.ring-disc {
+  background: transparent;
+  box-shadow: none;
+}
+.ring-disc::before {
+  content: '';
+  position: absolute;
+  inset: 28px;
+  border-radius: 50%;
+  box-shadow: 0 0 28px 3px var(--disc-aura);
+  pointer-events: none;
+}
+/* The action row belongs to the word cluster instead of the viewport's bottom. */
+.word-stage {
+  isolation: isolate;
+}
+.word-swipe-surface {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  border-radius: 20px;
+}
+.next-card-echo {
+  position: absolute;
+  z-index: 0;
+  inset: 10px 3% 64px;
+  border-radius: 20px;
+  background: var(--fill-1);
+  box-shadow: inset 0 -0.5px 0 var(--hair);
+  opacity: 0.4;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+.card-actions,
+html[data-keyboard-open='true'] .card-actions {
+  position: relative;
+  z-index: 1;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  justify-content: center;
+  margin-top: 24px;
+}

@@ -274,6 +274,7 @@ function saveNote() {
   <div v-if="word.word" class="typing-word" :class="{ 'minimal-input': minimalInput }" :data-practice-phase="phaseName">
     <Transition name="word-change" mode="out-in">
       <div :key="word.word + phaseKey" class="word-stage">
+        <i class="next-card-echo" aria-hidden="true" />
         <div
           class="word-swipe-surface"
           :class="{ dragging, flying }"
@@ -343,15 +344,17 @@ function saveNote() {
             </button>
           </div>
         </div>
+        <div class="card-actions">
+          <button class="icon-button" aria-label="再看" :disabled="flying" @click="decide(-1)">
+            <Icon name="review" />
+          </button>
+          <button class="icon-button" aria-label="认识" :disabled="flying" @click="decide(1)">
+            <Icon name="check" />
+          </button>
+        </div>
       </div>
     </Transition>
     <Footer />
-    <div class="card-actions">
-      <button class="icon-button" aria-label="再看" :disabled="flying" @click="decide(-1)">
-        <Icon name="review" />
-      </button>
-      <button class="icon-button" aria-label="认识" :disabled="flying" @click="decide(1)"><Icon name="check" /></button>
-    </div>
     <Sheet
       :open="detailsOpen"
       :title="!detailRevealed && effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"
