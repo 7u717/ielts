@@ -4011,3 +4011,67 @@ html[data-keyboard-open='true'] .card-actions {
 html.light .ring-today-arc {
   opacity: 0.5;
 }
+
+/* One quiet pulse for the home ring, including a truthful zero-state origin. */
+.hero-ring-button .iue-ring::after {
+  content: '';
+  position: absolute;
+  inset: 13px;
+  border-radius: 50%;
+  box-shadow: 0 0 18px 2px rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+  animation: empty-ring-aura 12s var(--r-ease) infinite;
+}
+html.light .hero-ring-button .iue-ring::after {
+  box-shadow: 0 0 18px 2px rgba(25, 30, 40, 0.065);
+}
+.ring-today-start {
+  fill: var(--text);
+  opacity: 0.25;
+}
+.ring-today-arc {
+  stroke-width: 0.9;
+  opacity: 0.58;
+}
+html.light .ring-today-arc {
+  opacity: 0.6;
+}
+.vocabulary-word {
+  padding-left: 20px;
+}
+.mastery-dot {
+  position: absolute;
+  left: 0;
+  top: calc(50% - 3px);
+  width: 6px;
+  height: 6px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 0.75px solid var(--muted);
+  opacity: 0.5;
+}
+.mastery-learning {
+  background: linear-gradient(to right, var(--muted) 50%, transparent 50%);
+  opacity: 0.7;
+}
+.mastery-mastered {
+  background: var(--text);
+  border-color: var(--text);
+  opacity: 0.8;
+}
+.word-change-enter-active {
+  transition:
+    transform 0.38s var(--r-spring),
+    filter 0.3s var(--r-ease),
+    opacity 0.26s var(--r-ease);
+}
+.word-change-enter-from {
+  transform: translateY(8px) scale(0.96);
+  filter: blur(6px);
+  opacity: 0;
+}
+.word-change-enter-to {
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+  opacity: 1;
+}

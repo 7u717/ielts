@@ -148,8 +148,8 @@ async function uiAndLearning() {
     }))
   )
   assert.ok(sizes.every(s => Math.abs(s.width - 38) < 0.1 && Math.abs(s.height - 38) < 0.1))
-  assert.equal(sizes[1].delay, '0.05s')
-  assert.equal(sizes[5].delay, '0.25s')
+  assert.equal(sizes[1].delay, '0.03s')
+  assert.equal(sizes[5].delay, '0.15s')
   assert.equal(
     await menu.getByRole('menuitemradio', { name: '环境', exact: true }).getAttribute('aria-checked'),
     'true'
@@ -365,6 +365,11 @@ async function completeCycle() {
   const data = JSON.parse(await record(page, 'typing-word-dict')).val
   assert.equal(data.word.bookList.find(d => d.id === 'ielts-environment').lastLearnIndex, 5)
   assert.equal(Object.keys(data.fsrsData).length, 5)
+  await page.locator('.hero-ring-button .ring-today-arc').waitFor()
+  const todayRatio = await page
+    .locator('.hero-ring-button .ring-today-arc')
+    .evaluate(e => 1 - Number(e.getAttribute('stroke-dashoffset')) / (2 * Math.PI * 103))
+  assert.ok(todayRatio > 0, 'a completed learning cycle grows the real daily arc')
   assert.ok(Object.values(data.fsrsData).every(card => card.due))
   assert.deepEqual(page.testErrors, [])
   await ctx.close()

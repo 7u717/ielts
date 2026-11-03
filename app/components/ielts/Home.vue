@@ -319,11 +319,6 @@ function up(e: PointerEvent) {
       </button>
     </Sheet>
     <Sheet :open="vocabularyOpen" :title="topic.name" minimal class="vocabulary-sheet" @close="vocabularyOpen = false">
-      <template #heading
-        ><div class="vocabulary-heading">
-          <h2>{{ topic.name }}</h2>
-        </div></template
-      >
       <Vocabulary :words="store.sdict.words" :open="vocabularyOpen" />
     </Sheet>
     <Sheet :open="!!wordDetails" :title="wordDetails?.word || ''" @close="wordDetails = null"

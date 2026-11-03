@@ -70,6 +70,7 @@ const learnedRatio = computed(() => (props.single ? Math.max(0, ratio.value - re
         :stroke-dasharray="todayCircumference"
         :stroke-dashoffset="todayCircumference * (1 - today)"
       />
+      <circle v-if="todayProgress !== undefined && today === 0" class="ring-today-start" cx="120" cy="17" r=".8" />
     </svg>
     <div class="ring-content"><slot /></div>
   </div>

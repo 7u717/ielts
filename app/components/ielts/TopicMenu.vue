@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
           v-for="(topic, index) in topics"
           :key="topic.id"
           :class="['lk-o', `lk-o${index + 1}`, { 'label-peek': peek === topic.id }]"
-          :style="{ '--x': '0px', '--y': 52 + index * 46 + 'px', '--delay': index * 0.05 + 's' }"
+          :style="{ '--x': '0px', '--y': 52 + index * 46 + 'px', '--delay': index * 0.03 + 's' }"
           role="menuitemradio"
           :aria-label="topic.name"
           :aria-checked="selected === topic.id"

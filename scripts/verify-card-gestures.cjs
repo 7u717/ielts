@@ -164,6 +164,21 @@ async function drag(p, dx, release = true) {
       }
       await p.screenshot({ path: `${out}/learning-rest-${scheme}-390.png`, fullPage: true })
       const wordBefore = await p.locator('#word-wrap').boundingBox()
+      await p.evaluate(() => {
+        window.wordArrivals = []
+        new MutationObserver(() => {
+          const e = document.querySelector('.word-stage.word-change-enter-from')
+          if (e) {
+            const s = getComputedStyle(e)
+            window.wordArrivals.push({ blur: s.filter, y: new DOMMatrix(s.transform).f })
+          }
+        }).observe(document.querySelector('.typing-word'), {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          attributeFilter: ['class'],
+        })
+      })
       const first = await word(p)
       await drag(p, 38, false)
       const turn = await p
@@ -221,6 +236,10 @@ async function drag(p, dx, release = true) {
       await p.screenshot({ path: `${out}/thumb-press-${scheme}-390.png`, fullPage: true })
       await p.mouse.up()
       await changed(p, third)
+      assert.ok(
+        await p.evaluate(() => window.wordArrivals.some(a => a.blur === 'blur(6px)' && Math.abs(a.y - 8) < 0.1)),
+        'new words enter blurred and rise from 8px below'
+      )
       const fourth = await word(p)
       await p.getByRole('button', { name: '再看', exact: true }).click()
       await changed(p, fourth)
@@ -248,6 +267,8 @@ async function drag(p, dx, release = true) {
       await p.getByRole('button', { name: '环境词表', exact: true }).click()
       const v = p.getByRole('dialog', { name: '环境', exact: true })
       await v.waitFor()
+      assert.equal(await v.locator('h2').count(), 0, 'word list has no heading text')
+      assert.equal(await v.locator('.mastery-dot').count(), 24)
       await p.waitForTimeout(500)
       assert.equal(
         await v
@@ -264,11 +285,17 @@ async function drag(p, dx, release = true) {
         '0.04s'
       )
       assert.equal(
-        await v.getByRole('button', { name: 'biodiversity', exact: true }).locator('.mastered-dot').count(),
+        await v
+          .getByRole('button', { name: 'biodiversity', exact: true })
+          .locator('.mastery-dot.mastery-mastered')
+          .count(),
         1
       )
       assert.equal(
-        await v.getByRole('button', { name: 'sustainability', exact: true }).locator('.mastered-dot').count(),
+        await v
+          .getByRole('button', { name: 'sustainability', exact: true })
+          .locator('.mastery-dot.mastery-mastered')
+          .count(),
         0
       )
       const row = v.getByRole('button', { name: 'biodiversity', exact: true })
@@ -283,9 +310,16 @@ async function drag(p, dx, release = true) {
       assert.equal(await p.evaluate(() => window.haptics.length), hapticsBefore + 1)
       await p.screenshot({ path: `${out}/vocabulary-press-${scheme}-390.png`, fullPage: true })
       await p.mouse.up()
-      await p.locator('.vocabulary-detail').waitFor()
+      await p.locator('.vocabulary-word-sheet').waitFor()
+      await p.waitForTimeout(350)
+      assert.ok(await p.locator('.vocabulary-word-sheet .detail-phonetic').innerText())
+      assert.equal(
+        await p.locator('.vocabulary-word-sheet').evaluate(e => getComputedStyle(e).backdropFilter),
+        'blur(40px) saturate(1.8)'
+      )
+      await p.screenshot({ path: `${out}/vocabulary-details-${scheme}-390.png`, fullPage: true })
       await p.mouse.click(8, 100)
-      await p.locator('.vocabulary-detail').waitFor({ state: 'hidden' })
+      await p.locator('.vocabulary-word-sheet').waitFor({ state: 'hidden' })
       await p.screenshot({ path: `${out}/vocabulary-${scheme}-390.png`, fullPage: true })
       assert.deepEqual(errors, [])
       assert.ok((await p.evaluate(() => window.haptics)).every(n => n === 8))

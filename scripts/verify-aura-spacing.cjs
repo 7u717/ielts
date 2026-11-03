@@ -43,6 +43,8 @@ fs.mkdirSync(out, { recursive: true })
       assert.equal(aura.name, 'empty-ring-aura')
       assert.equal(aura.duration, '12s')
       assert.ok(Math.max(...aura.frames) - Math.min(...aura.frames) <= 0.03001)
+      assert.equal(await p.locator('.ring-today-start').count(), 1)
+      assert.equal(await p.locator('.ring-today-arc').count(), 0)
       await shot('home-zero')
       await p.locator('.hero-ring-button').click()
       const disc = p.getByRole('dialog', { name: '学习概览', exact: true })
@@ -68,9 +70,9 @@ fs.mkdirSync(out, { recursive: true })
       await p.waitForTimeout(400)
       assert.equal(await mask(vocab), expectedMask)
       await p.getByRole('button', { name: 'biodiversity', exact: true }).click()
-      const vDetail = p.locator('.vocabulary-detail')
+      const vDetail = p.locator('.vocabulary-word-sheet')
       await vDetail.waitFor()
-      assert.equal(await mask(vDetail), expectedMask)
+      assert.equal(await mask(vDetail), scheme === 'dark' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(25, 30, 40, 0.12)')
       await p.mouse.click(8, 100)
       await vDetail.waitFor({ state: 'hidden' })
       await p.mouse.click(8, 100)
@@ -158,6 +160,13 @@ fs.mkdirSync(out, { recursive: true })
         await p.locator('.topic-orb-backdrop').evaluate(e => getComputedStyle(e).backgroundColor),
         expectedMask
       )
+      const orbs = p.locator('.topic-menu .lk-o')
+      for (let i = 0; i < 6; i++) {
+        assert.ok(
+          Math.abs(parseFloat(await orbs.nth(i).evaluate(e => getComputedStyle(e).transitionDelay)) - i * 0.03) < 0.001
+        )
+      }
+      await shot('topics')
       assert.deepEqual(errors, [])
       console.log(
         `PASS ${scheme}: 12s zero aura with opacity span <=3%; true spring zero-to-progress drawing; transparent disc and soft aura; unified masks with stronger word-detail isolation; centered cluster and bottom thumb actions and no next-card ghost`
