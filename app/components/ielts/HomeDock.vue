@@ -72,11 +72,11 @@ function down(e: PointerEvent) {
 }
 function move(e: PointerEvent) {
   if (tracking && Math.abs(e.clientX - start) > 5)
-    offset.value = Math.max(0, Math.min(3, (e.clientX - bar.value!.getBoundingClientRect().left - 5) / 60 - 0.5))
+    offset.value = Math.max(0, Math.min(3, (e.clientX - bar.value!.getBoundingClientRect().left - 5) / 64 - 0.5))
 }
 function up(e: PointerEvent) {
   if (!tracking) return
-  select(Math.max(0, Math.min(3, Math.floor((e.clientX - bar.value!.getBoundingClientRect().left - 5) / 60))))
+  select(Math.max(0, Math.min(3, Math.floor((e.clientX - bar.value!.getBoundingClientRect().left - 5) / 64))))
   skipClick = true
   cancel()
 }
@@ -101,7 +101,7 @@ function cancel() {
     <i
       class="tab-indicator"
       :class="{ dragging: offset !== null }"
-      :style="{ transform: `translateX(${(offset ?? active) * 60}px)` }"
+      :style="{ transform: `translateX(${(offset ?? active) * 64}px)` }"
     />
     <button
       v-for="(item, index) in items"

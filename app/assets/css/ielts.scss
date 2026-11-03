@@ -4419,3 +4419,143 @@ html.light .hero-ring-button .ring-today-start {
 html.light .hero-ring-button .ring-today-arc {
   r: 110px;
 }
+
+/* Focused home: one strong daily ring and clear, spacious navigation. */
+.home-header .topic-menu {
+  width: 44px;
+  height: 44px;
+}
+.home-header .header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+html .home-header .topic-menu .header-link-button {
+  width: 44px;
+  height: 44px;
+  color: var(--text);
+}
+.home-header .header-link-button .iue-icon {
+  width: 25px;
+  height: 25px;
+  stroke-width: 1.9;
+}
+.ielts-home .home-focus {
+  min-height: 0;
+  height: calc(100svh - var(--header-h) - 116px - env(safe-area-inset-bottom, 0px));
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+.home-focus .home-topic-name {
+  margin: 0;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+.home-focus .overview-hero {
+  display: contents;
+}
+.home-focus .hero-ring-button {
+  width: 320px;
+  height: 320px;
+  min-height: 320px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  margin: 0;
+  touch-action: manipulation;
+}
+.home-focus .hero-ring-button > .iue-ring {
+  width: 320px;
+  height: 320px;
+}
+.home-focus .hero-ring-button .ring-track {
+  stroke: var(--text);
+  stroke-width: calc(5px * var(--ring-stroke-unit));
+  opacity: 0.16;
+}
+html.light .home-focus .hero-ring-button .ring-track {
+  opacity: 0.12;
+}
+.home-focus .hero-ring-button .ring-arc {
+  stroke: var(--text);
+  stroke-width: calc(5px * var(--ring-stroke-unit));
+  stroke-linecap: round;
+  opacity: 1;
+  filter: none;
+  animation: arc-draw 0.85s var(--r-spring) both;
+}
+.home-focus .hero-ring-button .iue-ring::after {
+  display: none;
+}
+.home-focus .ring-content {
+  gap: 16px;
+  max-width: 220px;
+}
+.home-remaining {
+  font-family: var(--r-num);
+  font-size: 82px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.055em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.home-start-label {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  opacity: 0.72;
+}
+.ielts-home .unified-dock {
+  width: 266px;
+  height: 54px;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+}
+.ielts-home .unified-dock button {
+  width: 64px;
+  height: 44px;
+  flex-basis: 64px;
+  color: var(--muted);
+}
+.ielts-home .unified-dock .iue-icon {
+  width: 25px;
+  height: 25px;
+  stroke-width: 1.9;
+}
+.ielts-home .unified-dock .tab-indicator {
+  width: 44px;
+  height: 44px;
+  top: 5px;
+  left: 15px;
+  border-radius: 50%;
+  background: var(--text);
+}
+.ielts-home .unified-dock button[aria-pressed='true'] {
+  color: var(--bg);
+}
+@media (max-height: 700px) {
+  .ielts-home .home-focus {
+    gap: 16px;
+  }
+  .home-focus .hero-ring-button,
+  .home-focus .hero-ring-button > .iue-ring {
+    width: 280px !important;
+    height: 280px !important;
+    min-height: 280px;
+  }
+  .home-remaining {
+    font-size: 72px;
+  }
+}
+
+body:has(.vocabulary-sheet[open]) .home-focus .ring-content {
+  opacity: 0;
+}

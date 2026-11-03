@@ -36,13 +36,6 @@ const error = ref('')
 const hasSession = ref(false)
 const wordDetails = ref<Word | null>(null)
 const vocabularyOpen = ref(false)
-const overviewOpen = ref(false)
-const discY = ref(0)
-function openOverview(event: MouseEvent) {
-  const box = (event.currentTarget as HTMLElement).getBoundingClientRect()
-  discY.value = box.y + box.height / 2
-  overviewOpen.value = true
-}
 const topic = computed(() => topics.find(t => t.id === store.sdict.id) || topics[0])
 const topicProgress = (id: string) => {
   const dict = store.word.bookList.find(d => d.id === id)
@@ -54,10 +47,20 @@ const todayLearned = computed(() => {
     .filter(record => new Date(record.startDate).toDateString() === date)
     .reduce((sum, record) => sum + (record.new || 0), 0)
 })
-const todayProgress = computed(() => Math.min(1, todayLearned.value / Math.max(1, store.sdict.perDayStudyNumber)))
+const availableNew = computed(() => {
+  if (store.sdict.complete) return 0
+  const ignored = settings.ignoreSimpleWord ? store.allIgnoreWordsSet : store.knownWordsSet
+  return store.sdict.words.slice(store.sdict.lastLearnIndex).filter(word => !ignored.has(word.word)).length
+})
+const todayRemaining = computed(() =>
+  Math.max(0, Math.min(store.sdict.perDayStudyNumber - todayLearned.value, availableNew.value))
+)
+const todayProgress = computed(() => {
+  const target = todayLearned.value + todayRemaining.value
+  return target > 0 ? Math.min(1, todayLearned.value / target) : 1
+})
 const menuProgress = computed(() => Object.fromEntries(topics.map(t => [t.id, topicProgress(t.id)])))
 const review = computed(() => (store.load && !busy.value ? createStudyTask().taskWords.review : []))
-const dueReviewCount = computed(() => (store.load && !busy.value ? createStudyTask().dueReviewCount : 0))
 const list = computed(() => (tab.value === 'wrong' ? store.wrong.words : review.value))
 watch(
   () => store.load,
@@ -118,7 +121,6 @@ async function chooseMode(next: WordPracticeMode) {
 }
 async function start() {
   if (busy.value || error.value) return
-  overviewOpen.value = false
   busy.value = true
   try {
     if (tab.value === 'wrong') {
@@ -193,30 +195,26 @@ function up(e: PointerEvent) {
         key="learn"
         role="tabpanel"
         aria-labelledby="tab-learn"
-        class="overview-panel"
+        class="overview-panel home-focus"
       >
+        <p class="home-topic-name">{{ topic.name }}</p>
         <div class="overview-hero">
           <button
             class="hero-ring-button"
-            :class="{ 'ring-expanded': overviewOpen }"
             :disabled="busy || !!error"
             :aria-label="hasSession ? '继续学习' : '开始学习'"
-            aria-haspopup="dialog"
-            @click="openOverview"
+            aria-describedby="home-daily-summary"
+            @click="start"
           >
             <Transition name="hero-theme" mode="out-in"
-              ><Ring
-                :key="topic.id"
-                :progress="topicProgress(topic.id)"
-                :review-progress="dueReviewCount / topic.length"
-                :today-progress="todayProgress"
-                :size="274"
-                single
-                ><span class="hero-topic">{{ topic.name }}</span></Ring
+              ><Ring :key="topic.id" :progress="busy ? 0 : todayProgress" :size="320" single
+                ><span class="home-remaining" aria-hidden="true">{{ busy ? '—' : todayRemaining }}</span>
+                <span class="home-start-label" aria-hidden="true">开始</span></Ring
               ></Transition
             >
           </button>
         </div>
+        <span id="home-daily-summary" class="sr-only">今日还剩 {{ todayRemaining }} 个新词</span>
         <button v-if="error" class="error-action" @click="choose(topic)">{{ error }}</button>
         <span v-if="busy" class="loading-note" role="status">正在载入</span>
       </section>
@@ -278,46 +276,6 @@ function up(e: PointerEvent) {
           @close="topicsOpen = false"
           @select="chooseFromMenu" /></Teleport
     ></ClientOnly>
-    <Sheet
-      :open="overviewOpen"
-      title="学习概览"
-      minimal
-      floating
-      draggable
-      class="study-overview ring-disc"
-      :style="{ '--disc-y': discY + 'px' }"
-      @close="overviewOpen = false"
-    >
-      <h2>{{ topic.name }}</h2>
-      <div class="disc-progress">
-        <Ring
-          :progress="topicProgress(topic.id)"
-          :review-progress="dueReviewCount / topic.length"
-          :size="278"
-          single
-          :animate="false"
-        />
-        <span
-          class="sr-only"
-          role="progressbar"
-          aria-label="本话题已学进度"
-          :aria-valuenow="store.sdict.complete ? topic.length : store.sdict.lastLearnIndex"
-          :aria-valuemax="topic.length"
-          aria-valuemin="0"
-        />
-        <span
-          class="sr-only"
-          role="progressbar"
-          aria-label="本话题待复习比例"
-          :aria-valuenow="dueReviewCount"
-          :aria-valuemax="topic.length"
-          aria-valuemin="0"
-        />
-      </div>
-      <button class="overview-start" :aria-label="hasSession ? '继续学习' : '开始学习'" :disabled="busy" @click="start">
-        <Icon name="play" />
-      </button>
-    </Sheet>
     <Sheet :open="vocabularyOpen" :title="topic.name" minimal class="vocabulary-sheet" @close="vocabularyOpen = false">
       <Vocabulary :words="store.sdict.words" :open="vocabularyOpen" />
     </Sheet>

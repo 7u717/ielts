@@ -6,7 +6,7 @@
 
 ## 使用
 
-首页仅保留本话题主圆环与底部四枚裸图标，用弹簧滑动小点标示当前项。导航为学习、词表、错词、复习，打字／听写及学习模式选择收进底部学习图标点开的轻菜单，支持拖动滑动指示；页面左右滑动仍切换学习／错词／复习。首页与展开态的主题进度使用单一环轨，首页额外用一条无底环的细弧呈现今日实际新词进度，以亮度区分本话题已学／FSRS 到期待复习弧段，从 12 点顺时针弹簧画出并轻微呼吸，不绘制孤立端点。点击后原位放大成圆形玻璃盘，盘内收成一条 278px、2px 圆头环轨，已学／待复习沿同一轨道以亮度区分，弧线随圆盘缩放且不从零重画；只有话题名、进度弧与播放按钮，无数字或矩形卡片；圆盘本身无底色，仅在单环周围保留柔和光晕；点外部或下滑缩回，点播放开始或继续。
+首页以单一 5px 今日进度环为中心，环内用轻字重显示今日剩余新词数与小字“开始”；点环直接开始或继续现有学习任务。剩余量读取原有每日目标、当日完成记录和可用新词，不改写存储。四枚底部图标使用 44px 反色圆形选中态与弹簧滑动，保留学习模式轻菜单。标题与主题入口更清晰，主题切换、头像偏好及学习页样式保持原样。
 
 话题切换只在右上角六个圆形图标菜单：叶子、书、芯片、人群、心跳、折线，当前话题为反色实心圆；仅当前话题或长按／键盘聚焦时显示标签，长按不误切换，点图标或空白收回，保留错落弹簧动画。左上头像偏好只显示每日新词与自动发音，每日新词使用细轨和圆形拇指、拖动浮动数值与吸附触感，兼容旧档位；悬浮面板左右底部留 12px，支持阻尼下拉关闭。
 
@@ -16,9 +16,7 @@
 
 概览、偏好、词表与单词详情沿用白色 3.5%／浅色 32% 的轻玻璃、30px 模糊与 180% 饱和度及顶部细高光；面板背景只轻微模糊。所有浮层统一轻微变暗遮罩（深色 8%、浅色 6%）；任意浮层打开时 dock 淡出下沉，关闭后弹簧返回。深浅外观跟随系统，不重写任何已有学习设置。
 
-零进度圆盘也保留清晰单底环，有进度时叠加真实已学／待复习弧，不伪造完成量。圆盘主题名置于弧心，播放按钮距主题名下沿 24px。主动点开的详情会显示内容，即使当前是遮词练习；保留原有查看答案的错词判定。详情优先原词条音标，缺少时用只读英式 IPA 补充，不回写词库。
-
-首页每次进入时，已有进度弧从零以弹簧曲线描绘；零进度以 12 秒光晕呼吸，透明度只在 10%–12.5% 之间变化，并尊重减少动态效果。
+主动点开的详情会显示内容，即使当前是遮词练习；保留原有查看答案的错词判定。详情优先原词条音标，缺少时用只读英式 IPA 补充，不回写词库。
 
 ## 开发与发布
 
@@ -63,7 +61,7 @@ PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright \
 
 `scripts/verify-card-gestures.cjs` 检查 390px 深浅四项导航、头像模式选择、鼠标／触摸／释义详情、透明进度底轨、44px 工具、轻旋转、阈值触感、双向判定与替代按钮，以及 20ms 词表入场。
 
-`scripts/verify-aura-spacing.cjs` 检查真实描弧起止值、弹簧曲线、零进度呼吸透明度范围、透明圆盘及光晕、所有浮层同色遮罩、居中学习内容与底部按钮布局与无残影切词，并保存深浅 390px 截图。
+历史圆盘首页的 `scripts/verify-aura-spacing.cjs` 检查真实描弧起止值、弹簧曲线、零进度呼吸透明度范围、透明圆盘及光晕、所有浮层同色遮罩、居中学习内容与底部按钮布局与无残影切词，并保存深浅 390px 截图。
 
 ## 许可
 
@@ -90,3 +88,7 @@ Round 24: mastery markers are solid 6px dots at 20% / 55% / 100% opacity for new
 Round 25: study keyboard/settings tools use bare 20px icons in 44px targets, staggered by 30ms with the theme menu’s spring, retaining outside-tap dismissal. The word-list sheet uses translucent 32px frosted glass; rows press to 0.97 with the existing vibrate(8). Word changes use a stationary soft fade while swipe gestures remain. No storage or learning-record changes.
 
 Round 26: study header is explicitly borderless, with only the 2px daily track 6px below it. Solid 6px mastery dots use clearer 50% / 75% / 100% contrast. Study translations/examples are brighter and more spaced; sound/detail actions have 44px targets, press scaling and pointer-down haptics. Light home hides the inner track and places today’s arc on the main radius; SVG pathLength preserves its true progress ratio. No storage or study-record changes.
+
+Focused home redesign: a single 5px daily-progress ring with a large light-weight remaining-new-word count and small 开始. Ring tap starts/resumes directly through the existing session logic. Remaining words read the current goal, same-day statistics and available new words; no stored fields are changed. Home-only header/nav styles add weight and 44px active navigation circles, preserving the theme menu, avatar preferences and mode selection. Study and sheet styling remain unchanged.
+
+当前首页检查：`node scripts/verify-home-focus.cjs`，覆盖 390px 深浅外观、单环、真实剩余量、旧每日目标兼容、直接开始与续学、主题菜单、偏好、44px 导航及小屏布局。

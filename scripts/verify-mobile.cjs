@@ -371,10 +371,10 @@ async function completeCycle() {
   const data = JSON.parse(await record(page, 'typing-word-dict')).val
   assert.equal(data.word.bookList.find(d => d.id === 'ielts-environment').lastLearnIndex, 5)
   assert.equal(Object.keys(data.fsrsData).length, 5)
-  await page.locator('.hero-ring-button .ring-today-arc').waitFor()
+  await page.locator('.hero-ring-button .ring-arc').waitFor()
   const todayRatio = await page
-    .locator('.hero-ring-button .ring-today-arc')
-    .evaluate(e => 1 - Number(e.getAttribute('stroke-dashoffset')) / (2 * Math.PI * 103))
+    .locator('.hero-ring-button .ring-arc')
+    .evaluate(e => 1 - Number(e.getAttribute('stroke-dashoffset')) / (2 * Math.PI * 110))
   assert.ok(todayRatio > 0, 'a completed learning cycle grows the real daily arc')
   assert.ok(Object.values(data.fsrsData).every(card => card.due))
   assert.deepEqual(page.testErrors, [])

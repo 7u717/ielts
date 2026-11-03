@@ -8,9 +8,6 @@ async function headerAction(page, name) {
 }
 async function startStudy(page) {
   await page.locator('.hero-ring-button:enabled').click()
-  const overview = page.getByRole('dialog', { name: '学习概览', exact: true })
-  await overview.waitFor()
-  await overview.locator('.overview-start').click()
   await page.waitForURL('**/practice-words/**')
 }
 async function closeWordDetails(page) {
