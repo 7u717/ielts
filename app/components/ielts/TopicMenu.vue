@@ -1,41 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import Icon from './Icon.vue'
-import { haptic } from '@/core/ielts/ui'
-const props = defineProps<{
-  open: boolean
-  selected: string
-  topics: { id: string; name: string }[]
-  busy?: boolean
-  progressValues?: Record<string, number>
-}>()
-const icons = ['leaf', 'learn', 'chip', 'people', 'heartbeat', 'trend']
-const peek = ref('')
-let hold: ReturnType<typeof setTimeout> | undefined
-let labelTimer: ReturnType<typeof setTimeout> | undefined
-let held = false
-function press(id: string) {
-  held = false
-  hold = setTimeout(() => {
-    held = true
-    peek.value = id
-    haptic()
-    clearTimeout(labelTimer)
-    labelTimer = setTimeout(() => {
-      peek.value = ''
-    }, 1800)
-  }, 420)
-}
-function release() {
-  clearTimeout(hold)
-}
-function select(id: string) {
-  if (held) {
-    held = false
-    return
-  }
-  emit('select', id)
-}
+const props = defineProps<{ open: boolean; selected: string; topics: { id: string; name: string }[]; busy?: boolean }>()
 const emit = defineEmits<{ toggle: []; close: []; select: [string] }>()
 const wrap = ref<HTMLElement>()
 const trigger = ref<HTMLButtonElement>()
@@ -72,8 +38,6 @@ watch(
 )
 onMounted(() => document.addEventListener('pointerdown', outside))
 onBeforeUnmount(() => {
-  clearTimeout(hold)
-  clearTimeout(labelTimer)
   document.removeEventListener('pointerdown', outside)
   if (props.open) emit('close')
 })
@@ -87,7 +51,6 @@ onBeforeUnmount(() => {
       aria-haspopup="menu"
       :aria-expanded="open"
       aria-controls="topic-orb-menu"
-      @pointerdown="haptic()"
       @click="emit('toggle')"
     >
       <Icon name="topics" />
@@ -97,21 +60,15 @@ onBeforeUnmount(() => {
         <button
           v-for="(topic, index) in topics"
           :key="topic.id"
-          :class="['lk-o', `lk-o${index + 1}`, { 'label-peek': peek === topic.id }]"
-          :style="{ '--x': '0px', '--y': 52 + index * 46 + 'px', '--delay': index * 0.03 + 's' }"
+          :class="['lk-o', `lk-o${index + 1}`]"
+          :style="{ '--x': '0px', '--y': 52 + index * 46 + 'px', '--delay': index * 0.05 + 's' }"
           role="menuitemradio"
           :aria-label="topic.name"
           :aria-checked="selected === topic.id"
           :disabled="busy"
-          @pointerdown="press(topic.id)"
-          @pointerup="release"
-          @pointercancel="release"
-          @pointerleave="release"
-          @contextmenu.prevent
-          @click="select(topic.id)"
+          @click="emit('select', topic.id)"
         >
-          <Icon :name="icons[index]" />
-          <span v-if="selected !== topic.id">{{ topic.name }}</span>
+          <span>{{ topic.name }}</span>
         </button>
       </div>
     </div>

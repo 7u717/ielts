@@ -1,4 +1,3 @@
-const { headerAction, startStudy, closeWordDetails, chooseStudyMode } = require('./mobile-actions.cjs')
 /* Run against `pnpm dev` or the generated /ielts/ site.
  * npm install --prefix /tmp/ielts-browser playwright
  * PLAYWRIGHT_MODULE=/tmp/ielts-browser/node_modules/playwright node scripts/verify-mobile.cjs
@@ -13,7 +12,6 @@ fs.mkdirSync(shots, { recursive: true })
 let browser
 async function context() {
   const ctx = await browser.newContext({
-    colorScheme: 'dark',
     viewport: { width: 390, height: 844 },
     deviceScaleFactor: 2,
     isMobile: true,
@@ -85,7 +83,7 @@ async function swipe(page, locator, dx, dy = 0) {
   }
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
   await client.detach()
-  await page.waitForTimeout(650)
+  await page.waitForTimeout(320)
 }
 async function record(page, key, value) {
   return page.evaluate(
@@ -124,13 +122,13 @@ async function uiAndLearning() {
   assert.equal(style.width, 390)
   assert.equal(style.header, 57)
   assert.ok(!style.font.includes('Inter'))
-  assert.equal(await page.locator('.unified-dock button').count(), 4)
+  assert.equal(await page.getByRole('tab').count(), 3)
   await page.screenshot({ path: `${shots}/home.png`, fullPage: true })
-  await page.getByRole('button', { name: '错词', exact: true }).click()
+  await page.getByRole('tab', { name: '错词', exact: true }).click()
   await page.getByText('还没有错词', { exact: true }).waitFor()
   await swipe(page, page.locator('.ielts-home'), -170)
-  assert.equal(await page.getByRole('button', { name: '复习', exact: true }).getAttribute('aria-pressed'), 'true')
-  await page.getByRole('button', { name: '学习', exact: true }).click()
+  assert.equal(await page.getByRole('tab', { name: '复习', exact: true }).getAttribute('aria-selected'), 'true')
+  await page.getByRole('tab', { name: '学习', exact: true }).click()
   await page.getByRole('button', { name: '选择主题', exact: true }).click()
   assert.equal(await page.locator('.avatar-button[aria-label="偏好设置"]').count(), 1)
   assert.equal(await page.locator('.header-actions button[aria-label="偏好设置"]').count(), 0)
@@ -148,8 +146,8 @@ async function uiAndLearning() {
     }))
   )
   assert.ok(sizes.every(s => Math.abs(s.width - 38) < 0.1 && Math.abs(s.height - 38) < 0.1))
-  assert.equal(sizes[1].delay, '0.03s')
-  assert.equal(sizes[5].delay, '0.15s')
+  assert.equal(sizes[1].delay, '0.05s')
+  assert.equal(sizes[5].delay, '0.25s')
   assert.equal(
     await menu.getByRole('menuitemradio', { name: '环境', exact: true }).getAttribute('aria-checked'),
     'true'
@@ -158,11 +156,11 @@ async function uiAndLearning() {
   await page.getByRole('button', { name: '选择主题', exact: true }).click()
   await menu.waitFor({ state: 'hidden' })
   await page.waitForTimeout(300)
-  await startStudy(page)
+  await page.getByRole('button', { name: '开始学习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   const first = await word(page)
-  await headerAction(page, '打开键盘')
+  await page.getByRole('button', { name: '打开键盘', exact: true }).click()
   await input(page, first.slice(0, 2))
   await input(page, 'x')
   assert.equal(
@@ -178,9 +176,7 @@ async function uiAndLearning() {
   const second = await word(page)
   assert.notEqual(second, first, 'correct answer advances automatically')
   await page.locator('#word-wrap').click()
-  await closeWordDetails(page)
   await page.locator('#word-wrap').click()
-  await closeWordDetails(page)
   const target = await page.locator('#word-wrap').boundingBox()
   await page.mouse.move(target.x + target.width / 2, target.y + 10)
   await page.mouse.down()
@@ -194,8 +190,8 @@ async function uiAndLearning() {
   await page.getByRole('button', { name: '笔记', exact: true }).click()
   await page.getByRole('textbox', { name: '单词笔记' }).fill('雅思备考笔记')
   await page.getByRole('button', { name: '保存', exact: true }).click()
-  await page.keyboard.press('Escape')
-  await page.waitForTimeout(430)
+  await page.getByRole('button', { name: '关闭', exact: true }).click()
+  await page.waitForTimeout(260)
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.getByRole('button', { name: '继续学习', exact: true }).waitFor()
   await page.getByRole('button', { name: '选择主题', exact: true }).click()
@@ -203,9 +199,9 @@ async function uiAndLearning() {
   assert.equal(await menu.getByRole('menuitemradio').count(), 6)
   await page.getByRole('button', { name: '选择主题', exact: true }).click()
   await menu.waitFor({ state: 'hidden' })
-  await chooseStudyMode(page, '听写')
+  await page.getByRole('button', { name: '听写', exact: true }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await startStudy(page)
+  await page.getByRole('button', { name: '开始学习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   await page.getByRole('button', { name: '播放发音', exact: true }).click()
@@ -219,8 +215,8 @@ async function uiAndLearning() {
   )
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await chooseStudyMode(page, '学习')
-  await startStudy(page)
+  await page.getByRole('button', { name: '学习', exact: true }).click()
+  await page.getByRole('button', { name: '继续学习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   assert.equal(await word(page), third, 'System mode 0 session is restored')
@@ -229,7 +225,7 @@ async function uiAndLearning() {
   await page.screenshot({ path: `${shots}/practice.png`, fullPage: true })
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await headerAction(page, '偏好设置')
+  await page.getByRole('button', { name: '偏好设置' }).click()
   const preferences = page.getByRole('dialog', { name: '偏好', exact: true })
   assert.equal(await preferences.getByRole('slider', { name: '每日新词' }).count(), 1)
   assert.equal(await preferences.getByRole('switch', { name: '自动发音' }).count(), 1)
@@ -285,7 +281,7 @@ async function legacyAndReview() {
   assert.equal(after.val.word.bookList.find(d => d.id === 1).lastLearnIndex, 137)
   assert.deepEqual(after.val.fsrsData.biodiversity, saved.val.fsrsData.biodiversity)
   assert.equal(after.val.noteData.legacy, '保留已有笔记')
-  await startStudy(page)
+  await page.getByRole('button', { name: '开始学习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   const first = await word(page)
@@ -294,25 +290,25 @@ async function legacyAndReview() {
   const next = await word(page)
   await page.getByRole('link', { name: '保存并返回' }).click()
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await page.getByRole('button', { name: '复习', exact: true }).click()
+  await page.getByRole('tab', { name: '复习', exact: true }).click()
   await page.getByRole('button', { name: '开始复习', exact: true }).waitFor()
   assert.ok((await page.locator('.word-list-panel').innerText()).includes('biodiversity'))
   await page.getByRole('button', { name: '开始复习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   assert.equal(
-    await page.locator('.typing-word').getAttribute('data-practice-phase'),
+    await page.locator('.practice-phase').innerText(),
     '回想',
     'review starts its own flow, not unfinished new words'
   )
   await page.getByRole('link', { name: '保存并返回' }).click()
-  await page.getByRole('button', { name: '学习', exact: true }).click()
-  await startStudy(page)
+  await page.getByRole('tab', { name: '学习', exact: true }).click()
+  await page.getByRole('button', { name: '继续学习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   assert.equal(await word(page), next, 'review preserves unfinished new-word session')
   await page.getByRole('link', { name: '保存并返回' }).click()
-  await page.getByRole('button', { name: '错词', exact: true }).click()
+  await page.getByRole('tab', { name: '错词', exact: true }).click()
   await page.locator('.word-row').first().waitFor()
   await swipe(page, page.locator('.word-list-panel .word-row-wrap').first(), -150)
   assert.equal(await page.locator('.word-list-panel .word-row').count(), 1)
@@ -335,25 +331,20 @@ async function completeCycle() {
   await record(page, 'typing-word-dict', JSON.stringify(saved))
   await page.reload({ waitUntil: 'networkidle' })
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await startStudy(page)
+  await page.getByRole('button', { name: '开始学习', exact: true }).click()
   await page.waitForURL('**/practice-words/**')
   await stable(page)
   const phases = new Set()
   let complete = false
-  let lastDailyProgress = 0
   for (let i = 0; i < 80; i++) {
     const done = page.getByRole('dialog', { name: '这一组，记住了。', exact: true })
     if (await done.isVisible()) {
       complete = true
       break
     }
-    const dailyProgress = Number(await page.locator('.practice-mini-progress').getAttribute('aria-valuenow'))
-    assert.ok(dailyProgress >= lastDailyProgress, 'repeated phases must not reset daily progress')
-    assert.ok(dailyProgress <= 5, 'repeated phases must not double-count new words')
-    lastDailyProgress = dailyProgress
-    const phase = await page.locator('.typing-word').getAttribute('data-practice-phase')
+    const phase = await page.locator('.practice-phase').innerText()
     phases.add(phase)
-    if (phase === '回想') await page.getByRole('button', { name: '认识', exact: true }).click()
+    if (phase === '回想') await page.getByRole('button', { name: '记得', exact: true }).click()
     else {
       await page.getByRole('button', { name: '播放发音', exact: true }).click()
       const current = await page.evaluate(() => window.testSpeech.at(-1).text)
@@ -362,7 +353,6 @@ async function completeCycle() {
     await page.waitForTimeout(650)
   }
   assert.ok(complete, 'full learning cycle completes without a Next button')
-  assert.equal(lastDailyProgress, 5)
   await page.getByRole('button', { name: '再学一组 →', exact: true }).click()
   await stable(page)
   assert.equal(await word(page), 'ecosystem', 'completed progress advances exactly once')
@@ -371,11 +361,6 @@ async function completeCycle() {
   const data = JSON.parse(await record(page, 'typing-word-dict')).val
   assert.equal(data.word.bookList.find(d => d.id === 'ielts-environment').lastLearnIndex, 5)
   assert.equal(Object.keys(data.fsrsData).length, 5)
-  await page.locator('.hero-ring-button .ring-arc').waitFor()
-  const todayRatio = await page
-    .locator('.hero-ring-button .ring-arc')
-    .evaluate(e => 1 - Number(e.getAttribute('stroke-dashoffset')) / (2 * Math.PI * 110))
-  assert.ok(todayRatio > 0, 'a completed learning cycle grows the real daily arc')
   assert.ok(Object.values(data.fsrsData).every(card => card.due))
   assert.deepEqual(page.testErrors, [])
   await ctx.close()

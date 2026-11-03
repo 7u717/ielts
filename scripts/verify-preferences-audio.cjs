@@ -1,4 +1,3 @@
-const { headerAction, startStudy, closeWordDetails } = require('./mobile-actions.cjs')
 // Real Chromium media playback against a local WAV fixture at the HTTPS dictionary URL.
 // This verifies playback/gesture plumbing, not external Youdao availability or physical iPhone output.
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright')
@@ -59,7 +58,6 @@ async function nativeType(page, text) {
   })
   try {
     const ctx = await browser.newContext({
-      colorScheme: 'dark',
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 2,
       isMobile: true,
@@ -137,7 +135,7 @@ async function nativeType(page, text) {
     await page.screenshot({ path: `${output}/preferences-390.png`, fullPage: true })
     await page.mouse.click(16, 140)
     await sheet.waitFor({ state: 'hidden' })
-    await headerAction(page, '偏好设置')
+    await page.getByRole('button', { name: '偏好设置' }).click()
     await page.waitForTimeout(420)
     const handle = await sheet.locator('.sheet-grab').boundingBox()
     await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2)
@@ -145,7 +143,7 @@ async function nativeType(page, text) {
     await page.mouse.move(handle.x + handle.width / 2, handle.y + 105, { steps: 8 })
     await page.mouse.up()
     await sheet.waitFor({ state: 'hidden' })
-    await headerAction(page, '偏好设置')
+    await page.getByRole('button', { name: '偏好设置' }).click()
     await page.waitForTimeout(420)
     const slider = sheet.getByRole('slider', { name: '每日新词' })
     await slider.focus()
@@ -161,7 +159,7 @@ async function nativeType(page, text) {
     assert.equal(saved.val.word.bookList.find(d => d.id === 'ielts-environment').lastLearnIndex, 0)
     assert.equal(saved.val.noteData.preferenceSentinel, '已有笔记')
     assert.equal(saved.val.fsrsData.preferenceSentinel.reps, 3)
-    await startStudy(page)
+    await page.getByRole('button', { name: '开始学习', exact: true }).click()
     await page.waitForURL('**/practice-words/**')
     await page.locator('#word-wrap').waitFor()
     await page.waitForTimeout(500)
@@ -174,7 +172,6 @@ async function nativeType(page, text) {
     const word = (await page.locator('#word-wrap').innerText()).replace(/\s/g, '')
     let count = (await primary()).length
     await page.locator('#word-wrap').click()
-    await closeWordDetails(page)
     await page.waitForTimeout(200)
     assert.ok((await primary()).length > count, 'word tap plays audio')
     const box = await page.locator('#word-wrap').boundingBox()
@@ -186,7 +183,7 @@ async function nativeType(page, text) {
     await page.mouse.up()
     await page.waitForTimeout(200)
     assert.ok((await primary()).length > count, 'long press plays from the release gesture')
-    await headerAction(page, '偏好设置')
+    await page.getByRole('button', { name: '偏好设置' }).click()
     await sheet.getByRole('switch', { name: '自动发音' }).click()
     assert.equal(await sheet.getByRole('switch').getAttribute('aria-checked'), 'false')
     await page.keyboard.press('Escape')
@@ -196,10 +193,9 @@ async function nativeType(page, text) {
     await page.waitForTimeout(700)
     assert.equal((await primary()).length, count, 'automatic sound off stays silent on the next word')
     await page.locator('#word-wrap').click()
-    await closeWordDetails(page)
     await page.waitForTimeout(200)
     assert.ok((await primary()).length > count, 'manual word taps still work when automatic sound is off')
-    await headerAction(page, '偏好设置')
+    await page.getByRole('button', { name: '偏好设置' }).click()
     count = (await primary()).length
     await sheet.getByRole('switch', { name: '自动发音' }).click()
     await page.waitForTimeout(200)
@@ -215,7 +211,7 @@ async function nativeType(page, text) {
     })
     await page.waitForTimeout(150)
     assert.equal((await primary()).length, count, 'foreground playback waits for the next gesture')
-    await headerAction(page, '打开键盘')
+    await page.getByRole('button', { name: '打开键盘' }).click()
     await page.waitForTimeout(250)
     assert.ok((await primary()).length > count, 'first foreground tap unlocks the queued current word')
     assert.equal(await page.locator('#ielts-word-audio').count(), 1)
@@ -229,7 +225,6 @@ async function nativeType(page, text) {
     await topics.getByRole('menuitemradio', { name: '教育', exact: true }).click()
     await topics.waitFor({ state: 'hidden' })
     await page.getByRole('button', { name: '开始学习', exact: true }).waitFor()
-    await page.waitForFunction(() => document.querySelector('.hero-topic')?.textContent.includes('教育'))
     assert.match(await page.locator('.hero-ring-button').innerText(), /教育/)
     await avatar.click()
     await sheet.waitFor()

@@ -1,22 +1,11 @@
 <script setup lang="ts">
 defineProps<{ name: string }>()
 const paths: Record<string, string> = {
-  leaf: 'M5 18C5 7 13 4 20 4c0 8-3 16-11 16M5 20 16 9',
-  chip: 'M7 7h10v10H7V7Zm3 3h4v4h-4v-4ZM9 3v4m6-4v4M9 17v4m6-4v4M3 9h4m-4 6h4m10-6h4m-4 6h4',
-  people: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6-5a3 3 0 0 1 0 6M3 20v-2c0-5 12-5 12 0v2m3-6c2 0 3 2 3 4v2',
-  heartbeat: 'M3 12h4l2-5 4 10 2-5h6M5 5a5 5 0 0 1 7 1 5 5 0 0 1 7-1m0 13-7 4-7-4',
-  trend: 'M4 4v16h16M7 15l4-5 4 2 5-7m-4 0h4v4',
   learn: 'M4 5h6a2 2 0 0 1 2 2v13a4 4 0 0 0-4-2H4V5Zm16 0h-6a2 2 0 0 0-2 2m8-2v13h-4a4 4 0 0 0-4 2',
   wrong: 'M7 3.5h10v17l-5-3-5 3v-17Z',
   review: 'M4 8a8 8 0 1 1 0 8M4 3v5h5m3-1v5l3 2',
   topics: 'M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z',
   settings: 'M3 7h18M3 17h18M9 4v6m6 4v6',
-  detail: 'M6 3h8l4 4v14H6V3Zm8 0v5h4M9 12h6M9 16h6',
-  headphones:
-    'M4 14v-3a8 8 0 0 1 16 0v3M4 12h3v8H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1Zm16 0h-3v8h3a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1Z',
-  list: 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01',
-  bookmark: 'M7 3.5h10v17l-5-3-5 3v-17Z',
-  pen: 'm15 4 5 5M4 20l4-1 12-12a2 2 0 0 0-4-4L4 15v5Z',
   profile: 'M8 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0Zm-4 13v-1c0-7 16-7 16 0v1',
   back: 'm14 5-7 7 7 7',
   close: 'm6 6 12 12M6 18 18 6',

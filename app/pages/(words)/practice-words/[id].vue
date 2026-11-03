@@ -10,6 +10,7 @@ import { useStartKeyboardEventListener } from '@/core/hooks/event.ts'
 import useTheme from '@/core/hooks/theme.ts'
 import { _getDictDataByUrl, resourceWrap, shuffle, throttle } from '@/core/utils'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
+import Footer from '@/components/word/Footer.vue'
 import Panel from '@/components/Panel.vue'
 import { BaseIcon, Dialog, Toast, ToastComponent } from '@/base'
 import WordList from '@/components/list/WordList.vue'
@@ -628,6 +629,9 @@ useEvents([
           <Empty v-else />
         </div>
       </Panel>
+    </template>
+    <template v-slot:footer>
+      <Footer @skipStep="nav.skipStep" />
     </template>
   </PracticeLayout>
   <Statistics v-model="isComplete" :loading="settling" />

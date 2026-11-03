@@ -17,10 +17,9 @@ import { Toast } from '@/base'
 import Sheet from './Sheet.vue'
 import Icon from './Icon.vue'
 import Ring from './Ring.vue'
-import HomeDock from './HomeDock.vue'
+import Tabs from './Tabs.vue'
 import WordRow from './WordRow.vue'
 import TopicMenu from './TopicMenu.vue'
-import Vocabulary from './Vocabulary.vue'
 const store = useBaseStore()
 const settings = useSettingStore()
 const persistence = usePracticeWordPersistence()
@@ -30,7 +29,6 @@ const speak = usePlayWordAudio()
 const { nav } = useNav()
 const { tab, topicsOpen } = useIeltsUI()
 const mode = ref(WordPracticeMode.System)
-
 const busy = ref(true)
 const error = ref('')
 const hasSession = ref(false)
@@ -41,25 +39,13 @@ const topicProgress = (id: string) => {
   const dict = store.word.bookList.find(d => d.id === id)
   return dict?.complete ? 1 : Math.min(1, (dict?.lastLearnIndex || 0) / (dict?.length || 24))
 }
-const todayLearned = computed(() => {
-  const date = new Date().toDateString()
-  return (store.sdict.statistics || [])
-    .filter(record => new Date(record.startDate).toDateString() === date)
-    .reduce((sum, record) => sum + (record.new || 0), 0)
-})
-const availableNew = computed(() => {
-  if (store.sdict.complete) return 0
-  const ignored = settings.ignoreSimpleWord ? store.allIgnoreWordsSet : store.knownWordsSet
-  return store.sdict.words.slice(store.sdict.lastLearnIndex).filter(word => !ignored.has(word.word)).length
-})
-const todayRemaining = computed(() =>
-  Math.max(0, Math.min(store.sdict.perDayStudyNumber - todayLearned.value, availableNew.value))
+const today = computed(() =>
+  store.word.bookList
+    .flatMap(d => d.statistics)
+    .filter(s => new Date(s.startDate).toDateString() === new Date().toDateString())
+    .reduce((n, s) => n + (s.new || 0), 0)
 )
-const todayProgress = computed(() => {
-  const target = todayLearned.value + todayRemaining.value
-  return target > 0 ? Math.min(1, todayLearned.value / target) : 1
-})
-const menuProgress = computed(() => Object.fromEntries(topics.map(t => [t.id, topicProgress(t.id)])))
+const dailyGoal = computed(() => store.sdict.perDayStudyNumber || 20)
 const review = computed(() => (store.load && !busy.value ? createStudyTask().taskWords.review : []))
 const list = computed(() => (tab.value === 'wrong' ? store.wrong.words : review.value))
 watch(
@@ -158,6 +144,10 @@ async function start() {
     busy.value = false
   }
 }
+function showVocabularyWord(word: Word) {
+  wordDetails.value = word
+  vocabularyOpen.value = false
+}
 function removeDetailedWord() {
   if (wordDetails.value) void removeWord(wordDetails.value)
   wordDetails.value = null
@@ -185,6 +175,14 @@ function up(e: PointerEvent) {
     }
   }
 }
+let grabY = 0
+function grabDown(e: PointerEvent) {
+  grabY = e.clientY
+  ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+}
+function grabUp(e: PointerEvent) {
+  if (e.clientY < grabY - 20) topicsOpen.value = true
+}
 </script>
 <template>
   <main class="ielts-home" @pointerdown="down" @pointerup="up" @pointercancel="swipeStart = null">
@@ -195,26 +193,66 @@ function up(e: PointerEvent) {
         key="learn"
         role="tabpanel"
         aria-labelledby="tab-learn"
-        class="overview-panel home-focus"
+        class="overview-panel"
       >
-        <p class="home-topic-name">{{ topic.name }}</p>
         <div class="overview-hero">
           <button
             class="hero-ring-button"
             :disabled="busy || !!error"
             :aria-label="hasSession ? '继续学习' : '开始学习'"
-            aria-describedby="home-daily-summary"
             @click="start"
           >
-            <Transition name="hero-theme" mode="out-in"
-              ><Ring :key="topic.id" :progress="busy ? 0 : todayProgress" :size="320" single
-                ><span class="home-remaining" aria-hidden="true">{{ busy ? '—' : todayRemaining }}</span>
-                <span class="home-start-label" aria-hidden="true">开始</span></Ring
-              ></Transition
+            <Ring :progress="today / dailyGoal"
+              ><span class="hero-topic">{{ topic.name }}</span
+              ><span class="hero-meta"
+                >今日 {{ today }}/{{ dailyGoal }} · 已学 {{ store.sdict.lastLearnIndex }}/{{ topic.length }}</span
+              ><span v-if="hasSession" class="resume-label">继续 <Icon name="arrow" /></span
+            ></Ring>
+          </button>
+          <div class="study-modes" aria-label="学习模式">
+            <button
+              v-for="m in [
+                { id: WordPracticeMode.System, name: '学习' },
+                { id: WordPracticeMode.Free, name: '打字' },
+                { id: WordPracticeMode.ListenOnly, name: '听写' },
+              ]"
+              :key="m.id"
+              :aria-pressed="mode === m.id"
+              :disabled="busy"
+              @click="chooseMode(m.id)"
             >
+              {{ m.name }}
+            </button>
+          </div>
+          <button
+            class="overview-grab"
+            aria-label="选择主题，上拉展开"
+            @click="topicsOpen = true"
+            @pointerdown.stop="grabDown"
+            @pointerup.stop="grabUp"
+          >
+            <i /><Icon name="down" />
           </button>
         </div>
-        <span id="home-daily-summary" class="sr-only">今日还剩 {{ todayRemaining }} 个新词</span>
+        <div class="topic-progress">
+          <h2>主题进度</h2>
+          <div class="topic-strip" data-horizontal>
+            <button
+              v-for="t in topics"
+              :key="t.id"
+              class="topic-progress-item"
+              :aria-label="`${t.name}，已学 ${Math.round(topicProgress(t.id) * 100)}%`"
+              :aria-pressed="topic.id === t.id"
+              :disabled="busy"
+              @click="choose(t)"
+            >
+              <Ring :progress="topicProgress(t.id)" :size="80" small
+                ><span class="ring-percent">{{ Math.round(topicProgress(t.id) * 100) }}<small>%</small></span></Ring
+              ><span>{{ t.name }}</span>
+            </button>
+          </div>
+        </div>
+        <button class="subtle-link" @click="vocabularyOpen = true">{{ topic.name }}词表 <Icon name="arrow" /></button>
         <button v-if="error" class="error-action" @click="choose(topic)">{{ error }}</button>
         <span v-if="busy" class="loading-note" role="status">正在载入</span>
       </section>
@@ -225,11 +263,10 @@ function up(e: PointerEvent) {
         role="tabpanel"
         :aria-labelledby="'tab-' + tab"
         class="word-list-panel"
-        :class="{ 'wrong-panel': tab === 'wrong', 'empty-panel': !list.length }"
       >
-        <div v-if="tab !== 'wrong' || list.length" class="list-heading" :class="{ 'wrong-heading': tab === 'wrong' }">
-          <button v-if="tab !== 'wrong'" class="list-context" @click="topicsOpen = true">
-            {{ topic.name }}<Icon v-if="tab === 'review'" name="down" /></button
+        <div class="list-heading">
+          <button class="list-context" @click="topicsOpen = true">
+            {{ tab === 'wrong' ? '全部错词' : topic.name }}<Icon v-if="tab === 'review'" name="down" /></button
           ><button
             class="icon-button"
             :aria-label="tab === 'wrong' ? '巩固错词' : '开始复习'"
@@ -255,30 +292,22 @@ function up(e: PointerEvent) {
         </div>
       </section>
     </Transition>
-    <HomeDock
-      :tab="tab"
-      :mode="mode"
-      :disabled="busy"
-      :vocabulary-label="topic.name + '词表'"
-      @tab="tab = $event"
-      @mode="chooseMode"
-      @vocabulary="vocabularyOpen = true"
-    />
+    <Tabs v-model="tab" />
     <ClientOnly
       ><Teleport to="#topic-menu-mount"
         ><TopicMenu
           :open="topicsOpen"
           :selected="topic.id"
           :topics="topics"
-          :progress-values="menuProgress"
           :busy="busy"
           @toggle="topicsOpen = !topicsOpen"
           @close="topicsOpen = false"
           @select="chooseFromMenu" /></Teleport
     ></ClientOnly>
-    <Sheet :open="vocabularyOpen" :title="topic.name" minimal class="vocabulary-sheet" @close="vocabularyOpen = false">
-      <Vocabulary :words="store.sdict.words" :open="vocabularyOpen" />
-    </Sheet>
+    <Sheet :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
+      ><div class="word-list">
+        <WordRow v-for="word in store.sdict.words" :key="word.word" :word="word" @open="showVocabularyWord" /></div
+    ></Sheet>
     <Sheet :open="!!wordDetails" :title="wordDetails?.word || ''" @close="wordDetails = null"
       ><template v-if="wordDetails"
         ><p class="detail-meaning">{{ wordDetails.trans.map(t => t.cn).join('；') }}</p>
