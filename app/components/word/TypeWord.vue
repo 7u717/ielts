@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { britishPhonetic } from '@/core/ielts/phonetics'
 import { practiceExamples } from '@/core/ielts/examples'
 import { useWindowSize } from '@vueuse/core'
 import type { Question, Word } from '@/core/types'
@@ -37,8 +38,8 @@ const minimalInput = computed(() =>
   [WordPracticeMode.Free, WordPracticeMode.ListenOnly].includes(settings.wordPracticeMode)
 )
 const detailsOpen = ref(false)
+const detailRevealed = ref(false)
 const meaning = ref(false)
-const hint = ref(false)
 const note = ref('')
 const editing = ref(false)
 const bookmarkBounce = ref(false)
@@ -79,6 +80,7 @@ function measureWord() {
 watch([() => props.word.word, width], measureWord, { immediate: true })
 const size = computed(() => Math.min(48, (Math.min(500, Math.min(width.value, 600) - 64) - 2) / glyphWidth.value))
 const detailSize = computed(() => Math.min(30, (Math.min(width.value - 64, 310) - 52) / glyphWidth.value))
+const phonetic = computed(() => britishPhonetic(props.word))
 const examples = computed(() => practiceExamples(props.word))
 const examplePreview = computed(() =>
   !minimalInput.value && !effective.value.isWordMasked ? examples.value[0]?.c : ''
@@ -100,15 +102,16 @@ function play(trigger = WordPlayTrigger.Manual) {
   if (trigger === WordPlayTrigger.Manual) haptic()
   controller.playWord(trigger)
 }
+function openDetails() {
+  haptic()
+  if (!detailRevealed.value) controller.checkMaskedRevealWrong(!!typing.value?.isWordRight())
+  detailRevealed.value = true
+  detailsOpen.value = true
+}
 function tapWord() {
-  if (suppressClick) {
-    suppressClick = false
-    return
-  }
   play()
   meaning.value = true
-  controller.checkMaskedRevealWrong(!!typing.value?.isWordRight())
-  detailsOpen.value = true
+  openDetails()
 }
 function onWrong() {
   haptic()
@@ -123,16 +126,24 @@ function unknown() {
   controller.showWordResult.value = true
   focusPracticeKeyboard()
 }
+let skipWordClick = false
+function wordClick() {
+  if (skipWordClick || suppressClick) {
+    skipWordClick = suppressClick = false
+    return
+  }
+  tapWord()
+}
 let startX = 0,
   startY = 0,
   moved = false,
   suppressClick = false
 let hold: ReturnType<typeof setTimeout> | undefined
 let finishTimer: ReturnType<typeof setTimeout> | undefined
-let hintTimer: ReturnType<typeof setTimeout> | undefined
 function down(e: PointerEvent) {
   if (!e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return
   dragging.value = true
+  skipWordClick = false
   dragX.value = 0
   startX = e.clientX
   startY = e.clientY
@@ -159,7 +170,13 @@ function up(e: PointerEvent) {
   dragging.value = false
   dragX.value = 0
   if (suppressClick && !moved) {
+    skipWordClick = true
     play()
+    return
+  }
+  if (!moved) {
+    tapWord()
+    skipWordClick = true
     return
   }
   if (moved) {
@@ -186,6 +203,7 @@ watch(
     cancelWordPracticeAudio()
     controller.reset()
     editing.value = false
+    detailRevealed.value = false
     meaning.value = props.practiceType === WordPracticeType.FollowWrite
   },
   { immediate: true }
@@ -200,30 +218,16 @@ watch(
 function resumeAudio() {
   if (!document.hidden && settings.wordSound) play(WordPlayTrigger.NewWord)
 }
-const hintViews = useState('ielts-ui-swipe-hints', () => 0)
-function showSwipeHint() {
-  clearTimeout(hintTimer)
-  hint.value = hintViews.value < 3
-  if (hint.value) {
-    hintViews.value++
-    hintTimer = setTimeout(() => {
-      hint.value = false
-    }, 3500)
-  }
-}
-watch(() => props.word.word, showSwipeHint)
 onMounted(() => {
   measureWord()
   void document.fonts?.ready.then(measureWord)
   document.addEventListener('visibilitychange', resumeAudio)
-  showSwipeHint()
 })
 onBeforeUnmount(() => {
   disposed = true
   document.removeEventListener('visibilitychange', resumeAudio)
   clearTimeout(hold)
   clearTimeout(finishTimer)
-  clearTimeout(hintTimer)
   cancelWordPracticeAudio()
 })
 useEvents([
@@ -266,7 +270,7 @@ function saveNote() {
             @pointermove="move"
             @pointerup="up"
             @pointercancel="cancel"
-            @click="tapWord"
+            @click="wordClick"
             @keydown.enter.prevent="tapWord"
             @keydown.space.prevent="play()"
             @contextmenu.prevent
@@ -311,13 +315,13 @@ function saveNote() {
             class="sentence-preview"
             lang="en"
             aria-label="查看完整例句"
-            @click="detailsOpen = true"
+            @click="openDetails"
           >
             {{ examplePreview }}
           </button>
           <div class="word-tools">
             <button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button
-            ><button class="icon-button" aria-label="单词详情" @click="detailsOpen = true">
+            ><button class="icon-button" aria-label="单词详情" @click="openDetails">
               <Icon name="detail" />
             </button>
           </div>
@@ -325,25 +329,20 @@ function saveNote() {
       </div>
     </Transition>
     <Footer />
-    <Transition name="meaning"
-      ><p v-if="hint" class="gesture-hint" role="status">
-        <span class="swipe-hint-line" aria-hidden="true"></span><span class="sr-only">左右滑动切词</span>
-      </p></Transition
-    >
     <Sheet
       :open="detailsOpen"
-      :title="effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"
+      :title="!detailRevealed && effective.isWordMasked && !controller.showWordResult.value ? '单词' : word.word"
       minimal
       floating
       draggable
       class="word-detail-sheet"
       @close="closeDetails"
     >
-      <template v-if="!effective.isWordMasked || controller.showWordResult.value">
+      <template v-if="detailRevealed || !effective.isWordMasked || controller.showWordResult.value">
         <div class="detail-word-heading">
           <h2 :style="{ fontSize: detailSize + 'px' }">{{ word.word }}</h2>
           <div class="detail-sound-row">
-            <span v-if="word.phonetic0">/{{ word.phonetic0 }}/</span
+            <span v-if="phonetic" class="detail-phonetic">/{{ phonetic }}/</span
             ><button class="icon-button" aria-label="播放发音" @click="play()"><Icon name="sound" /></button>
           </div>
         </div>

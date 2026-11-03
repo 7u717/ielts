@@ -283,7 +283,7 @@ function up(e: PointerEvent) {
         <Ring
           :progress="topicProgress(topic.id)"
           :review-progress="dueReviewCount / topic.length"
-          :size="152"
+          :size="278"
           :animate="false"
         />
         <span

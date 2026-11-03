@@ -130,7 +130,7 @@ async function skip(page) {
       assert.equal(await overview.evaluate(el => getComputedStyle(el).borderRadius), '50%')
       assert.equal(await overview.evaluate(el => getComputedStyle(el).boxShadow), 'none')
       assert.equal(await overview.locator('.ring-arc').count(), 2)
-      assert.equal((await overview.locator('.iue-ring').boundingBox()).width, 152)
+      assert.equal((await overview.locator('.iue-ring').boundingBox()).width, 278)
       const actualArc = await overview
         .locator('.ring-arc')
         .first()
@@ -192,7 +192,7 @@ async function skip(page) {
       const vocabFill = await vocab.evaluate(el => getComputedStyle(el).backgroundColor)
       assert.equal((await vocab.boundingBox()).x, 12)
       assert.equal(await vocab.evaluate(el => getComputedStyle(el).borderTopWidth), '0px')
-      assert.equal(await page.locator('.hero-ring-button').evaluate(el => getComputedStyle(el).opacity), '0')
+      assert.equal(await page.locator('.hero-ring-button').evaluate(el => getComputedStyle(el).opacity), '0.8')
       assert.equal(await page.locator('.iue-tabs').evaluate(el => getComputedStyle(el).opacity), '0')
       assert.equal(
         await vocab

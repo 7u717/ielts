@@ -87,7 +87,7 @@ function key(event: KeyboardEvent) {
       </div>
       <div class="goal-dial" :class="{ dragging }" :style="{ '--goal-position': progress + '%' }">
         <div class="goal-track" aria-hidden="true">
-          <div class="goal-ticks"><i v-for="goal in goals" :key="goal" /></div>
+          <div class="goal-rail" />
           <span class="goal-cursor"
             ><span class="goal-floating-value"
               ><Transition name="goal-digit"

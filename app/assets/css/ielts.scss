@@ -3495,3 +3495,126 @@ html.light .practice-mini-progress {
   height: 18px;
   color: var(--muted);
 }
+
+/* Visible zero-state rings; real progress overlays them without inventing completion. */
+.ring-disc .sheet-body {
+  position: relative;
+  padding: 0;
+}
+.ring-disc .disc-progress {
+  position: absolute;
+  inset: 18px;
+  width: 278px;
+  height: 278px;
+  pointer-events: none;
+}
+.ring-disc h2 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  width: max-content;
+}
+.ring-disc .overview-start {
+  position: absolute;
+  left: calc(50% - 16px);
+  top: calc(50% + 33px);
+}
+.ring-disc .ring-continuous .ring-track {
+  stroke: var(--text);
+  stroke-width: 1.727;
+  opacity: 0.36;
+}
+.ring-disc .ring-continuous .ring-review-track {
+  stroke-width: 1.727;
+  opacity: 0.23;
+}
+.ring-disc .ring-continuous .ring-arc,
+.ring-disc .ring-continuous .ring-review-arc {
+  stroke-width: 1.727;
+  stroke-linecap: round;
+}
+/* A single optical material across the sheets; the source ring remains faintly visible. */
+:root {
+  --floating-fill: rgba(255, 255, 255, 0.035);
+}
+html.light {
+  --floating-fill: rgba(255, 255, 255, 0.32);
+}
+.ielts-sheet.preference-sheet,
+.ielts-sheet.word-detail-sheet,
+.ielts-sheet.vocabulary-sheet,
+.ielts-sheet.ring-disc,
+.vocabulary-detail {
+  background: var(--floating-fill);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+}
+body:has(.vocabulary-sheet[open]) .hero-ring-button {
+  opacity: 0.45;
+}
+body:has(.vocabulary-sheet[open]) .hero-topic {
+  opacity: 0;
+}
+body:has(.vocabulary-sheet[open]) .hero-ring-button .ring-arc {
+  filter: none;
+}
+.practice-mini-progress {
+  background: rgba(255, 255, 255, 0.07);
+}
+html.light .practice-mini-progress {
+  background: rgba(25, 30, 40, 0.055);
+}
+.practice-mini-progress i {
+  opacity: 1;
+  background: var(--text);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.16);
+}
+.goal-rail {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 0.5px;
+  background: var(--line);
+}
+.goal-dial .goal-cursor,
+.goal-dial.dragging .goal-cursor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text);
+  transition:
+    left 0.2s var(--r-spring),
+    transform 0.16s var(--r-spring);
+}
+.goal-dial.dragging .goal-cursor {
+  transition:
+    left 0.08s var(--r-spring),
+    transform 0.16s var(--r-spring);
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.goal-dial .goal-floating-value {
+  top: -28px;
+}
+.ielts-sheet[open],
+.ielts-sheet.sheet-closing,
+.vocabulary-detail[open],
+.vocabulary-detail.vocabulary-closing {
+  animation-timing-function: var(--r-spring);
+}
+
+body:has(.vocabulary-sheet[open]) .hero-ring-button {
+  opacity: 0.8;
+}
+body:has(.vocabulary-sheet[open]) .hero-ring-button .ring-track {
+  stroke-width: 2.5;
+  opacity: 0.5;
+}
+.ring-disc h2 {
+  line-height: 18px;
+}
+html.light .ielts-sheet.ring-disc {
+  background: var(--floating-fill);
+}
