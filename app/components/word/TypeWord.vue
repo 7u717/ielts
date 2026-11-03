@@ -51,7 +51,7 @@ const controller = usePracticeTypeWordController({
 const effective = useInjectedDisplayPolicy(
   computed(() => ({ showFullWord: controller.showFullWord.value, showWordResult: controller.showWordResult.value }))
 )
-const size = computed(() => Math.min(46, 455 / Math.max(1, props.word.word.length)))
+const size = computed(() => Math.min(60, 555 / Math.max(1, props.word.word.length)))
 const phaseName = computed(
   () =>
     ({
@@ -90,6 +90,16 @@ function unknown() {
   controller.showWordResult.value = true
   focusPracticeKeyboard()
 }
+const cardX = ref(0)
+const cardY = ref(0)
+const dragging = ref(false)
+const flying = ref(false)
+const cardStyle = computed(() => ({
+  transform: `translate3d(${cardX.value}px, ${cardY.value}px, 0) rotate(${cardX.value / 24}deg)`,
+  '--card-opacity': String(Math.max(0, 1 - Math.abs(cardX.value) / 520)),
+}))
+let thresholdPassed = false
+let flyTimer: ReturnType<typeof setTimeout> | undefined
 let startX = 0,
   startY = 0,
   moved = false,
@@ -98,23 +108,41 @@ let hold: ReturnType<typeof setTimeout> | undefined
 let finishTimer: ReturnType<typeof setTimeout> | undefined
 let hintTimer: ReturnType<typeof setTimeout> | undefined
 function down(e: PointerEvent) {
+  if (flying.value || (e.target as HTMLElement).closest('button, input, textarea')) return
+  dragging.value = true
+  thresholdPassed = false
   startX = e.clientX
   startY = e.clientY
   moved = false
   suppressClick = false
-  ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  ;((e.target as HTMLElement).closest('.practice-word-target') || (e.currentTarget as HTMLElement)).setPointerCapture(
+    e.pointerId
+  )
   hold = setTimeout(() => {
     suppressClick = true
     haptic()
   }, 420)
 }
 function move(e: PointerEvent) {
+  if (!dragging.value || flying.value) return
+  const dx = e.clientX - startX
+  const dy = e.clientY - startY
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 9) {
+    cardX.value = dx
+    cardY.value = dy * 0.16
+    if (Math.abs(dx) > 65 && !thresholdPassed) {
+      haptic()
+      thresholdPassed = true
+    }
+  }
   if (Math.hypot(e.clientX - startX, e.clientY - startY) > 9) {
     moved = true
     clearTimeout(hold)
   }
 }
 function up(e: PointerEvent) {
+  if (!dragging.value) return
+  dragging.value = false
   clearTimeout(hold)
   if (suppressClick && !moved) {
     play()
@@ -122,20 +150,37 @@ function up(e: PointerEvent) {
   }
   if (moved) {
     suppressClick = true
-    if (e.clientX - startX < -65 && Math.abs(e.clientY - startY) < 60) {
+    if (Math.abs(cardX.value) > 65 && Math.abs(e.clientY - startY) < 100) {
       haptic()
-      emit('skip')
+      flying.value = true
+      const right = cardX.value > 0
+      cardX.value = (right ? 1 : -1) * Math.max(window.innerWidth, 500)
+      flyTimer = setTimeout(
+        () => {
+          if (right && props.practiceType === WordPracticeType.Identify) known()
+          else emit('skip')
+        },
+        matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 240
+      )
+      return
     }
   }
+  cardX.value = cardY.value = 0
 }
 function cancel() {
   clearTimeout(hold)
+  dragging.value = false
+  cardX.value = cardY.value = 0
   suppressClick = true
 }
+
 watch(
   [() => props.word.word, () => props.phaseKey],
   () => {
     clearTimeout(hold)
+    clearTimeout(flyTimer)
+    cardX.value = cardY.value = 0
+    dragging.value = flying.value = false
     clearTimeout(finishTimer)
     cancelWordPracticeAudio()
     controller.reset()
@@ -169,6 +214,7 @@ onBeforeUnmount(() => {
   clearTimeout(hold)
   clearTimeout(finishTimer)
   clearTimeout(hintTimer)
+  clearTimeout(flyTimer)
   cancelWordPracticeAudio()
 })
 useEvents([
@@ -193,7 +239,17 @@ function saveNote() {
 <template>
   <div v-if="word.word" class="typing-word">
     <Transition name="word-change" mode="out-in">
-      <div :key="word.word + phaseKey" class="word-stage">
+      <div
+        :key="word.word + phaseKey"
+        class="word-stage"
+        :class="{ dragging, flying }"
+        :style="cardStyle"
+        @pointerdown="down"
+        @pointermove="move"
+        @pointerup="up"
+        @pointercancel="cancel"
+        @contextmenu.prevent
+      >
         <p class="practice-phase">{{ phaseName }}</p>
         <div
           id="word-wrap"
@@ -202,10 +258,6 @@ function saveNote() {
           tabindex="0"
           aria-label="单词，点按释义，长按发音，左滑跳过"
           :style="{ fontSize: size + 'px' }"
-          @pointerdown="down"
-          @pointermove="move"
-          @pointerup="up"
-          @pointercancel="cancel"
           @click="tapWord"
           @keydown.enter.prevent="tapWord"
           @keydown.space.prevent="play()"
@@ -226,7 +278,7 @@ function saveNote() {
             @wrong="onWrong"
           />
         </div>
-        <Transition name="meaning"
+        <Transition name="meaning" appear
           ><p v-if="meaning || controller.showWordResult.value" class="word-translation">
             {{ word.trans.map(t => t.cn).join('；') }}
           </p></Transition

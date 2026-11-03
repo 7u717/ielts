@@ -51,10 +51,10 @@ function up(e: PointerEvent, word: Word, removable?: boolean) {
       class="word-row"
       :style="{ transform: `translateX(${removable ? offset : 0}px)` }"
       @click="!swiped && emit('open', word)"
+      @pointerdown="haptic"
     >
       <span>{{ word.word }}</span
-      ><span class="row-meaning">{{ word.trans.map(t => t.cn).join('；') }}</span
-      ><Icon name="chevron" />
+      ><span class="row-meaning">{{ word.trans.map(t => t.cn).join('；') }}</span>
     </button>
   </div>
 </template>

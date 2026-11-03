@@ -1286,3 +1286,302 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
 .preference-sheet[open] {
   transition-duration: 0.38s;
 }
+/* iue dl1 geometry and quiet interactive controls. */
+.ring-track {
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 1;
+}
+.ring-arc {
+  stroke: rgba(255, 255, 255, 0.62);
+  stroke-width: 1.2;
+  transform-origin: 110px 110px;
+  transition: stroke-dashoffset 1.6s var(--r-ease);
+}
+.small .ring-track {
+  stroke-width: 1;
+}
+.small .ring-arc {
+  stroke-width: 1.2;
+}
+.hero-ring-button {
+  transition:
+    transform 0.45s var(--r-spring),
+    opacity 0.3s;
+}
+.ielts-app .hero-ring-button:active {
+  transform: scale(0.97);
+}
+.hero-topic {
+  font-size: 15px;
+  letter-spacing: 0.1em;
+}
+.hero-count {
+  font: 300 52px/1.1 var(--r-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+.hero-meta {
+  font-size: 11px;
+}
+.ring-zooming .hero-ring-button {
+  transform: scale(5);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.4s var(--r-spring),
+    opacity 0.35s var(--r-ease);
+}
+.ring-zooming .overview-hero > :not(.hero-ring-button),
+.ring-zooming .topic-progress,
+.ring-zooming .iue-tabs {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.ielts-home {
+  overflow-x: clip;
+}
+.iue-tabs .tab-indicator {
+  background: var(--fill-2);
+  box-shadow: none;
+}
+.iue-tabs button[aria-selected='true'] {
+  color: var(--text);
+}
+.word-row > .iue-icon {
+  display: none;
+}
+.word-row {
+  border: 0;
+}
+.word-row:active {
+  scale: 0.97;
+}
+.ielts-sheet,
+.preference-sheet {
+  background: rgba(24, 24, 27, 0.55);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+}
+.ielts-sheet::backdrop {
+  background: rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+.ielts-sheet[open],
+.ielts-sheet.sheet-closing {
+  animation-duration: 0.38s;
+  animation-timing-function: var(--r-spring);
+}
+.preference-sheet .sheet-body {
+  padding: 12px 34px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+.focused-preferences {
+  gap: 24px;
+  max-width: 270px;
+}
+.daily-goal {
+  gap: 10px;
+}
+.goal-value {
+  order: -1;
+  color: var(--text);
+  font: 300 48px/1.1 var(--r-num);
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.3s var(--r-spring);
+}
+.daily-goal:has(input:active) .goal-value {
+  transform: translateY(-3px) scale(1.04);
+}
+.goal-value span {
+  font-size: 11px;
+}
+.goal-dial {
+  height: 44px;
+}
+.goal-dial input {
+  position: static;
+  opacity: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 44px;
+  background: transparent;
+  cursor: pointer;
+}
+.goal-dial input::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--text) var(--goal-fill), var(--fill-2) var(--goal-fill));
+}
+.goal-dial input::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--fill-2);
+}
+.goal-dial input::-moz-range-progress {
+  height: 4px;
+  background: var(--text);
+}
+.goal-dial input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 0;
+  box-shadow: 0 2px 8px #0002;
+  transition: transform 0.25s var(--r-spring);
+}
+.goal-dial input::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 0;
+}
+.goal-dial input:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.quiet-switch {
+  width: 44px;
+  height: 44px;
+  flex: none;
+}
+.quiet-switch span {
+  inset: 9px 0;
+  height: 26px;
+  background: #42454b;
+  border-radius: 999px;
+}
+.quiet-switch i {
+  top: 12px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: #b3b5bb;
+  transition:
+    transform 0.3s var(--r-spring),
+    background 0.2s;
+}
+.quiet-switch[aria-checked='true'] span {
+  background: var(--text);
+}
+.quiet-switch[aria-checked='true'] i {
+  transform: translateX(18px);
+  background: var(--bg);
+}
+.preference-label {
+  color: var(--text);
+}
+.typing-word {
+  padding-top: clamp(115px, 23svh, 220px);
+  overflow: visible;
+}
+.practice-phase {
+  display: none;
+}
+.practice-word-target {
+  color: var(--text);
+  font-weight: 400;
+  cursor: pointer;
+}
+.word-stage {
+  opacity: var(--card-opacity, 1);
+  position: relative;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition:
+    transform 0.5s var(--r-spring),
+    opacity 0.3s var(--r-ease);
+  will-change: transform;
+}
+.word-stage * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.word-stage.dragging {
+  transition: none;
+}
+.word-stage.flying {
+  transition:
+    transform 0.24s ease-out,
+    opacity 0.24s ease-out;
+}
+.word-translation {
+  margin-top: 28px;
+  color: var(--text);
+  opacity: 0.66;
+}
+.word-tools .icon-button {
+  width: 44px;
+  height: 44px;
+  background: none;
+}
+.word-tools {
+  margin-top: 28px;
+}
+.word-tools .icon-button:active {
+  transform: scale(0.96);
+}
+.word-change-enter-active {
+  transition:
+    opacity 0.4s var(--r-ease),
+    filter 0.4s var(--r-ease);
+}
+.word-change-leave-active {
+  transition: opacity 0.18s var(--r-ease);
+}
+.word-change-enter-from {
+  opacity: 0;
+  filter: blur(3px);
+}
+.word-change-leave-to {
+  opacity: 0;
+}
+.meaning-enter-active,
+.meaning-leave-active {
+  transition:
+    opacity 0.35s var(--r-ease),
+    transform 0.4s var(--r-spring);
+}
+.meaning-enter-from,
+.meaning-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.practice-hairline {
+  background: none;
+  height: 0;
+}
+.practice-hairline i {
+  display: none;
+}
+.study-count {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: var(--muted);
+  font: 12px var(--r-num);
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ring-zooming .hero-ring-button {
+    transform: none;
+  }
+  .word-stage {
+    transition: none;
+  }
+}
+
+.practice-word-target .typing-core {
+  white-space: pre;
+  overflow-wrap: normal;
+}
+.practice-word-target .typing-core .letter {
+  color: var(--text);
+}

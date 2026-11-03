@@ -184,6 +184,10 @@ async function uiAndLearning() {
   await page.mouse.up()
   assert.equal(await page.evaluate(() => window.testSpeech.at(-1)?.text), second)
   await swipe(page, page.locator('#word-wrap'), -170)
+  await page.waitForFunction(
+    previous => document.querySelector('#word-wrap')?.textContent.replace(/\s/g, '') !== previous,
+    second
+  )
   const third = await word(page)
   assert.notEqual(third, second, 'left swipe skips')
   await page.getByRole('button', { name: '单词详情', exact: true }).click()

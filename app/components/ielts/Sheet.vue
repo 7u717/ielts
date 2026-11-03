@@ -24,7 +24,7 @@ function beginClose(notify = false) {
   if (closing.value || !dialog.value?.open) return
   closing.value = true
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  timer = setTimeout(() => finishClose(notify), reduced ? 0 : props.minimal ? 380 : 180)
+  timer = setTimeout(() => finishClose(notify), reduced ? 0 : 380)
 }
 function close() {
   beginClose(true)

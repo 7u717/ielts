@@ -30,10 +30,7 @@ function toggleSound() {
   <div class="preferences focused-preferences">
     <section class="daily-goal">
       <span class="preference-label">每日新词</span>
-      <div class="goal-dial">
-        <div class="goal-ticks" aria-hidden="true">
-          <i v-for="(goal, i) in goals" :key="goal" :class="{ active: i === index }" />
-        </div>
+      <div class="goal-dial" :style="{ '--goal-fill': (index / Math.max(1, goals.length - 1)) * 100 + '%' }">
         <input
           id="daily-goal-dial"
           type="range"

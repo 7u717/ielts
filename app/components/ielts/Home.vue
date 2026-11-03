@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onBeforeUnmount } from 'vue'
 import topics from '@/core/ielts/topics.json'
 import { useBaseStore } from '@/core/stores/base'
 import { useSettingStore } from '@/core/stores/setting'
@@ -46,6 +46,45 @@ const today = computed(() =>
     .reduce((n, s) => n + (s.new || 0), 0)
 )
 const dailyGoal = computed(() => store.sdict.perDayStudyNumber || 20)
+const remaining = computed(() => Math.max(0, dailyGoal.value - today.value))
+const animatedCount = ref(0)
+let countFrame = 0
+watch(
+  [remaining, busy],
+  () => {
+    if (!import.meta.client) return
+    cancelAnimationFrame(countFrame)
+    if (busy.value || !import.meta.client) return
+    const target = remaining.value
+    const from = animatedCount.value
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduced) {
+      animatedCount.value = target
+      return
+    }
+    const begin = performance.now()
+    function tick(now: number) {
+      const t = Math.min(1, (now - begin) / 1200)
+      animatedCount.value = Math.round(from + (target - from) * (1 - Math.pow(1 - t, 3)))
+      if (t < 1) countFrame = requestAnimationFrame(tick)
+    }
+    countFrame = requestAnimationFrame(tick)
+  },
+  { immediate: true }
+)
+onBeforeUnmount(() => cancelAnimationFrame(countFrame))
+const zooming = ref(false)
+async function openStudy() {
+  if (busy.value || error.value || zooming.value) return
+  haptic()
+  zooming.value = true
+  try {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) await new Promise(resolve => setTimeout(resolve, 360))
+    await start()
+  } finally {
+    zooming.value = false
+  }
+}
 const review = computed(() => (store.load && !busy.value ? createStudyTask().taskWords.review : []))
 const list = computed(() => (tab.value === 'wrong' ? store.wrong.words : review.value))
 watch(
@@ -185,7 +224,13 @@ function grabUp(e: PointerEvent) {
 }
 </script>
 <template>
-  <main class="ielts-home" @pointerdown="down" @pointerup="up" @pointercancel="swipeStart = null">
+  <main
+    class="ielts-home"
+    :class="{ 'ring-zooming': zooming }"
+    @pointerdown="down"
+    @pointerup="up"
+    @pointercancel="swipeStart = null"
+  >
     <Transition name="tab-page" mode="out-in">
       <section
         v-if="tab === 'learn'"
@@ -200,14 +245,14 @@ function grabUp(e: PointerEvent) {
             class="hero-ring-button"
             :disabled="busy || !!error"
             :aria-label="hasSession ? '继续学习' : '开始学习'"
-            @click="start"
+            @click="openStudy"
           >
-            <Ring :progress="today / dailyGoal"
-              ><span class="hero-topic">{{ topic.name }}</span
-              ><span class="hero-meta"
-                >今日 {{ today }}/{{ dailyGoal }} · 已学 {{ store.sdict.lastLearnIndex }}/{{ topic.length }}</span
-              ><span v-if="hasSession" class="resume-label">继续 <Icon name="arrow" /></span
-            ></Ring>
+            <Ring :progress="today / dailyGoal">
+              <span class="hero-topic">{{ topic.name }}</span>
+              <span class="hero-count" aria-hidden="true">{{ animatedCount }}</span>
+              <span class="hero-meta">{{ hasSession ? '继续' : '开始' }}</span>
+              <span class="sr-only">今日还剩 {{ remaining }} 个新词</span>
+            </Ring>
           </button>
           <div class="study-modes" aria-label="学习模式">
             <button

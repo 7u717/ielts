@@ -13,6 +13,7 @@ defineEmits<{ skipStep: [] }>()
     :aria-valuemax="data.words.length"
     aria-valuemin="0"
   >
+    <span class="study-count">{{ Math.min(data.index + 1, data.words.length) }}/{{ data.words.length }}</span>
     <i :style="{ transform: `scaleX(${data.index / Math.max(1, data.words.length)})` }" />
   </div>
 </template>
