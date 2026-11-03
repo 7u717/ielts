@@ -30,11 +30,7 @@ const speak = usePlayWordAudio()
 const { nav } = useNav()
 const { tab, topicsOpen } = useIeltsUI()
 const mode = ref(WordPracticeMode.System)
-const modeChoices = [
-  { id: WordPracticeMode.System, label: '学习', icon: 'learn' },
-  { id: WordPracticeMode.Free, label: '打字', icon: 'keyboard' },
-  { id: WordPracticeMode.ListenOnly, label: '听写', icon: 'headphones' },
-]
+
 const busy = ref(true)
 const error = ref('')
 const hasSession = ref(false)
@@ -98,10 +94,6 @@ async function choose(t: (typeof topics)[number]) {
 function chooseFromMenu(id: string) {
   const found = topics.find(t => t.id === id)
   if (found) void choose(found)
-}
-function chooseAvatarMode(next: WordPracticeMode) {
-  tab.value = 'learn'
-  void chooseMode(next)
 }
 async function chooseMode(next: WordPracticeMode) {
   if (busy.value || next === mode.value) return
@@ -211,6 +203,7 @@ function up(e: PointerEvent) {
                 :progress="topicProgress(topic.id)"
                 :review-progress="dueReviewCount / topic.length"
                 :size="274"
+                single
                 ><span class="hero-topic">{{ topic.name }}</span></Ring
               ></Transition
             >
@@ -276,20 +269,6 @@ function up(e: PointerEvent) {
           @toggle="topicsOpen = !topicsOpen"
           @close="topicsOpen = false"
           @select="chooseFromMenu" /></Teleport
-    ></ClientOnly>
-    <ClientOnly
-      ><Teleport to="#home-mode-mount"
-        ><div class="avatar-mode-picker" role="group" aria-label="学习模式">
-          <button
-            v-for="choice in modeChoices"
-            :key="choice.id"
-            :aria-label="choice.label + '模式'"
-            :aria-pressed="mode === choice.id"
-            :disabled="busy"
-            @click="chooseAvatarMode(choice.id)"
-          >
-            <Icon :name="choice.icon" />
-          </button></div></Teleport
     ></ClientOnly>
     <Sheet
       :open="overviewOpen"

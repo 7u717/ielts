@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { WordPracticeMode } from '@/core/types/enum'
 import { haptic, type IeltsTab } from '@/core/ielts/ui'
 import Icon from './Icon.vue'
@@ -13,17 +13,59 @@ const items = [
 ]
 const active = computed(() => (props.tab === 'wrong' ? 2 : props.tab === 'review' ? 3 : 0))
 const bar = ref<HTMLElement>()
+const modeMenu = ref<HTMLElement>()
+const modeOpen = ref(false)
+const modeChoices = [
+  { id: WordPracticeMode.System, label: '学习', icon: 'learn' },
+  { id: WordPracticeMode.Free, label: '打字', icon: 'keyboard' },
+  { id: WordPracticeMode.ListenOnly, label: '听写', icon: 'headphones' },
+]
+let skipClick = false
+function chooseMode(mode: WordPracticeMode) {
+  modeOpen.value = false
+  haptic()
+  emit('mode', mode)
+}
+function outside(event: PointerEvent) {
+  if (!bar.value?.contains(event.target as Node) && !modeMenu.value?.contains(event.target as Node))
+    modeOpen.value = false
+}
+function key(event: KeyboardEvent) {
+  if (event.key === 'Escape') modeOpen.value = false
+}
+onMounted(() => {
+  document.addEventListener('pointerdown', outside)
+  document.addEventListener('keydown', key)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', outside)
+  document.removeEventListener('keydown', key)
+})
+function click(event: MouseEvent, index: number) {
+  if (event.detail !== 0 && skipClick) {
+    skipClick = false
+    return
+  }
+  skipClick = false
+  select(index)
+}
 const offset = ref<number | null>(null)
 let start = 0,
   tracking = false
 function select(index: number) {
   if (props.disabled) return
   haptic()
+  if (index === 0 && props.tab === 'learn') {
+    modeOpen.value = !modeOpen.value
+    return
+  }
+  modeOpen.value = false
   if (index === 1) emit('vocabulary')
   else emit('tab', index === 2 ? 'wrong' : index === 3 ? 'review' : 'learn')
 }
 function down(e: PointerEvent) {
   if (!e.isPrimary || props.disabled) return
+  skipClick = false
   tracking = true
   start = e.clientX
   ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
@@ -35,6 +77,7 @@ function move(e: PointerEvent) {
 function up(e: PointerEvent) {
   if (!tracking) return
   select(Math.max(0, Math.min(3, Math.floor((e.clientX - bar.value!.getBoundingClientRect().left - 5) / 60))))
+  skipClick = true
   cancel()
 }
 function cancel() {
@@ -67,10 +110,35 @@ function cancel() {
       :aria-label="item.label || vocabularyLabel"
       :aria-pressed="active === index"
       :disabled="disabled"
-      :aria-haspopup="index === 1 ? 'dialog' : undefined"
-      @click="select(index)"
+      :aria-haspopup="index === 1 ? 'dialog' : index === 0 ? 'menu' : undefined"
+      :aria-expanded="index === 0 ? modeOpen : undefined"
+      @click="click($event, index)"
     >
       <Icon :name="item.icon" />
     </button>
   </nav>
+  <Transition name="dock-modes">
+    <div
+      v-if="modeOpen"
+      ref="modeMenu"
+      class="dock-mode-menu"
+      role="menu"
+      aria-label="学习模式"
+      data-horizontal
+      @pointerdown.stop
+    >
+      <button
+        v-for="choice in modeChoices"
+        :key="choice.id"
+        role="menuitemradio"
+        :aria-label="choice.label + '模式'"
+        :aria-checked="mode === choice.id"
+        :aria-pressed="mode === choice.id"
+        :disabled="disabled"
+        @click="chooseMode(choice.id)"
+      >
+        <Icon :name="choice.icon" />
+      </button>
+    </div>
+  </Transition>
 </template>

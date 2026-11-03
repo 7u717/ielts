@@ -22,12 +22,12 @@ async function closeWordDetails(page) {
   }
 }
 async function chooseStudyMode(page, label) {
-  await page.getByRole('button', { name: '偏好设置', exact: true }).click()
-  const sheet = page.getByRole('dialog', { name: '偏好', exact: true })
-  await sheet.waitFor()
-  await sheet.getByRole('button', { name: label + '模式', exact: true }).click()
+  await page.getByRole('button', { name: '学习', exact: true }).click()
+  const menu = page.getByRole('menu', { name: '学习模式', exact: true })
+  await menu.waitFor()
+  await menu.getByRole('menuitemradio', { name: label + '模式', exact: true }).click()
+  await menu.waitFor({ state: 'hidden' })
   await page.locator('.hero-ring-button:enabled').waitFor()
-  await page.mouse.click(8, 100)
-  await sheet.waitFor({ state: 'hidden' })
 }
+
 module.exports = { headerAction, startStudy, closeWordDetails, chooseStudyMode }

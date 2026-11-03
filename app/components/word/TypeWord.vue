@@ -73,7 +73,7 @@ function measureWord() {
   measurementCanvas ??= document.createElement('canvas')
   const context = measurementCanvas.getContext('2d')
   if (!context) return
-  const family = getComputedStyle(document.documentElement).getPropertyValue('--r-num').trim()
+  const family = getComputedStyle(document.documentElement).getPropertyValue('--r-english').trim()
   context.font = `400 100px ${family || '-apple-system, sans-serif'}`
   glyphWidth.value = Math.max(1, context.measureText(props.word.word).width / 100)
 }
@@ -274,9 +274,6 @@ function saveNote() {
   <div v-if="word.word" class="typing-word" :class="{ 'minimal-input': minimalInput }" :data-practice-phase="phaseName">
     <Transition name="word-change" mode="out-in">
       <div :key="word.word + phaseKey" class="word-stage">
-        <div class="next-card-echo" aria-hidden="true">
-          <span class="echo-word" /><span class="echo-meaning" /><span class="echo-sentence" />
-        </div>
         <div
           class="word-swipe-surface"
           :class="{ dragging, flying }"

@@ -61,6 +61,7 @@ async function drag(p, dx, release = true) {
       await p.goto(base, { waitUntil: 'networkidle' })
       await p.locator('.hero-ring-button:enabled').waitFor()
       assert.equal(await p.locator('.unified-dock button').count(), 4)
+      assert.equal(await p.locator('.hero-ring-button .ring-track').count(), 1)
       await p.screenshot({ path: `${out}/home-${scheme}-390.png`, fullPage: true })
       await p.locator('.hero-ring-button').click()
       const disc = p.getByRole('dialog', { name: '学习概览', exact: true })
@@ -78,7 +79,30 @@ async function drag(p, dx, release = true) {
       const avatar = p.getByRole('dialog', { name: '偏好', exact: true })
       await avatar.waitFor()
       await p.waitForTimeout(400)
-      await p.screenshot({ path: `${out}/avatar-modes-${scheme}-390.png`, fullPage: true })
+      assert.equal(await avatar.getByRole('slider').count(), 1)
+      assert.equal(await avatar.getByRole('switch').count(), 1)
+      assert.equal(await avatar.getByRole('button').count(), 0)
+      assert.equal(await avatar.locator('.avatar-mode-picker').count(), 0)
+      assert.equal(await avatar.locator('.goal-rail').evaluate(e => getComputedStyle(e).height), '6px')
+      assert.equal(await avatar.locator('.goal-cursor').evaluate(e => getComputedStyle(e).width), '20px')
+      const slider = avatar.getByRole('slider')
+      const bounds = await slider.boundingBox()
+      const countBefore = await p.evaluate(() => window.haptics.length)
+      await p.mouse.move(bounds.x + 10, bounds.y + bounds.height / 2)
+      await p.mouse.down()
+      for (let n = 1; n <= 3; n++) {
+        await p.mouse.move(bounds.x + 10 + ((bounds.width - 20) * n) / 3, bounds.y + bounds.height / 2, { steps: 5 })
+        await p.waitForTimeout(90)
+      }
+      await p.screenshot({ path: `${out}/preferences-drag-${scheme}-390.png`, fullPage: true })
+      await p.mouse.up()
+      assert.ok(
+        await p.evaluate(n => window.haptics.length >= n + 3, countBefore),
+        'each slider detent has a light haptic'
+      )
+      await slider.press('Home')
+      await slider.press('ArrowRight')
+      await p.screenshot({ path: `${out}/preferences-${scheme}-390.png`, fullPage: true })
       await p.mouse.click(8, 100)
       await avatar.waitFor({ state: 'hidden' })
       await startStudy(p)
@@ -125,23 +149,10 @@ async function drag(p, dx, release = true) {
         }
       }
       assert.match(await p.locator('.typing-word').evaluate(e => getComputedStyle(e).maskImage), /linear-gradient/)
-      const echo = await p.locator('.next-card-echo').evaluate(e => {
-        const s = getComputedStyle(e)
-        return {
-          text: e.textContent.trim(),
-          background: s.backgroundColor,
-          shadow: s.boxShadow,
-          filter: s.filter,
-          opacity: Number(s.opacity),
-          transform: s.transform,
-        }
-      })
-      assert.equal(echo.text, '', 'echo contains no duplicate or next-word answer')
-      assert.equal(echo.background, 'rgba(0, 0, 0, 0)')
-      assert.equal(echo.shadow, 'none', 'no plate edge below tools')
-      assert.equal(echo.filter, 'blur(7px)')
-      assert.ok(echo.opacity <= 0.05)
-      assert.ok(parseFloat(echo.transform.slice(7)) < 0.9)
+      assert.equal(await p.locator('.next-card-echo').count(), 0, 'no blurred ghost during a swipe')
+      for (const el of await p.locator('.typing-core, .sentence-preview').all()) {
+        assert.match(await el.evaluate(e => getComputedStyle(e).fontFamily), /^-apple-system/)
+      }
       await p.screenshot({ path: `${out}/learning-rest-${scheme}-390.png`, fullPage: true })
       const wordBefore = await p.locator('#word-wrap').boundingBox()
       const first = await word(p)
@@ -256,7 +267,7 @@ async function drag(p, dx, release = true) {
       assert.deepEqual(errors, [])
       assert.ok((await p.evaluate(() => window.haptics)).every(n => n === 8))
       console.log(
-        `PASS ${scheme}: four core dock entries plus avatar modes; mouse/touch/meaning details; transparent progress track; 44px tools; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; blurred text-free echo; moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
+        `PASS ${scheme}: four core dock entries plus contextual dock modes; mouse/touch/meaning details; transparent progress track; 44px tools; rotation, threshold haptic, spring return, right-known/left-review and equivalent buttons; 20ms list stagger; single disc track; no drag echo; moving current text; press-time row scale/haptic; selection-free drag with edge fade; isolated detail glass and centered examples`
       )
       await c.close()
     }

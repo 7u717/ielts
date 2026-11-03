@@ -79,11 +79,9 @@ fs.mkdirSync(out, { recursive: true })
       await p.locator('#word-wrap').waitFor()
       await p.waitForTimeout(450)
       const face = await p.locator('.word-swipe-surface').boundingBox(),
-        actions = await p.locator('.card-actions').boundingBox(),
-        echo = await p.locator('.next-card-echo').boundingBox()
+        actions = await p.locator('.card-actions').boundingBox()
       assert.ok(Math.abs(actions.y - face.y - face.height - 24) < 1, 'action row follows card at 24px')
-      assert.ok(echo.width < face.width, 'next-card echo is smaller than the current card')
-      assert.ok(+(await p.locator('.next-card-echo').evaluate(e => getComputedStyle(e).opacity)) <= 0.4)
+      assert.equal(await p.locator('.next-card-echo').count(), 0)
       await shot('learning')
       await p.locator('#word-wrap').click()
       const detail = p.locator('.word-detail-sheet')
@@ -150,7 +148,7 @@ fs.mkdirSync(out, { recursive: true })
       )
       assert.deepEqual(errors, [])
       console.log(
-        `PASS ${scheme}: 12s zero aura with opacity span <=3%; true spring zero-to-progress drawing; transparent disc and soft aura; unified masks with stronger word-detail isolation; 24px card-action spacing and subtle next-card echo`
+        `PASS ${scheme}: 12s zero aura with opacity span <=3%; true spring zero-to-progress drawing; transparent disc and soft aura; unified masks with stronger word-detail isolation; 24px card-action spacing and no next-card ghost`
       )
       await c.close()
     }

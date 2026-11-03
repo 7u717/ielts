@@ -199,7 +199,7 @@ defineExpose({
 .typing-core {
   display: inline-block;
   position: relative;
-  font-family: var(--r-num);
+  font-family: var(--r-english);
   font-weight: 400;
   letter-spacing: -0.025em;
   white-space: pre-wrap;

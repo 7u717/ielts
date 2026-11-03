@@ -3656,7 +3656,7 @@ html.light .practice-mini-progress {
     opacity 0.22s var(--r-ease);
 }
 .word-change-enter-from {
-  transform: scale(0.94);
+  transform: scale(0.96);
   opacity: 0;
 }
 .word-change-leave-active {
@@ -3704,28 +3704,6 @@ html[data-keyboard-open='true'] .card-actions {
 }
 .unified-dock button[aria-pressed='true'] {
   color: var(--text);
-}
-.avatar-mode-picker {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  padding: 0 0 24px;
-}
-.avatar-mode-picker button {
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  color: var(--muted);
-}
-.avatar-mode-picker button[aria-pressed='true'] {
-  background: var(--fill-2);
-  color: var(--text);
-}
-.avatar-mode-picker .iue-icon {
-  width: 18px;
-  height: 18px;
 }
 .vocabulary-word {
   position: relative;
@@ -3820,38 +3798,6 @@ html.light .ielts-sheet.ring-disc {
   background: transparent;
   border-radius: 20px;
 }
-.next-card-echo {
-  position: absolute;
-  z-index: 0;
-  inset: 0 0 72px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 16px;
-  gap: 24px;
-  opacity: 0.045;
-  filter: blur(7px);
-  transform: translateY(12px) scale(0.88);
-  pointer-events: none;
-}
-.next-card-echo span {
-  display: block;
-  border-radius: 999px;
-  background: var(--text);
-}
-.echo-word {
-  width: 58%;
-  height: 24px;
-}
-.echo-meaning {
-  width: 20%;
-  height: 7px;
-}
-.echo-sentence {
-  width: 64%;
-  height: 6px;
-  margin-top: 12px;
-}
 /* No plate edge beneath the audio and detail controls. */
 .word-tools {
   border: 0;
@@ -3912,4 +3858,94 @@ body:has(.word-detail-sheet[open]) .card-actions {
 .word-detail-sheet .word-examples,
 .word-detail-sheet .word-examples p {
   text-align: center;
+}
+
+/* System Latin text matches the iue shell, without a remote font. */
+:root {
+  --r-english: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+}
+.practice-word-target,
+.typing-word .typing-core,
+.sentence-preview,
+.word-detail-sheet h2,
+.word-detail-sheet .word-examples,
+.vocabulary-english,
+.vocabulary-detail-word,
+.vocabulary-example {
+  font-family: var(--r-english);
+}
+.goal-rail {
+  height: 6px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: var(--fill-2);
+  overflow: hidden;
+}
+.goal-rail::before {
+  content: '';
+  display: block;
+  width: var(--goal-position);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--muted);
+  opacity: 0.5;
+  transition: width 0.2s var(--r-spring);
+}
+.goal-dial.dragging .goal-rail::before {
+  transition-duration: 0.08s;
+}
+.goal-dial .goal-cursor,
+.goal-dial.dragging .goal-cursor {
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+}
+.goal-dial.dragging .goal-cursor {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+.goal-dial .goal-floating-value {
+  top: -30px;
+}
+/* Mode controls are contextual to the learning dock, never preferences. */
+.dock-mode-menu {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 38px);
+  left: 50%;
+  z-index: 30;
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 999px;
+  background: var(--floating-fill);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: inset 0 0.5px 0 var(--floating-edge);
+  transform: translateX(-50%);
+}
+.dock-mode-menu button {
+  border: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+}
+.dock-mode-menu button[aria-pressed='true'] {
+  background: var(--fill-2);
+  color: var(--text);
+}
+.dock-mode-menu .iue-icon {
+  width: 18px;
+  height: 18px;
+}
+.dock-modes-enter-active,
+.dock-modes-leave-active {
+  transition:
+    transform 0.24s var(--r-spring),
+    opacity 0.16s var(--r-ease);
+}
+.dock-modes-enter-from,
+.dock-modes-leave-to {
+  opacity: 0;
+  transform: translate(-50%, 8px) scale(0.96);
 }
