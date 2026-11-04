@@ -322,9 +322,15 @@ function grabUp(e: PointerEvent) {
           @close="topicsOpen = false"
           @select="chooseFromMenu" /></Teleport
     ></ClientOnly>
-    <Sheet :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
+    <Sheet class="vocabulary-sheet" :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
       ><div class="word-list">
-        <WordRow v-for="word in store.sdict.words" :key="word.word" :word="word" @open="showVocabularyWord" /></div
+        <WordRow
+          v-for="(word, index) in store.sdict.words"
+          :key="word.word"
+          :word="word"
+          :style="{ '--row-delay': Math.min(index, 12) * 30 + 'ms' }"
+          @open="showVocabularyWord"
+        /></div
     ></Sheet>
     <Sheet :open="!!wordDetails" :title="wordDetails?.word || ''" @close="wordDetails = null"
       ><template v-if="wordDetails"

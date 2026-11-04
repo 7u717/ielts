@@ -467,7 +467,7 @@ a {
 .ielts-sheet[open] {
   animation: sheet-in 0.2s var(--r-ease) both;
   transform: translateY(var(--sheet-drag, 0px));
-  transition: transform 0.2s var(--r-ease);
+  transition: transform 0.38s var(--r-spring);
 }
 .ielts-sheet.sheet-dragging {
   animation: none;
@@ -1364,7 +1364,7 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
   padding: 12px 34px calc(24px + env(safe-area-inset-bottom, 0px));
 }
 .focused-preferences {
-  gap: 24px;
+  gap: 16px;
   max-width: 270px;
 }
 .daily-goal {
@@ -1396,23 +1396,23 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
   cursor: pointer;
 }
 .goal-dial input::-webkit-slider-runnable-track {
-  height: 4px;
+  height: 2px;
   border-radius: 999px;
   background: linear-gradient(to right, var(--text) var(--goal-fill), var(--fill-2) var(--goal-fill));
 }
 .goal-dial input::-moz-range-track {
-  height: 4px;
+  height: 2px;
   border-radius: 999px;
   background: var(--fill-2);
 }
 .goal-dial input::-moz-range-progress {
-  height: 4px;
+  height: 2px;
   background: var(--text);
 }
 .goal-dial input::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   margin-top: -10px;
   border-radius: 50%;
   background: var(--text);
@@ -1421,14 +1421,15 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
   transition: transform 0.25s var(--r-spring);
 }
 .goal-dial input::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--text);
   border: 0;
+  transition: transform 0.25s var(--r-spring);
 }
 .goal-dial input:active::-webkit-slider-thumb {
-  transform: scale(1.12);
+  transform: scale(1.15);
 }
 .quiet-switch {
   width: 44px;
@@ -1572,4 +1573,83 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
 }
 .practice-word-target .typing-core .letter {
   color: var(--text);
+}
+
+/* Sheet contents sit directly on the frosted surface. */
+.vocabulary-sheet .word-list,
+.vocabulary-sheet .word-row-wrap,
+.vocabulary-sheet .word-row {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+}
+.vocabulary-sheet .word-list {
+  padding: 0;
+  margin: 0;
+}
+.vocabulary-sheet .word-row {
+  box-sizing: border-box;
+  height: 52px;
+  min-height: 52px;
+  padding: 0;
+  color: #fff;
+  transition:
+    transform 0.18s var(--r-spring),
+    scale 0.18s var(--r-spring) !important;
+}
+.vocabulary-sheet .word-row > span:first-child {
+  font-size: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vocabulary-sheet .row-meaning {
+  color: rgba(255, 255, 255, 0.5);
+}
+.vocabulary-sheet[open] .word-row-wrap {
+  animation: vocabulary-row-in 0.35s var(--r-ease) both;
+  animation-delay: var(--row-delay, 0ms);
+}
+.sheet-head .icon-button {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+.preference-sheet,
+.preference-sheet *,
+.ielts-app .avatar-button {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+.goal-dial:active {
+  transform: none;
+}
+.goal-dial input:active::-moz-range-thumb {
+  transform: scale(1.15);
+}
+.automatic-sound {
+  justify-content: center;
+  gap: 24px;
+  padding: 0;
+}
+@keyframes vocabulary-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vocabulary-sheet[open] .word-row-wrap {
+    animation: none;
+  }
 }
