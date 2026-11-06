@@ -50,6 +50,6 @@ useHead(() => ({
 
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <NuxtPage :keepalive="{ include: ['IeltsHomePage'] }" />
   </NuxtLayout>
 </template>

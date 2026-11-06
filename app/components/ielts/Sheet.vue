@@ -24,7 +24,7 @@ function beginClose(notify = false) {
   if (closing.value || !dialog.value?.open) return
   closing.value = true
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  timer = setTimeout(() => finishClose(notify), reduced ? 0 : 380)
+  timer = setTimeout(() => finishClose(notify), reduced ? 0 : 240)
 }
 function close() {
   beginClose(true)
@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
       <div class="sheet-grab" @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up"><i /></div>
       <div v-if="!minimal" class="sheet-head">
         <h2>{{ title }}</h2>
-        <button class="icon-button" aria-label="关闭" @click="close">
+        <button class="sheet-close" aria-label="关闭" @click="close">
           <Icon name="close" />
         </button>
       </div>

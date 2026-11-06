@@ -14,6 +14,7 @@ const dragging = ref(false)
 const dragX = ref<number | null>(null)
 const bar = ref<HTMLElement>()
 let start = 0
+let barLeft = 0
 function cancelDrag() {
   dragging.value = false
   dragX.value = null
@@ -25,18 +26,19 @@ function choose(id: IeltsTab) {
   }
 }
 function down(e: PointerEvent) {
+  barLeft = bar.value!.getBoundingClientRect().left
   start = e.clientX
   dragging.value = true
   ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
 }
 function move(e: PointerEvent) {
   if (dragging.value && Math.abs(e.clientX - start) > 4)
-    dragX.value = Math.max(0, Math.min(128, e.clientX - bar.value!.getBoundingClientRect().left - 36))
+    dragX.value = Math.max(0, Math.min(128, e.clientX - barLeft - 36))
 }
 function up(e: PointerEvent) {
   if (!dragging.value) return
   dragging.value = false
-  const local = e.clientX - bar.value!.getBoundingClientRect().left - 5
+  const local = e.clientX - barLeft - 5
   choose(tabs[Math.max(0, Math.min(2, Math.floor(local / 64)))].id)
   dragX.value = null
 }

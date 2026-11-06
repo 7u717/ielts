@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onActivated, onDeactivated } from 'vue'
+import { prepareStudy } from '@/core/ielts/prepared-study'
 import topics from '@/core/ielts/topics.json'
 import { useBaseStore } from '@/core/stores/base'
 import { useSettingStore } from '@/core/stores/setting'
@@ -52,7 +53,8 @@ async function openStudy() {
   haptic()
   zooming.value = true
   try {
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) await new Promise(resolve => setTimeout(resolve, 360))
+    // Paint press feedback before preparing the session on the home view.
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
     await start()
   } finally {
     zooming.value = false
@@ -83,6 +85,10 @@ watch(
   },
   { immediate: true }
 )
+onActivated(async () => {
+  if (store.load && !busy.value) hasSession.value = !!(await persistence.load())
+})
+onDeactivated(() => { topicsOpen.value = false })
 async function choose(t: (typeof topics)[number]) {
   if (busy.value) return
   busy.value = true
@@ -127,9 +133,11 @@ async function start() {
     }
     if (tab.value === 'review') await selectReviewSession()
     if (tab.value === 'learn') await selectModeSession(mode.value)
+    await preloadRouteComponents('/practice-words/' + store.sdict.id)
     const cached = await persistence.load()
     if (cached) {
       await dataSync.saveLocalAndSync(SyncDataType.setting, settings.$state)
+      prepareStudy(cached)
       nav('/practice-words/' + store.sdict.id, {}, cached)
       return
     }
@@ -148,6 +156,7 @@ async function start() {
     await dataSync.saveDictState()
     await dataSync.saveLocalAndSync(SyncDataType.setting, settings.$state)
     await persistence.save({ taskWords: task })
+    prepareStudy({ taskWords: task })
     nav('/practice-words/' + store.sdict.id, {}, { taskWords: task })
   } catch (e) {
     Toast.error('练习暂时无法打开，请先导出备份')
@@ -328,7 +337,7 @@ function grabUp(e: PointerEvent) {
           v-for="(word, index) in store.sdict.words"
           :key="word.word"
           :word="word"
-          :style="{ '--row-delay': Math.min(index, 12) * 30 + 'ms' }"
+          :style="{ '--row-delay': Math.min(index, 5) * 12 + 'ms' }"
           @open="showVocabularyWord"
         /></div
     ></Sheet>

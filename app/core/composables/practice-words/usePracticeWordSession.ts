@@ -33,6 +33,7 @@ export interface PracticeWordSessionOptions {
   scheduleSave: () => void
   notify?: PracticeNotifier
   /** 平台可按运行能力提供有效模式，不会回写用户的持久设置。 */
+  provideContext?: boolean
   getPracticeMode?: () => WordPracticeMode
 }
 
@@ -84,7 +85,7 @@ export function usePracticeWordSession(options: PracticeWordSessionOptions) {
   })
 
   const { activeFlowConfig, activeCursor, currentPhase, currentPracticeType, currentPhaseKey } = nav
-  const display = usePracticeDisplayPolicy(currentPracticeType, currentPhaseKey)
+  const display = usePracticeDisplayPolicy(currentPracticeType, currentPhaseKey, options.provideContext)
 
   function updateQuestion() {
     const data = options.getPracticeData()

@@ -6,7 +6,7 @@ const emit = defineEmits<{ toggle: []; close: []; select: [string] }>()
 const wrap = ref<HTMLElement>()
 const trigger = ref<HTMLButtonElement>()
 function outside(event: PointerEvent) {
-  if (props.open && !wrap.value?.contains(event.target as Node)) emit('close')
+  if (props.open && !(event.target as HTMLElement).closest('.topic-menu')) emit('close')
 }
 function key(event: KeyboardEvent) {
   if (!props.open) return

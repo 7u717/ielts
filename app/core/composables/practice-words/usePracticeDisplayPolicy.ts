@@ -33,7 +33,8 @@ export function resolvePracticeViewDefaults(practiceType: WordPracticeType): {
 
 export function usePracticeDisplayPolicy(
   currentPracticeType: ComputedRef<WordPracticeType>,
-  phaseKey: ComputedRef<string>
+  phaseKey: ComputedRef<string>,
+  provideContext = true
 ) {
   const wordMaskOverride = ref<boolean | null>(null)
   const translateOverride = ref<boolean | null>(null)
@@ -48,12 +49,16 @@ export function usePracticeDisplayPolicy(
     }
   })
 
-  watch(phaseKey, (_key, previousKey) => {
-    if (previousKey !== undefined) {
-      wordMaskOverride.value = null
-      translateOverride.value = null
-    }
-  }, { flush: 'sync' })
+  watch(
+    phaseKey,
+    (_key, previousKey) => {
+      if (previousKey !== undefined) {
+        wordMaskOverride.value = null
+        translateOverride.value = null
+      }
+    },
+    { flush: 'sync' }
+  )
 
   function setWordMasked(value: boolean) {
     const defaults = resolvePracticeViewDefaults(currentPracticeType.value)
@@ -70,8 +75,7 @@ export function usePracticeDisplayPolicy(
     translateOverride.value = next === defaults.isShowTranslate ? null : next
   }
 
-  provide(PRACTICE_VIEW_STATE_KEY, effective)
-  provide(PRACTICE_DISPLAY_ACTIONS_KEY, { toggleDictation, toggleTranslate })
+  if (provideContext) providePracticeDisplayPolicy({ effective, toggleDictation, toggleTranslate })
 
   return {
     effective,
@@ -101,4 +105,13 @@ export function useInjectedDisplayPolicy(localReveal?: Ref<PracticeLocalReveal>)
 
 export function useInjectedDisplayActions() {
   return inject(PRACTICE_DISPLAY_ACTIONS_KEY)!
+}
+
+export function providePracticeDisplayPolicy(policy: {
+  effective: ComputedRef<PracticeViewState>
+  toggleDictation: () => void
+  toggleTranslate: () => void
+}) {
+  provide(PRACTICE_VIEW_STATE_KEY, policy.effective)
+  provide(PRACTICE_DISPLAY_ACTIONS_KEY, policy)
 }

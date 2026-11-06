@@ -146,8 +146,8 @@ async function uiAndLearning() {
     }))
   )
   assert.ok(sizes.every(s => Math.abs(s.width - 38) < 0.1 && Math.abs(s.height - 38) < 0.1))
-  assert.equal(sizes[1].delay, '0.05s')
-  assert.equal(sizes[5].delay, '0.25s')
+  assert.equal(sizes[1].delay, '0s')
+  assert.equal(sizes[5].delay, '0s')
   assert.equal(
     await menu.getByRole('menuitemradio', { name: '环境', exact: true }).getAttribute('aria-checked'),
     'true'

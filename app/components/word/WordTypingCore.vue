@@ -8,7 +8,6 @@ import { resetActiveWordPlayCount, usePlayBeep, usePlayCorrect, usePlayKeyboardA
 import { emitter, EventKey } from '@/core/utils/eventBus.ts'
 import { onUnmounted, watch } from 'vue'
 import Space from '@/components/article/Space.vue'
-import { _nextTick, last } from '@/core/utils'
 import { useOnKeyboardEventListener } from '@/core/hooks/event.ts'
 import { Toast } from '@/base'
 import { usePracticeWordTyping } from '@/core/composables/practice-words/usePracticeWordTyping.ts'
@@ -79,9 +78,6 @@ watch(inputCharacterStates, states => {
 })
 
 const displayWord = $computed(() => props.word.word.slice(input.value.length + wrong.value.length))
-let cursor = $ref({ top: 0, left: 0 })
-const typingWordRef = $ref<HTMLDivElement>()
-
 function onTyping(event: KeyboardEvent) {
   if (event.code === 'Backspace') {
     backspace()
@@ -90,32 +86,8 @@ function onTyping(event: KeyboardEvent) {
   typeCharacter({ key: event.key, code: event.code, shiftKey: event.shiftKey })
 }
 
-function checkCursorPosition() {
-  _nextTick(() => {
-    if (!typingWordRef) return
-    const typingWordRect = typingWordRef.getBoundingClientRect()
-    const inputList = typingWordRef.querySelectorAll('.l')
-    if (inputList.length) {
-      const inputRect = last(Array.from(inputList)).getBoundingClientRect()
-      cursor = {
-        top: inputRect.top - typingWordRect.top,
-        left: inputRect.right - typingWordRect.left,
-      }
-      return
-    }
-    const element = typingWordRef.querySelector('.dictation') ?? typingWordRef.querySelector('.letter')
-    const rect = element?.getBoundingClientRect()
-    if (!rect) return
-    cursor = {
-      top: rect.top - typingWordRect.top,
-      left: rect.left - typingWordRect.left,
-    }
-  })
-}
-
 function resetTypingCore(trigger: WordPlayTrigger) {
   reset(trigger)
-  checkCursorPosition()
 }
 
 function onResetWord() {
@@ -133,8 +105,6 @@ watch(
   { immediate: true }
 )
 
-watch([input, () => props.showFullWord, () => props.practiceType], checkCursorPosition)
-
 function deactivate() {
   clearDeferredTimers()
   emitter.off(EventKey.resetWord, onResetWord)
@@ -148,7 +118,6 @@ watch(
     if (active) {
       emitter.on(EventKey.resetWord, onResetWord)
       emitter.on(EventKey.onTyping, onTyping)
-      checkCursorPosition()
     }
   },
   { immediate: true }
@@ -164,7 +133,6 @@ defineExpose({
 
 <template>
   <div
-    ref="typingWordRef"
     class="typing-core"
     :class="{ 'is-wrong': wrong || (wholeInputAttempt && inputLock && !isWordCorrect) }"
   >

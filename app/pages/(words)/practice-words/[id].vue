@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { providePracticeDisplayPolicy } from '@/core/composables/practice-words/usePracticeDisplayPolicy'
+import { takePreparedStudy } from '@/core/ielts/prepared-study'
 import { selectSavedDictionary } from '@/core/ielts/session'
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from 'vue'
 import Statistics from '@/components/word/Statistics.vue'
@@ -76,21 +78,39 @@ let taskWords = $ref<TaskWords>({
 
 //watch 实例列表，用于本地代码修改hrm后，导致重复watch
 let watchRefList = []
-let data = $ref<PracticeData>(getDefaultPracticeData({}))
+const prepared = takePreparedStudy(String(route.params.id))
+let allWords: Word[] = prepared?.allWords ?? []
+let isIniting = ref(!prepared)
+let data = $ref<PracticeData>(prepared?.data ?? getDefaultPracticeData({}))
+if (prepared) taskWords = prepared.task
 
 const word = $computed<Word>(() => {
   return data.words[data.index] ?? getDefaultWord()
 })
 
-const session = usePracticeWordSession({
-  getPracticeData: () => data,
-  setPracticeData: value => (data = value),
-  getTaskWords: () => taskWords,
-  getAllWords: () => allWords,
+const session =
+  prepared?.session ??
+  usePracticeWordSession({
+    getPracticeData: () => data,
+    setPracticeData: value => (data = value),
+    getTaskWords: () => taskWords,
+    getAllWords: () => allWords,
+    complete,
+    scheduleSave: savePracticeData,
+    notify: notifyPractice,
+  })
+prepared?.bind({
   complete,
   scheduleSave: savePracticeData,
   notify: notifyPractice,
+  getPracticeData: () => data,
+  setPracticeData: (value: PracticeData) => {
+    data = value
+  },
+  getTaskWords: () => taskWords,
+  getAllWords: () => allWords,
 })
+if (prepared) providePracticeDisplayPolicy(session)
 const { nav } = session
 const { activeFlowConfig, activeCursor, currentPhase, currentPracticeType, currentPhaseKey } = nav
 const { effective, toggleDictation, toggleTranslate } = session
@@ -230,7 +250,9 @@ async function reloadRemotePracticeSession(): Promise<boolean> {
 
 onMounted(async () => {
   //如果是从单词学习主页过来的，就直接使用；否则等待加载
-  if (runtimeStore.routeData) {
+  if (prepared) {
+    startTimer()
+  } else if (runtimeStore.routeData) {
     await initData(null, true)
   } else {
     loading = true
@@ -248,6 +270,7 @@ onBeforeRouteLeave(async () => {
 })
 
 onUnmounted(() => {
+  prepared?.scope.stop()
   document.removeEventListener('visibilitychange', onvisibilitychange)
   clearVisibilityResumeTimer()
   cancelScheduledPracticeSave()
@@ -255,9 +278,6 @@ onUnmounted(() => {
   watchRefList.map(v => v?.stop())
   if (!showRemoteReloadDialog) void savePracticeDataIns()
 })
-
-let allWords: Word[] = []
-let isIniting = ref(true)
 
 async function loadDict() {
   let dict = getDefaultDict()
@@ -500,22 +520,26 @@ function randomWrite() {
   session.randomWrite()
 }
 
-watch(isIniting, n => {
-  if (!n) {
-    watchRefList = [
-      watch(() => data.index, savePracticeData),
-      // 监听 statStore.spend，每过10秒自动保存数据
-      watch(
-        () => statStore.spend,
-        curr => {
-          if (curr % (30 * 1000) === 0 && curr !== 0) {
-            savePracticeData()
+watch(
+  isIniting,
+  n => {
+    if (!n) {
+      watchRefList = [
+        watch(() => data.index, savePracticeData),
+        // 监听 statStore.spend，每过10秒自动保存数据
+        watch(
+          () => statStore.spend,
+          curr => {
+            if (curr % (30 * 1000) === 0 && curr !== 0) {
+              savePracticeData()
+            }
           }
-        }
-      ),
-    ]
-  }
-})
+        ),
+      ]
+    }
+  },
+  { immediate: true }
+)
 
 function onWordMarkPickComplete(result: WordMarkPickResult) {
   session.onWordMarkPickComplete(result)

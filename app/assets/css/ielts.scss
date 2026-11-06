@@ -1653,3 +1653,91 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
     animation: none;
   }
 }
+
+/* Moving surfaces stay on compositor layers: no backdrop sampling or blur. */
+.ielts-sheet,
+.preference-sheet {
+  background: #18181b;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.ielts-sheet::backdrop {
+  background: rgba(0, 0, 0, 0.48);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.ielts-sheet[open],
+.ielts-sheet.sheet-closing {
+  animation-duration: 240ms;
+  transition: transform 240ms var(--r-ease);
+}
+.ielts-sheet.sheet-dragging { transition: none; }
+.ielts-sheet .sheet-close,
+.ielts-sheet .sheet-close:is(:hover, :focus, :focus-visible, :active) {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0 !important;
+  background: transparent !important;
+  border-radius: 0;
+  outline: none !important;
+  box-shadow: none !important;
+  color: var(--muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.preference-sheet .sheet-body { padding: 6px 30px calc(20px + env(safe-area-inset-bottom, 0px)); }
+.focused-preferences { gap: 12px; }
+.daily-goal { gap: 6px; }
+.goal-dial:has(input:focus-visible) { outline: none; box-shadow: none; }
+.goal-value { transition: transform 220ms var(--r-ease); }
+.quiet-switch i { transition: transform 220ms var(--r-ease); }
+.topic-menu .lk-o,
+.iue-tabs {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.topic-menu .lk-o,
+.topic-menu .header-link-button {
+  transition: transform 240ms var(--r-ease), opacity 220ms var(--r-ease);
+}
+.topic-menu.open .lk-o { transition-delay: 0s; }
+.hero-ring-button,
+.ring-zooming .hero-ring-button {
+  transition: transform 220ms var(--r-ease), opacity 220ms var(--r-ease);
+}
+.ring-zooming .hero-ring-button { transform: scale(0.98); opacity: 0.65; }
+.word-stage { transition: transform 240ms var(--r-ease), opacity 220ms var(--r-ease); }
+.word-stage.dragging { transition: none; }
+.word-change-enter-active,
+.word-change-leave-active { transition: opacity 200ms var(--r-ease); }
+.word-change-enter-from { filter: none; }
+.meaning-enter-active,
+.meaning-leave-active { transition: opacity 220ms var(--r-ease), transform 220ms var(--r-ease); }
+.vocabulary-sheet[open] .word-row-wrap {
+  animation: vocabulary-row-in 160ms var(--r-ease) both;
+  animation-delay: var(--row-delay, 0ms);
+}
+@keyframes vocabulary-row-in { from { opacity: 0; } to { opacity: 1; } }
+.ielts-app button:active,
+.ielts-app a:active { transition-duration: 0s; }
+@media (prefers-reduced-motion: reduce) {
+  .ielts-sheet[open], .ielts-sheet.sheet-closing,
+  .vocabulary-sheet[open] .word-row-wrap { animation: none; transition: none; }
+}
+.ielts-home > .overview-panel,
+.ielts-home > .word-list-panel,
+.iue-tabs { transition: transform 240ms var(--r-ease), opacity 220ms var(--r-ease); }
+body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .word-list-panel, .iue-tabs) {
+  scale: 1;
+  transform: scale(0.97);
+  filter: none;
+  opacity: 0.65;
+}
+.topic-menu .lk-o span { transition: transform 240ms var(--r-ease), opacity 220ms var(--r-ease); }
