@@ -145,12 +145,23 @@ export function holdRelease(gesture: HoldGesture): { gesture: HoldGesture; commi
   return { gesture, commitIndex: null }
 }
 
-// pointercancel does not produce a click on most phones. Leave suppressClick
-// false so the next word, close, or keyboard activation is delivered.
-// A ghost click, if one arrives before the next contact, is still ignored by
-// the short-lived guard the component arms only when a click is expected.
-export function holdCancel(gesture: HoldGesture): HoldGesture {
+// pointerup after the gesture is already idle must not commit. An explicit
+// cancel leaves suppressClick set so the click that follows pointerup is swallowed.
+export function holdPointerUp(
+  gesture: HoldGesture,
+  pointerId: number
+): { gesture: HoldGesture; commitIndex: number | null } {
+  if (gesture.phase === 'idle' || pointerId !== gesture.pointerId) return { gesture, commitIndex: null }
+  return holdRelease(gesture)
+}
+
+// 'pointer' is the browser pointercancel event: no click follows, so the next
+// tap and keyboard activation must not be swallowed.
+// 'explicit' is Escape or a route change while the button is still pressed:
+// pointerup then a click still fire, and only that trailing click is swallowed.
+export function holdCancel(gesture: HoldGesture, reason: 'pointer' | 'explicit' = 'pointer'): HoldGesture {
   if (gesture.phase === 'idle') return gesture
+  if (reason === 'explicit') return { ...createHoldGesture(), suppressClick: true }
   return createHoldGesture()
 }
 

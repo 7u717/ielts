@@ -18,6 +18,7 @@ import {
   holdConsumeClick,
   holdPointerDown,
   holdPointerMove,
+  holdPointerUp,
   holdRelease,
 } from './avatar-hold.ts'
 
@@ -145,8 +146,44 @@ describe('avatar hold', () => {
     cancelled = holdCancel(cancelled)
     assert.equal(cancelled.phase, 'idle')
     assert.equal(cancelled.suppressClick, false)
-    assert.equal(holdRelease(cancelled).commitIndex, null)
+    assert.equal(holdPointerUp(cancelled, 3).commitIndex, null)
     assert.equal(holdConsumeClick(cancelled, 1).suppressed, false)
+    assert.equal(holdConsumeClick(cancelled, 0).suppressed, false)
+  })
+
+  it('Escape or route cancel swallows only the trailing click', () => {
+    const down = {
+      pointerId: 1,
+      x: 37,
+      y: 32,
+      isPrimary: true,
+      index: 2,
+      count: 4,
+      viewportWidth: 390,
+      viewportHeight: 844,
+    }
+    function active() {
+      return holdActivate(holdPointerDown(createHoldGesture(), down), 37, 32, 390, 844)
+    }
+    for (const reason of ['explicit'] as const) {
+      let gesture = holdPointerMove(active(), { pointerId: 1, x: 37, y: 240 }).gesture
+      assert.notEqual(gesture.draftIndex, gesture.originIndex)
+      gesture = holdCancel(gesture, reason)
+      assert.equal(gesture.phase, 'idle')
+      assert.equal(gesture.suppressClick, true)
+      const released = holdPointerUp(gesture, 1)
+      assert.equal(released.commitIndex, null)
+      assert.equal(released.gesture.suppressClick, true)
+      assert.equal(holdConsumeClick(released.gesture, 0).suppressed, false)
+      assert.equal(released.gesture.suppressClick, true)
+      const trailing = holdConsumeClick(released.gesture, 1)
+      assert.equal(trailing.suppressed, true)
+      const next = holdPointerDown(trailing.gesture, { ...down, pointerId: 4 })
+      assert.equal(next.suppressClick, false)
+      const tap = holdRelease(next)
+      assert.equal(tap.commitIndex, null)
+      assert.equal(holdConsumeClick(tap.gesture, 1).suppressed, false)
+    }
   })
 
   it('ignores a second pointer without moving the origin or the draft', () => {

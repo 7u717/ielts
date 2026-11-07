@@ -12,7 +12,7 @@ import {
   holdConsumeClick,
   holdPointerDown,
   holdPointerMove,
-  holdRelease,
+  holdPointerUp,
   type HoldGesture,
 } from '@/core/ielts/avatar-hold'
 import { withAppBaseURL } from '@/core/utils/base-url'
@@ -118,9 +118,10 @@ function onPointerMove(event: PointerEvent) {
   }
 }
 function onPointerUp(event: PointerEvent) {
-  if (gesture.value.phase === 'idle' || event.pointerId !== gesture.value.pointerId) return
+  const result = holdPointerUp(gesture.value, event.pointerId)
+  // Idle after Escape/route keeps the one-shot suppress for the trailing click.
+  if (result.commitIndex == null && result.gesture === gesture.value) return
   window.clearTimeout(timer)
-  const result = holdRelease(gesture.value)
   if (result.commitIndex != null) {
     const goal = stops.value[result.commitIndex]
     if (goal && goal !== store.sdict.perDayStudyNumber) {
@@ -155,7 +156,7 @@ function onClick(event: MouseEvent) {
 function closePersistent() {
   if (gesture.value.phase !== 'idle') {
     window.clearTimeout(timer)
-    gesture.value = holdCancel(gesture.value)
+    gesture.value = holdCancel(gesture.value, 'explicit')
     clearHoldChrome()
     stopListening()
   }

@@ -9,6 +9,7 @@ import {
   holdConsumeClick,
   holdPointerDown,
   holdPointerMove,
+  holdPointerUp,
   holdRelease,
 } from './avatar-hold.ts'
 import { createClickSuppress, idleSheetDrag, sheetDragFinish, sheetDragMove, sheetDragStart } from './click-suppress.ts'
@@ -189,6 +190,95 @@ describe('multi-pointer and cancel lifecycle', () => {
     assert.equal(dragged.gesture.draftIndex, 3)
     const commit = holdRelease(dragged.gesture)
     assert.equal(commit.commitIndex, 3)
+    window.close()
+  })
+
+  it('hold, Escape, pointerup, click stays closed; the next tap opens', () => {
+    const { window, document } = phone()
+    const button = document.createElement('button')
+    document.body.append(button)
+    let gesture = createHoldGesture()
+    let open = false
+    const commits: number[] = []
+    const context = { index: 2, count: 4, viewportWidth: 390, viewportHeight: 844 }
+    button.addEventListener('pointerdown', event => {
+      const next = holdPointerDown(gesture, {
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        isPrimary: event.isPrimary,
+        ...context,
+      })
+      if (next !== gesture) gesture = next
+    })
+    button.addEventListener('pointerup', event => {
+      const result = holdPointerUp(gesture, event.pointerId)
+      gesture = result.gesture
+      if (result.commitIndex != null) commits.push(result.commitIndex)
+    })
+    button.addEventListener('click', event => {
+      const result = holdConsumeClick(gesture, event.detail)
+      gesture = result.gesture
+      if (result.suppressed) {
+        event.preventDefault()
+        return
+      }
+      open = !open
+    })
+    const down = () =>
+      button.dispatchEvent(
+        new window.PointerEvent('pointerdown', {
+          bubbles: true,
+          cancelable: true,
+          pointerId: 1,
+          clientX: 37,
+          clientY: 32,
+          isPrimary: true,
+          button: 0,
+        })
+      )
+    const up = () =>
+      button.dispatchEvent(
+        new window.PointerEvent('pointerup', {
+          bubbles: true,
+          cancelable: true,
+          pointerId: 1,
+          clientX: 80,
+          clientY: 32,
+          isPrimary: true,
+          button: 0,
+        })
+      )
+    const click = (detail: number) => {
+      const event = new window.MouseEvent('click', { bubbles: true, cancelable: true, detail })
+      button.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+    down()
+    gesture = holdActivate(gesture, 37, 32, 390, 844)
+    gesture = holdPointerMove(gesture, { pointerId: 1, x: 37, y: 240 }).gesture
+    gesture = holdCancel(gesture, 'explicit')
+    open = false
+    up()
+    const trailingPrevented = click(1)
+    assert.equal(trailingPrevented, true)
+    assert.equal(open, false)
+    assert.deepEqual(commits, [])
+    down()
+    up()
+    assert.equal(click(1), false)
+    assert.equal(open, true)
+    assert.deepEqual(commits, [])
+
+    // Route change uses the same explicit cancel while the contact is active.
+    down()
+    gesture = holdActivate(gesture, 37, 32, 390, 844)
+    gesture = holdCancel(gesture, 'explicit')
+    open = false
+    up()
+    assert.equal(click(1), true)
+    assert.equal(open, false)
+    assert.deepEqual(commits, [])
     window.close()
   })
 
