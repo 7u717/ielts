@@ -1764,6 +1764,10 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
   top: calc(var(--header-h) + 8px);
   left: max(16px, calc(50% - 300px + 20px));
   width: min(368px, calc(100vw - 32px));
+  max-height: calc(100svh - var(--header-h) - 12px - var(--keyboard-inset, 0px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   box-sizing: border-box;
   padding: 16px 18px 14px;
   border-radius: 26px;
@@ -1781,6 +1785,15 @@ body:has(.topic-menu.open) :is(.ielts-home > .overview-panel, .ielts-home > .wor
   transform-origin: calc(100% - 22px) 0;
 }
 .avatar-glass.holding { pointer-events: none; }
+@media (max-height: 520px) {
+  .avatar-glass {
+    top: 8px;
+    max-height: calc(100svh - 16px - var(--keyboard-inset, 0px));
+  }
+}
+html[data-keyboard-open='true'] .avatar-glass {
+  max-height: calc(100svh - var(--header-h) - var(--keyboard-inset, 0px) - 8px);
+}
 .avatar-glass:focus { outline: none; }
 .avatar-glass:focus-visible,
 .avatar-glass :focus-visible {

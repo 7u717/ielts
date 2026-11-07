@@ -171,8 +171,9 @@ async function start() {
   }
 }
 function showVocabularyWord(word: Word) {
+  // The detail dialog stacks on the list. Closing the list here made the
+  // dialog's first play/close click look like an outside tap on the panel.
   wordDetails.value = word
-  vocabularyOpen.value = false
 }
 function removeDetailedWord() {
   if (wordDetails.value) void removeWord(wordDetails.value)

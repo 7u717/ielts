@@ -6,8 +6,9 @@ import {
   goalIndex,
   goalRangeMax,
   goalStops,
-  indexFromDelta,
+  indexFromReach,
   nearestStop,
+  parseGoalEntry,
   uniformStep,
 } from './daily-goal.ts'
 import {
@@ -18,8 +19,11 @@ import {
   holdPointerDown,
   holdPointerMove,
   holdRelease,
-  holdSetWidth,
 } from './avatar-hold.ts'
+
+const phone = { viewportWidth: 390, viewportHeight: 844, count: 4 }
+// Avatar sits at x 20–54, y 16–48. The finger starts at its centre.
+const avatar = { x: 37, y: 32 }
 
 describe('daily goal stops', () => {
   it('keeps the original 10/20/30/40 stops and a saved legacy value', () => {
@@ -42,58 +46,153 @@ describe('daily goal stops', () => {
     assert.equal(nearestStop(stops, 99), 40)
     assert.equal(goalIndex(stops, 30), 3)
   })
+
+  it('rejects empty and invalid goal text instead of treating it as zero', () => {
+    assert.equal(parseGoalEntry(''), null)
+    assert.equal(parseGoalEntry('   '), null)
+    assert.equal(parseGoalEntry('abc'), null)
+    assert.equal(parseGoalEntry('10px'), null)
+    assert.equal(parseGoalEntry('30'), 30)
+    assert.equal(parseGoalEntry(' 15 '), 15)
+  })
+})
+
+describe('hold reach from the screen edge', () => {
+  it('does not move when the finger has not moved', () => {
+    assert.equal(indexFromReach({ ...phone, originIndex: 3, originX: avatar.x, originY: avatar.y, x: avatar.x, y: avatar.y }), 3)
+    assert.equal(indexFromReach({ ...phone, originIndex: 3, originX: avatar.x, originY: avatar.y, x: avatar.x + 4, y: avatar.y + 2 }), 3)
+  })
+
+  it('reaches both ends of the range inside a 390px viewport', () => {
+    const fromTop = { ...phone, originIndex: 3, originX: avatar.x, originY: avatar.y }
+    assert.equal(indexFromReach({ ...fromTop, x: 0, y: avatar.y }), 0)
+    assert.equal(indexFromReach({ ...fromTop, x: avatar.x, y: 32 + 200 }), 0)
+    const fromBottom = { ...phone, originIndex: 0, originX: avatar.x, originY: avatar.y }
+    assert.equal(indexFromReach({ ...fromBottom, x: 37 + 200, y: avatar.y }), 3)
+    assert.equal(indexFromReach({ ...fromBottom, x: 370, y: avatar.y }), 3)
+  })
 })
 
 describe('avatar hold', () => {
-  it('does not jump when the hold activates away from the thumb', () => {
-    let gesture = holdPointerDown(createHoldGesture(), { pointerId: 1, x: 12, y: 40, index: 2, count: 4 })
-    gesture = holdActivate(gesture, 28, 0)
-    assert.equal(gesture.draftIndex, 2)
-    gesture = holdSetWidth(gesture, 240, 28)
-    assert.equal(gesture.draftIndex, 2)
-    const still = holdPointerMove(gesture, { pointerId: 1, x: 28, y: 40 })
-    assert.equal(still.gesture.draftIndex, 2)
-    const slid = holdPointerMove(gesture, { pointerId: 1, x: 28 + 80, y: 44 })
-    assert.equal(slid.gesture.draftIndex, 3)
-    const back = holdPointerMove(gesture, { pointerId: 1, x: 28 - 160, y: 40 })
-    assert.equal(back.gesture.draftIndex, 0)
-    const capped = holdPointerMove(gesture, { pointerId: 1, x: 28 + 800, y: 40 })
-    assert.equal(capped.gesture.draftIndex, 3)
+  it('does not jump when the hold activates on the avatar', () => {
+    let gesture = holdPointerDown(createHoldGesture(), {
+      pointerId: 1,
+      x: avatar.x,
+      y: avatar.y,
+      isPrimary: true,
+      index: 3,
+      count: 4,
+      viewportWidth: 390,
+      viewportHeight: 844,
+    })
+    gesture = holdActivate(gesture, avatar.x, avatar.y, 390, 844)
+    assert.equal(gesture.draftIndex, 3)
+    const still = holdPointerMove(gesture, { pointerId: 1, x: avatar.x, y: avatar.y })
+    assert.equal(still.gesture.draftIndex, 3)
   })
 
   it('cancels before the hold so a scroll is not captured', () => {
-    const down = holdPointerDown(createHoldGesture(), { pointerId: 4, x: 20, y: 20, index: 1, count: 4 })
+    const down = holdPointerDown(createHoldGesture(), {
+      pointerId: 4,
+      x: 20,
+      y: 20,
+      isPrimary: true,
+      index: 1,
+      count: 4,
+      viewportWidth: 390,
+      viewportHeight: 844,
+    })
     const moved = holdPointerMove(down, { pointerId: 4, x: 22, y: 48 })
     assert.equal(moved.scrollCancelled, true)
     assert.equal(moved.gesture.phase, 'idle')
     const released = holdRelease(moved.gesture)
     assert.equal(released.commitIndex, null)
-    const click = holdConsumeClick(moved.gesture)
+    const click = holdConsumeClick(moved.gesture, 1)
     assert.equal(click.suppressed, true)
   })
 
-  it('commits on release and drops the value on pointercancel', () => {
-    let gesture = holdPointerDown(createHoldGesture(), { pointerId: 2, x: 0, y: 0, index: 1, count: 4 })
-    gesture = holdActivate(gesture, 0, 180)
-    gesture = holdPointerMove(gesture, { pointerId: 2, x: 60, y: 2 }).gesture
-    assert.equal(gesture.draftIndex, 2)
+  it('commits on release and does not arm a click after pointercancel', () => {
+    let gesture = holdPointerDown(createHoldGesture(), {
+      pointerId: 2,
+      x: avatar.x,
+      y: avatar.y,
+      isPrimary: true,
+      index: 0,
+      count: 4,
+      viewportWidth: 390,
+      viewportHeight: 844,
+    })
+    gesture = holdActivate(gesture, avatar.x, avatar.y, 390, 844)
+    gesture = holdPointerMove(gesture, { pointerId: 2, x: avatar.x + 200, y: avatar.y }).gesture
+    assert.equal(gesture.draftIndex, 3)
     const released = holdRelease(gesture)
-    assert.equal(released.commitIndex, 2)
-    assert.equal(released.gesture.phase, 'idle')
-    assert.equal(holdConsumeClick(released.gesture).suppressed, true)
+    assert.equal(released.commitIndex, 3)
+    assert.equal(holdConsumeClick(released.gesture, 1).suppressed, true)
+    assert.equal(holdConsumeClick(released.gesture, 0).suppressed, false)
 
-    let cancelled = holdPointerDown(createHoldGesture(), { pointerId: 3, x: 0, y: 0, index: 1, count: 4 })
-    cancelled = holdActivate(cancelled, 0, 180)
-    cancelled = holdPointerMove(cancelled, { pointerId: 3, x: 60, y: 0 }).gesture
+    let cancelled = holdPointerDown(createHoldGesture(), {
+      pointerId: 3,
+      x: avatar.x,
+      y: avatar.y,
+      isPrimary: true,
+      index: 3,
+      count: 4,
+      viewportWidth: 390,
+      viewportHeight: 844,
+    })
+    cancelled = holdActivate(cancelled, avatar.x, avatar.y, 390, 844)
+    cancelled = holdPointerMove(cancelled, { pointerId: 3, x: avatar.x, y: avatar.y + 200 }).gesture
     cancelled = holdCancel(cancelled)
     assert.equal(cancelled.phase, 'idle')
+    assert.equal(cancelled.suppressClick, false)
     assert.equal(holdRelease(cancelled).commitIndex, null)
+    assert.equal(holdConsumeClick(cancelled, 1).suppressed, false)
+  })
+
+  it('ignores a second pointer without moving the origin or the draft', () => {
+    let gesture = holdPointerDown(createHoldGesture(), {
+      pointerId: 1,
+      x: avatar.x,
+      y: avatar.y,
+      isPrimary: true,
+      index: 3,
+      count: 4,
+      viewportWidth: 390,
+      viewportHeight: 844,
+    })
+    gesture = holdActivate(gesture, avatar.x, avatar.y, 390, 844)
+    const intruder = holdPointerDown(gesture, {
+      pointerId: 2,
+      x: 10,
+      y: 700,
+      isPrimary: false,
+      index: 0,
+      count: 4,
+      viewportWidth: 390,
+      viewportHeight: 844,
+    })
+    assert.equal(intruder.pointerId, 1)
+    assert.equal(intruder.originX, avatar.x)
+    const moved = holdPointerMove(intruder, { pointerId: 2, x: 8, y: 780 })
+    assert.equal(moved.gesture.draftIndex, 3)
+    assert.equal(moved.gesture.lastX, avatar.x)
+    const up = holdRelease(moved.gesture)
+    assert.equal(up.commitIndex, 3)
   })
 
   it('lets a plain tap through to the persistent controls', () => {
-    const down = holdPointerDown(createHoldGesture(), { pointerId: 7, x: 5, y: 5, index: 0, count: 4 })
+    const down = holdPointerDown(createHoldGesture(), {
+      pointerId: 7,
+      x: 5,
+      y: 5,
+      isPrimary: true,
+      index: 0,
+      count: 4,
+      viewportWidth: 390,
+      viewportHeight: 844,
+    })
     const released = holdRelease(down)
     assert.equal(released.commitIndex, null)
-    assert.equal(holdConsumeClick(released.gesture).suppressed, false)
+    assert.equal(holdConsumeClick(released.gesture, 1).suppressed, false)
   })
 })

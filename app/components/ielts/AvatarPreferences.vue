@@ -13,7 +13,6 @@ import {
   holdPointerDown,
   holdPointerMove,
   holdRelease,
-  holdSetWidth,
   type HoldGesture,
 } from '@/core/ielts/avatar-hold'
 import { withAppBaseURL } from '@/core/utils/base-url'
@@ -33,7 +32,6 @@ const holding = computed(() => gesture.value.phase === 'holding')
 const visible = computed(() => preferencesOpen.value || holding.value)
 const draftGoal = computed(() => stops.value[gesture.value.draftIndex] ?? store.sdict.perDayStudyNumber)
 let timer = 0
-let lastX = 0
 let listening = false
 let swallowClick = false
 let swallowTimer = 0
@@ -68,28 +66,35 @@ function releaseCapture(event: PointerEvent) {
 function clearHoldChrome() {
   if (button.value) button.value.style.touchAction = ''
 }
-function measureWidth(x: number) {
-  const dial = panel.value?.querySelector('.goal-dial') as HTMLElement | null
-  const width = dial?.getBoundingClientRect().width || 0
-  gesture.value = holdSetWidth(gesture.value, width || 220, x)
-}
 function onPointerDown(event: PointerEvent) {
   if (!props.enabled || event.button !== 0) return
-  lastX = event.clientX
-  window.clearTimeout(timer)
-  gesture.value = holdPointerDown(gesture.value, {
+  const next = holdPointerDown(gesture.value, {
     pointerId: event.pointerId,
     x: event.clientX,
     y: event.clientY,
+    isPrimary: event.isPrimary,
     index: currentIndex(),
     count: stops.value.length,
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
   })
+  // A second finger leaves the active gesture, its origin, and the saved goal alone.
+  if (next === gesture.value) return
+  gesture.value = next
   startListening()
   const pointerId = event.pointerId
   const target = event.currentTarget as HTMLElement
+  window.clearTimeout(timer)
   timer = window.setTimeout(() => {
-    if (gesture.value.phase !== 'pending' || gesture.value.pointerId !== pointerId) return
-    gesture.value = holdActivate(gesture.value, lastX, 0)
+    const current = gesture.value
+    if (current.phase !== 'pending' || current.pointerId !== pointerId) return
+    gesture.value = holdActivate(
+      current,
+      current.lastX,
+      current.lastY,
+      window.innerWidth,
+      window.innerHeight
+    )
     preferencesOpen.value = false
     topicsOpen.value = false
     haptic()
@@ -99,14 +104,13 @@ function onPointerDown(event: PointerEvent) {
     } catch {
       /* Pointer may already be gone. */
     }
-    void nextTick(() => requestAnimationFrame(() => measureWidth(lastX)))
   }, HOLD_MS)
 }
 function onPointerMove(event: PointerEvent) {
-  lastX = event.clientX
+  const active = event.pointerId === gesture.value.pointerId
   const result = holdPointerMove(gesture.value, { pointerId: event.pointerId, x: event.clientX, y: event.clientY })
   gesture.value = result.gesture
-  if (gesture.value.phase === 'holding' && event.cancelable) event.preventDefault()
+  if (active && result.gesture.phase === 'holding' && event.cancelable) event.preventDefault()
   if (result.scrollCancelled) {
     window.clearTimeout(timer)
     clearHoldChrome()
@@ -138,7 +142,7 @@ function onPointerCancel(event: PointerEvent) {
   stopListening()
 }
 function onClick(event: MouseEvent) {
-  const result = holdConsumeClick(gesture.value)
+  const result = holdConsumeClick(gesture.value, event.detail)
   gesture.value = result.gesture
   if (result.suppressed) {
     event.preventDefault()

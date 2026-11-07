@@ -3,7 +3,15 @@ import { computed, ref, watch } from 'vue'
 import { useSettingStore } from '@/core/stores/setting'
 import { useBaseStore } from '@/core/stores/base'
 import { haptic } from '@/core/ielts/ui'
-import { GOAL_RANGE_MIN, GOAL_RANGE_STEP, goalIndex, goalRangeMax, nearestStop, uniformStep } from '@/core/ielts/daily-goal'
+import {
+  GOAL_RANGE_MIN,
+  GOAL_RANGE_STEP,
+  goalIndex,
+  goalRangeMax,
+  nearestStop,
+  parseGoalEntry,
+  uniformStep,
+} from '@/core/ielts/daily-goal'
 import { useGoalStops } from '@/core/ielts/goal-stops'
 
 const props = defineProps<{ preview?: number | null; locked?: boolean }>()
@@ -46,8 +54,12 @@ function fromRange(event: Event) {
 }
 function fromNumber(event: Event) {
   const input = event.target as HTMLInputElement
-  const raw = Number(input.value)
-  const next = Number.isFinite(raw) ? commit(raw) : shown.value
+  const parsed = parseGoalEntry(input.value)
+  if (parsed == null) {
+    input.value = String(shown.value)
+    return
+  }
+  const next = commit(parsed)
   input.value = String(next || shown.value)
 }
 function toggleSound() {

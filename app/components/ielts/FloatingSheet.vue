@@ -2,6 +2,8 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Icon from './Icon.vue'
 import { haptic } from '@/core/ielts/ui'
+import { createClickSuppress, idleSheetDrag, sheetDragFinish, sheetDragMove, sheetDragStart, type SheetDrag } from '@/core/ielts/click-suppress'
+import { hitOwner, topmostModalDialog } from '@/core/ielts/modal-owner'
 
 const props = defineProps<{ open: boolean; title: string }>()
 const emit = defineEmits<{ close: [] }>()
@@ -13,11 +15,9 @@ const closing = ref(false)
 const tracking = ref(false)
 const drag = ref(0)
 let timer = 0
-let startY = 0
 let previous: HTMLElement | null = null
-let suppressClick = false
-let swallowClick = false
-let swallowTimer = 0
+let dragState: SheetDrag = idleSheetDrag()
+const clickGuard = createClickSuppress()
 let bodyTrack: { id: number; x: number; y: number; armed: boolean } | null = null
 
 function reduced() {
@@ -67,20 +67,29 @@ watch(
     }
   }
 )
-function endDrag(commit: boolean) {
-  const distance = drag.value
+function applyDragFinish(event: PointerEvent, mode: 'up' | 'cancel') {
+  const result = sheetDragFinish(dragState, event, mode)
+  if (result.state === dragState) return
+  dragState = result.state
   tracking.value = false
   bodyTrack = null
-  if (distance > 8) suppressClick = true
-  if (commit && distance > 65) {
+  drag.value = 0
+  if (result.suppressClick) clickGuard.arm()
+  if (result.dismiss) {
     haptic()
     requestClose()
-  } else drag.value = 0
+  }
 }
 function startDrag(event: PointerEvent) {
-  if (closing.value || (event.target as HTMLElement).closest('button')) return
+  if ((event.target as HTMLElement).closest('button')) return
+  const next = sheetDragStart(
+    dragState,
+    { pointerId: event.pointerId, y: event.clientY, isPrimary: event.isPrimary },
+    closing.value
+  )
+  if (next === dragState) return
+  dragState = next
   tracking.value = true
-  startY = event.clientY
   drag.value = 0
   try {
     ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
@@ -89,19 +98,21 @@ function startDrag(event: PointerEvent) {
   }
 }
 function moveDrag(event: PointerEvent) {
-  if (!tracking.value) return
-  drag.value = Math.max(0, event.clientY - startY)
+  const next = sheetDragMove(dragState, { pointerId: event.pointerId, y: event.clientY })
+  if (next === dragState) return
+  dragState = next
+  drag.value = next.drag
 }
-function upDrag() {
-  if (!tracking.value) return
-  endDrag(true)
+function upDrag(event: PointerEvent) {
+  applyDragFinish(event, 'up')
 }
-function cancelDrag() {
-  if (!tracking.value) return
-  endDrag(false)
+function cancelDrag(event: PointerEvent) {
+  applyDragFinish(event, 'cancel')
 }
 function bodyDown(event: PointerEvent) {
+  if (event.isPrimary === false) return
   if (closing.value || tracking.value) return
+  if (bodyTrack && bodyTrack.id !== event.pointerId) return
   if ((bodyEl.value?.scrollTop || 0) > 0) return
   bodyTrack = { id: event.pointerId, x: event.clientX, y: event.clientY, armed: false }
 }
@@ -117,15 +128,16 @@ function bodyMove(event: PointerEvent) {
       return
     }
     bodyTrack.armed = true
+    dragState = { pointerId: event.pointerId, startY: bodyTrack.y, drag: 0, tracking: true }
     tracking.value = true
-    startY = bodyTrack.y
     try {
       ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
     } catch {
       /* Fall through; the gesture still updates from later moves. */
     }
   }
-  drag.value = Math.max(0, event.clientY - startY)
+  drag.value = Math.max(0, event.clientY - bodyTrack.y)
+  dragState = { ...dragState, drag: drag.value }
 }
 function bodyUp(event: PointerEvent) {
   if (!bodyTrack || event.pointerId !== bodyTrack.id) return
@@ -133,16 +145,15 @@ function bodyUp(event: PointerEvent) {
     bodyTrack = null
     return
   }
-  endDrag(true)
+  applyDragFinish(event, 'up')
 }
 function bodyCancel(event: PointerEvent) {
   if (!bodyTrack || event.pointerId !== bodyTrack.id) return
-  if (bodyTrack.armed) endDrag(false)
+  if (bodyTrack.armed) applyDragFinish(event, 'cancel')
   else bodyTrack = null
 }
 function onClickCapture(event: MouseEvent) {
-  if (!suppressClick) return
-  suppressClick = false
+  if (!clickGuard.shouldSuppress(event)) return
   event.preventDefault()
   event.stopPropagation()
 }
@@ -153,6 +164,7 @@ function focusables() {
 }
 function onKey(event: KeyboardEvent) {
   if (!shown.value || closing.value) return
+  if (topmostModalDialog(document)) return
   if (event.key === 'Escape') {
     event.preventDefault()
     requestClose()
@@ -174,21 +186,14 @@ function onKey(event: KeyboardEvent) {
 }
 function onOutside(event: PointerEvent) {
   if (!shown.value || closing.value || tracking.value) return
-  const target = event.target as Node | null
-  if (target && panel.value?.contains(target)) return
-  swallowClick = true
-  window.clearTimeout(swallowTimer)
-  swallowTimer = window.setTimeout(() => {
-    swallowClick = false
-  }, 600)
+  if (hitOwner(event.target, panel.value ?? null, document) !== 'outside') return
+  clickGuard.arm()
   event.preventDefault()
   event.stopPropagation()
   requestClose()
 }
 function onSwallowClick(event: MouseEvent) {
-  if (!swallowClick) return
-  swallowClick = false
-  window.clearTimeout(swallowTimer)
+  if (!clickGuard.shouldSuppress(event)) return
   event.preventDefault()
   event.stopPropagation()
 }
@@ -199,7 +204,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   window.clearTimeout(timer)
-  window.clearTimeout(swallowTimer)
+  clickGuard.clear()
   document.documentElement.classList.remove('vocabulary-open')
   window.removeEventListener('keydown', onKey)
   window.removeEventListener('pointerdown', onOutside, true)
