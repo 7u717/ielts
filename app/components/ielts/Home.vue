@@ -15,6 +15,7 @@ import { WordPracticeMode, SyncDataType } from '@/core/types/enum'
 import type { Word } from '@/core/types'
 import { haptic, useIeltsUI } from '@/core/ielts/ui'
 import { Toast } from '@/base'
+import FloatingSheet from './FloatingSheet.vue'
 import Sheet from './Sheet.vue'
 import Icon from './Icon.vue'
 import Ring from './Ring.vue'
@@ -88,7 +89,11 @@ watch(
 onActivated(async () => {
   if (store.load && !busy.value) hasSession.value = !!(await persistence.load())
 })
-onDeactivated(() => { topicsOpen.value = false })
+onDeactivated(() => {
+  topicsOpen.value = false
+  vocabularyOpen.value = false
+  wordDetails.value = null
+})
 async function choose(t: (typeof topics)[number]) {
   if (busy.value) return
   busy.value = true
@@ -166,8 +171,9 @@ async function start() {
   }
 }
 function showVocabularyWord(word: Word) {
+  // The detail dialog stacks on the list. Closing the list here made the
+  // dialog's first play/close click look like an outside tap on the panel.
   wordDetails.value = word
-  vocabularyOpen.value = false
 }
 function removeDetailedWord() {
   if (wordDetails.value) void removeWord(wordDetails.value)
@@ -331,7 +337,7 @@ function grabUp(e: PointerEvent) {
           @close="topicsOpen = false"
           @select="chooseFromMenu" /></Teleport
     ></ClientOnly>
-    <Sheet class="vocabulary-sheet" :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
+    <FloatingSheet :open="vocabularyOpen" :title="topic.name" @close="vocabularyOpen = false"
       ><div class="word-list">
         <WordRow
           v-for="(word, index) in store.sdict.words"
@@ -340,7 +346,7 @@ function grabUp(e: PointerEvent) {
           :style="{ '--row-delay': Math.min(index, 5) * 12 + 'ms' }"
           @open="showVocabularyWord"
         /></div
-    ></Sheet>
+    ></FloatingSheet>
     <Sheet :open="!!wordDetails" :title="wordDetails?.word || ''" @close="wordDetails = null"
       ><template v-if="wordDetails"
         ><p class="detail-meaning">{{ wordDetails.trans.map(t => t.cn).join('；') }}</p>
